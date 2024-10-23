@@ -20,8 +20,6 @@ public class UserService implements IUserService {
         User user = new User(userRequestDTO);
         userRepository.save(user);
 
-        uis
-
         return new MessageResponseDTO("El usuario se creo correctamente");
     }
 

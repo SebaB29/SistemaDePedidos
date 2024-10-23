@@ -15,7 +15,6 @@ public class UserController {
     @Autowired
     private IUserService userService;
 
-
     @GetMapping("/hello")
     public String hello(@RequestParam(value = "name", defaultValue = "World") String name) {
         return String.format("Hello %s!", name);
@@ -25,5 +24,4 @@ public class UserController {
     public ResponseEntity<MessageResponseDTO> createUser(@RequestBody UserRequestDTO userDTO) {
         return new ResponseEntity<MessageResponseDTO>(userService.createUser(userDTO), HttpStatus.OK);
     }
-
 }
