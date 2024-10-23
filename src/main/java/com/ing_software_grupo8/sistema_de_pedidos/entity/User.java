@@ -1,15 +1,15 @@
 package com.ing_software_grupo8.sistema_de_pedidos.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Entity
 @Getter
 @Setter
+@AllArgsConstructor
+@NoArgsConstructor
 public class User {
-    @Id
     private long id;
     private String name;
     private String lastName;
@@ -19,7 +19,4 @@ public class User {
     private String photo;
     private String gender;
     private String address;
-
-    public User() {}
-    public User(String name, String lastName, String email, String password, Number age, String photo, String gender, String address) {}
 }

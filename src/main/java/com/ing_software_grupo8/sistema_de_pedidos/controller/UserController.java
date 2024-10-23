@@ -1,25 +1,15 @@
 package com.ing_software_grupo8.sistema_de_pedidos.controller;
 
-import com.ing_software_grupo8.sistema_de_pedidos.SistemaDePedidosApplication;
 import com.ing_software_grupo8.sistema_de_pedidos.service.IUserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-@SpringBootApplication
 @RestController
-//public class UserController {
-//
-//    @Autowired
-//    private IUserService userService;
-//}
 public class UserController {
-    public static void main(String[] args) {
-        SpringApplication.run(SistemaDePedidosApplication.class, args);
-    }
+    @Autowired
+    private IUserService userService;
 
     @GetMapping("/hello")
     public String hello(@RequestParam(value = "name", defaultValue = "World") String name) {
