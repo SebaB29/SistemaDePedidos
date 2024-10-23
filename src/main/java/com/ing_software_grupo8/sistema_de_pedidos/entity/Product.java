@@ -12,8 +12,12 @@ import java.util.HashMap;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Product {
+
     private long Id;
+
     private String name;
+
     private int weight;
+
     private HashMap<String, String> attributes;
 }

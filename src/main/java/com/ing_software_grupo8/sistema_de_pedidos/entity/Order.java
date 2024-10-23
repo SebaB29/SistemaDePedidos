@@ -13,10 +13,16 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Order {
+
     private long id;
+
     private long userId;
+
     private String status;
+
     private Timestamp orderDate;
+
     private Timestamp confirmationDate;
+
     private List<Product> productList;
 }
