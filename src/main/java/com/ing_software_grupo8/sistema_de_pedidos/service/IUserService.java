@@ -1,9 +1,9 @@
 package com.ing_software_grupo8.sistema_de_pedidos.service;
 
-import com.ing_software_grupo8.sistema_de_pedidos.DTO.ResponseDTO;
-import com.ing_software_grupo8.sistema_de_pedidos.DTO.UserDTO;
+import com.ing_software_grupo8.sistema_de_pedidos.DTO.MessageResponseDTO;
+import com.ing_software_grupo8.sistema_de_pedidos.DTO.UserRequestDTO;
 
 public interface IUserService {
 
-    ResponseDTO CreateUser(UserDTO userDTO); //TODO: Agregar parametros que necesite
+    MessageResponseDTO createUser(UserRequestDTO userRequestDTO);
 }
