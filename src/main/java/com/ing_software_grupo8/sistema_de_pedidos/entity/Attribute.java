@@ -9,9 +9,12 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class Stock {
-    private long stockId;
-    private String stockType;
+public class Attribute {
+
+    private long id;
+
     private long productId;
-    private float quantity;
+
+    private String description;
+
 }
