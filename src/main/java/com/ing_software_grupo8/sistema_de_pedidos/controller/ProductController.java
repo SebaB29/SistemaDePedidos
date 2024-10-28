@@ -5,19 +5,21 @@ import com.ing_software_grupo8.sistema_de_pedidos.DTO.MessageResponseDTO;
 import com.ing_software_grupo8.sistema_de_pedidos.entity.Product;
 import com.ing_software_grupo8.sistema_de_pedidos.entity.Stock;
 import com.ing_software_grupo8.sistema_de_pedidos.entity.Attribute;
-import com.ing_software_grupo8.sistema_de_pedidos.security.CustomUserDetails;
 import com.ing_software_grupo8.sistema_de_pedidos.service.IAttributeService;
 import com.ing_software_grupo8.sistema_de_pedidos.service.IProductService;
 import com.ing_software_grupo8.sistema_de_pedidos.service.IStockService;
+
+import jakarta.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.validation.annotation.Validated;
 
 @RestController
+@Validated
 public class ProductController {
 
     @Autowired
@@ -29,40 +31,40 @@ public class ProductController {
     @Autowired
     private IAttributeService attributeService;
 
-    private long createProduct(CustomUserDetails user, AdminCreateProductRequestDTO productRequest) {
+    private long createProduct(AdminCreateProductRequestDTO productRequest) {
         Product product = new Product();
         product.setName(productRequest.getProductName());
         product.setWeight(productRequest.getWeight());
-        return productService.createProduct(user, product);
+        return productService.createProduct(product);
     }
 
-    private void createStock(long productId, CustomUserDetails user, AdminCreateProductRequestDTO productRequest) {
+    private void createStock(long productId, AdminCreateProductRequestDTO productRequest) {
         Stock stock = new Stock();
         stock.setProductId(productId);
         stock.setStockType(productRequest.getStockType());
         stock.setQuantity(productRequest.getQuantity());
-        stockService.createStock(user, stock);
+        stockService.createStock(stock);
     }
 
-    private void createAttribute(long productId, CustomUserDetails user, AdminCreateProductRequestDTO productRequest) {
+    private void createAttribute(long productId, AdminCreateProductRequestDTO productRequest) {
         Attribute attribute = new Attribute();
         attribute.setProductId(productId);
         attribute.setDescription(productRequest.getDescription());
-        attributeService.createAttribute(user, attribute);
+        attributeService.createAttribute(attribute);
     }
 
-    public void createProductWithStockAndAttributes(CustomUserDetails user,
+    public void createProductWithStockAndAttributes(
             AdminCreateProductRequestDTO productRequest) {
-        long productId = createProduct(user, productRequest);
-        createStock(productId, user, productRequest);
-        createAttribute(productId, user, productRequest);
+        long productId = createProduct(productRequest);
+        createStock(productId, productRequest);
+        createAttribute(productId, productRequest);
     }
 
     @PostMapping("/product/create")
-    public ResponseEntity<MessageResponseDTO> create(@AuthenticationPrincipal CustomUserDetails user,
-            @RequestBody AdminCreateProductRequestDTO productRequest) {
+    public ResponseEntity<MessageResponseDTO> create(
+            @Valid @RequestBody AdminCreateProductRequestDTO productRequest) {
         try {
-            createProductWithStockAndAttributes(user, productRequest);
+            createProductWithStockAndAttributes(productRequest);
             String messageOk = "Product created";
             MessageResponseDTO message = new MessageResponseDTO(messageOk);
             return ResponseEntity.ok(message);

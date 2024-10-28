@@ -15,7 +15,6 @@ import org.springframework.context.annotation.Primary;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Entity
 public class User {
 
     @Id
@@ -45,7 +44,7 @@ public class User {
     @Column
     private String address;
 
-    public User(UserRequestDTO userRequestDTO){
+    public User(UserRequestDTO userRequestDTO) {
         this.name = userRequestDTO.getNombre();
         this.lastName = userRequestDTO.getApellido();
         this.email = userRequestDTO.getEmail();

@@ -7,6 +7,8 @@ import lombok.Setter;
 
 import java.util.HashMap;
 
+import jakarta.validation.constraints.NotBlank;
+
 @Getter
 @Setter
 @AllArgsConstructor
@@ -15,8 +17,10 @@ public class Product {
 
     private long Id;
 
+    @NotBlank
     private String name;
 
+    @NotBlank
     private int weight;
 
     private HashMap<String, String> attributes;
