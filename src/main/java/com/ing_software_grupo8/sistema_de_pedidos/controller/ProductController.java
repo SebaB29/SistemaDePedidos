@@ -62,7 +62,7 @@ public class ProductController {
         createAttribute(productId, productRequest);
     }
 
-    @PostMapping("/product/create")
+    @PostMapping("/product")
     public ResponseEntity<MessageResponseDTO> create(
             @Valid @RequestBody AdminCreateProductRequestDTO productRequest) {
         try {
