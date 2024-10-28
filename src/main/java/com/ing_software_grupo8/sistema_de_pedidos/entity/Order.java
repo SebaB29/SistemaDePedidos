@@ -1,16 +1,12 @@
 package com.ing_software_grupo8.sistema_de_pedidos.entity;
 
-import com.ing_software_grupo8.sistema_de_pedidos.DTO.ProductOrderDTO;
-import jakarta.persistence.Column;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
+import jdk.jfr.Relational;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.security.Timestamp;
 import java.time.LocalTime;
 import java.util.List;
 
@@ -18,7 +14,7 @@ import java.util.List;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Table
+@Entity
 public class Order {
 
     @Id
@@ -27,12 +23,14 @@ public class Order {
     @Column(unique = true)
     private long userId;
 
-    @Column
-    private OrderState status;
+    @ManyToOne
+    @JoinColumn(name = "order_state")
+    private OrderState orderState;
 
-    @Column
+    @Column(nullable = false)
     private LocalTime orderDate;
 
+    @Column
     private LocalTime confirmationDate;
 
     @OneToMany

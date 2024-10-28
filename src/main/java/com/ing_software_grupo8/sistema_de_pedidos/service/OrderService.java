@@ -9,7 +9,7 @@ import com.ing_software_grupo8.sistema_de_pedidos.repository.IOrderRepository;
 import com.ing_software_grupo8.sistema_de_pedidos.repository.IOrderStateRepository;
 import com.ing_software_grupo8.sistema_de_pedidos.repository.IProductRepository;
 import com.ing_software_grupo8.sistema_de_pedidos.repository.IUserRepository;
-import com.ing_software_grupo8.sistema_de_pedidos.utils.OrderState;
+import com.ing_software_grupo8.sistema_de_pedidos.utils.OrderStateEnum;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -40,7 +40,7 @@ public class OrderService implements IOrderService{
 
         order.setUserId(orderRequestDTO.getUserId());
         order.setOrderDate(LocalTime.now());
-        order.setStatus(orderStateRepository.findByStateCode(OrderState.CREADO.ordinal()));
+        order.setOrderState(orderStateRepository.findByStateCode(OrderStateEnum.CREADO.ordinal()));
         List<ProductOrder> productOrderList = new ArrayList<>();
         for(ProductOrderDTO productOrderDTO : orderRequestDTO.getProductOrderDTOList()){
             ProductOrder productOrder = new ProductOrder();

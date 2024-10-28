@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import jakarta.persistence.*;
 
 import java.util.HashMap;
 
@@ -11,13 +12,15 @@ import java.util.HashMap;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@Entity
 public class Product {
 
+    @Id
     private long Id;
 
+    @Column(nullable = false)
     private String name;
 
+    @Column(nullable = false)
     private int weight;
-
-    private HashMap<String, String> attributes;
 }
