@@ -17,10 +17,10 @@ public class Product {
 
     private long Id;
 
-    @NotBlank
+    @NotBlank(message = "Porfavor agregue un nombre")
     private String name;
 
-    @NotBlank
+    @NotBlank(message = "Porfavor agregue un peso")
     private int weight;
 
     private HashMap<String, String> attributes;
