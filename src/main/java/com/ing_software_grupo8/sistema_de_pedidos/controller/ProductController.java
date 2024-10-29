@@ -25,10 +25,7 @@ public class ProductController {
     @PostMapping("/product")
     public ResponseEntity<MessageResponseDTO> create(
             @Valid @RequestBody AdminCreateProductRequestDTO productRequest) {
-        productService.createProduct(productRequest);
-        String messageOk = "Product created";
-        MessageResponseDTO message = new MessageResponseDTO(messageOk);
-        return ResponseEntity.ok(message);
+        return ResponseEntity.ok(productService.createProduct(productRequest));
     }
 
     @PutMapping("/product")

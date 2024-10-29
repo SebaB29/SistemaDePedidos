@@ -45,13 +45,14 @@ public class ProductService implements IProductService {
         attributeService.createAttribute(attribute);
     }
 
-    public void createProduct(AdminCreateProductRequestDTO productRequest) {
+    public MessageResponseDTO createProduct(AdminCreateProductRequestDTO productRequest) {
         // if (!user.isAdmin())
         // throw new IllegalArgumentException("Only admins can create products");
         Product productSaved = createProductInRepository(productRequest);
         long productSavedId = productSaved.getProductId();
         createStock(productSavedId, productRequest);
         createAttribute(productSavedId, productRequest);
+        return new MessageResponseDTO("Producto creado");
     }
 
     public MessageResponseDTO editProduct(ProductRequestDTO productDTO) {
