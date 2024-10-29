@@ -1,9 +1,11 @@
 package com.ing_software_grupo8.sistema_de_pedidos.service;
 
+import com.ing_software_grupo8.sistema_de_pedidos.DTO.AdminCreateProductRequestDTO;
 import com.ing_software_grupo8.sistema_de_pedidos.DTO.MessageResponseDTO;
 import com.ing_software_grupo8.sistema_de_pedidos.DTO.ProductRequestDTO;
 import com.ing_software_grupo8.sistema_de_pedidos.entity.Attribute;
 import com.ing_software_grupo8.sistema_de_pedidos.entity.Product;
+import com.ing_software_grupo8.sistema_de_pedidos.entity.Stock;
 import com.ing_software_grupo8.sistema_de_pedidos.repository.IProductRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,12 +18,40 @@ public class ProductService implements IProductService {
 
     @Autowired
     private IProductRepository productRepository;
+    @Autowired
+    private IStockService stockService;
+    @Autowired
+    private IAttributeService attributeService;
 
-    public long createProduct(Product product) {
+    private Product createProductInRepository(AdminCreateProductRequestDTO productRequest) {
+        Product product = new Product();
+        product.setName(productRequest.getProductName());
+        product.setWeight(productRequest.getWeight());
+        return productRepository.save(product);
+    }
+
+    private void createStock(long productId, AdminCreateProductRequestDTO productRequest) {
+        Stock stock = new Stock();
+        stock.setProductId(productId);
+        stock.setStockType(productRequest.getStockType());
+        stock.setQuantity(productRequest.getQuantity());
+        stockService.createStock(stock);
+    }
+
+    private void createAttribute(long productId, AdminCreateProductRequestDTO productRequest) {
+        Attribute attribute = new Attribute();
+        attribute.setProductId(productId);
+        attribute.setDescription(productRequest.getDescription());
+        attributeService.createAttribute(attribute);
+    }
+
+    public void createProduct(AdminCreateProductRequestDTO productRequest) {
         // if (!user.isAdmin())
         // throw new IllegalArgumentException("Only admins can create products");
-        Product productSaved = productRepository.save(product);
-        return productSaved.getProductId();
+        Product productSaved = createProductInRepository(productRequest);
+        long productSavedId = productSaved.getProductId();
+        createStock(productSavedId, productRequest);
+        createAttribute(productSavedId, productRequest);
     }
 
     public MessageResponseDTO editProduct(ProductRequestDTO productDTO) {
