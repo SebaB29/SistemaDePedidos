@@ -5,6 +5,7 @@ import com.ing_software_grupo8.sistema_de_pedidos.DTO.ProductRequestDTO;
 import com.ing_software_grupo8.sistema_de_pedidos.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -15,8 +16,12 @@ public class ProductController {
     @Autowired
     private ProductService productService;
 
-    @PutMapping("/edit-product")
+    @PutMapping("/product")
     public ResponseEntity<MessageResponseDTO> editProduct(@RequestBody ProductRequestDTO productDTO) {
         return ResponseEntity.ok(productService.editProduct(productDTO));
+    }
+    @DeleteMapping("/product")
+    public ResponseEntity<MessageResponseDTO> deleteProduct(@RequestBody ProductRequestDTO productDTO) {
+        return ResponseEntity.ok(productService.deleteProduct(productDTO));
     }
 }
