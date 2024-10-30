@@ -19,7 +19,7 @@ public class Attribute {
 
     @ManyToOne
     @JoinColumn(name = "product_id", nullable = false)
-    private Product product;
+    private long productId;
 
     private String description;
 
