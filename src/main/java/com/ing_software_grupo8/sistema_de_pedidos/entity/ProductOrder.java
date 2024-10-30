@@ -1,9 +1,6 @@
 package com.ing_software_grupo8.sistema_de_pedidos.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -18,11 +15,13 @@ public class ProductOrder {
     @Id
     private long productOrderId;
 
-    @Column
-    private long orderId;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name="order_id")
+    private Order order;
 
-    @Column
-    private long productId;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name="product_id")
+    private Product product;
 
     @Column
     private float orderQuantity;

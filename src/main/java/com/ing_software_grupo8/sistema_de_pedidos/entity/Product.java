@@ -24,6 +24,10 @@ public class Product {
     @Column(nullable = false)
     private int weight;
 
-    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "stock_id")
+    private Stock stock;
+
+    @OneToMany(mappedBy = "product", fetch = FetchType.EAGER)
     private List<Attribute> attributes;
 }

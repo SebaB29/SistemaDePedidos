@@ -45,7 +45,7 @@ public class OrderService implements IOrderService{
         for(ProductOrderDTO productOrderDTO : orderRequestDTO.getProductOrderDTOList()){
             ProductOrder productOrder = new ProductOrder();
             productOrder.setOrderQuantity(productOrderDTO.getQuantity());
-            productOrder.setProductId(productOrderDTO.getProductId());
+            productOrder.setProductOrderId(productOrderDTO.getProductId());
             productOrderList.add(productOrder);
         }
         order.setProductOrder(productOrderList);

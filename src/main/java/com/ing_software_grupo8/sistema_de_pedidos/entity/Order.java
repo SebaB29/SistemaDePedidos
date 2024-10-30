@@ -18,7 +18,8 @@ import java.util.List;
 public class Order {
 
     @Id
-    private long id;
+    @Column(name="order_id")
+    private long orderId;
 
     @Column(unique = true)
     private long userId;
