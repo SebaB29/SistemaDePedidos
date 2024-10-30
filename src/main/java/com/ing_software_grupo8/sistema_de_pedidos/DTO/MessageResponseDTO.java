@@ -4,7 +4,6 @@ import lombok.*;
 
 @AllArgsConstructor
 @NoArgsConstructor
-@Getter
 public class MessageResponseDTO {
 
     private String message;

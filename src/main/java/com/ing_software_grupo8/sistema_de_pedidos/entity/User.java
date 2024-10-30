@@ -2,16 +2,20 @@ package com.ing_software_grupo8.sistema_de_pedidos.entity;
 
 import com.ing_software_grupo8.sistema_de_pedidos.DTO.UserRequestDTO;
 import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.context.annotation.Primary;
 
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@Entity
 public class User {
 
     @Id
@@ -41,7 +45,7 @@ public class User {
     @Column
     private String address;
 
-    public User(UserRequestDTO userRequestDTO) {
+    public User(UserRequestDTO userRequestDTO){
         this.name = userRequestDTO.getNombre();
         this.lastName = userRequestDTO.getApellido();
         this.email = userRequestDTO.getEmail();
