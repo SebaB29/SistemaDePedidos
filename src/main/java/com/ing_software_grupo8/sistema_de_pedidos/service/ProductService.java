@@ -39,4 +39,12 @@ public class ProductService {
 
         return new MessageResponseDTO("Producto editado correctamente");
     }
+    public MessageResponseDTO deleteProduct(ProductRequestDTO productDTO) {
+
+        Product product = productRepository.findById(productDTO.getProductId())
+                .orElseThrow(() -> new RuntimeException("Producto no encontrado"));
+
+        productRepository.delete(product);
+        return new MessageResponseDTO("Producto eliminado correctamente");
+    }
 }
