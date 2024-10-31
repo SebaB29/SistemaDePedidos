@@ -1,7 +1,10 @@
 package com.ing_software_grupo8.sistema_de_pedidos.service;
 
+import com.fasterxml.jackson.databind.RuntimeJsonMappingException;
+import com.ing_software_grupo8.sistema_de_pedidos.DTO.AttributeDTO;
 import com.ing_software_grupo8.sistema_de_pedidos.DTO.MessageResponseDTO;
 import com.ing_software_grupo8.sistema_de_pedidos.DTO.ProductRequestDTO;
+import com.ing_software_grupo8.sistema_de_pedidos.DTO.ProductResponseDTO;
 import com.ing_software_grupo8.sistema_de_pedidos.entity.Attribute;
 import com.ing_software_grupo8.sistema_de_pedidos.entity.Product;
 import com.ing_software_grupo8.sistema_de_pedidos.repository.IProductRepository;
@@ -22,7 +25,6 @@ public class ProductService {
                 .orElseThrow(() -> new RuntimeException("Producto no encontrado"));
 
         product.setName(productDTO.getName());
-        product.setWeight(productDTO.getWeight());
 
         List<Attribute> attributes = productDTO.getAttributes().stream()
                 .map(attributeDTO -> {
@@ -39,6 +41,7 @@ public class ProductService {
 
         return new MessageResponseDTO("Producto editado correctamente");
     }
+    
     public MessageResponseDTO deleteProduct(ProductRequestDTO productDTO) {
 
         Product product = productRepository.findById(productDTO.getProductId())
@@ -47,4 +50,16 @@ public class ProductService {
         productRepository.delete(product);
         return new MessageResponseDTO("Producto eliminado correctamente");
     }
+
+    public List<ProductResponseDTO> getAllProducts() {
+        return productRepository.findAll().stream()
+                .map(product -> new ProductResponseDTO(
+                        product.getName(),
+                        product.getAttributes().stream()
+                                .map(attribute -> new AttributeDTO(attribute.getDescription()))
+                                .collect(Collectors.toList())
+                ))
+                .collect(Collectors.toList());
+    }
+
 }
