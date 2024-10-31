@@ -20,12 +20,16 @@ public class Product {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long productId;
 
-    @NotBlank(message = "Porfavor agregue un nombre")
+    @Column(nullable = false)
     private String name;
 
-    @NotBlank(message = "Porfavor agregue un peso")
+    @Column(nullable = false)
     private int weight;
 
-    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "stock_id")
+    private Stock stock;
+
+    @OneToMany(mappedBy = "product", fetch = FetchType.EAGER)
     private List<Attribute> attributes;
 }

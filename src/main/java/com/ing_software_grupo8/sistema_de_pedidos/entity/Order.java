@@ -1,28 +1,39 @@
 package com.ing_software_grupo8.sistema_de_pedidos.entity;
 
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.*;
+import jdk.jfr.Relational;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.security.Timestamp;
+import java.time.LocalTime;
 import java.util.List;
 
 @Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@Entity
 public class Order {
 
-    private long id;
+    @Id
+    @Column(name="order_id")
+    private long orderId;
 
+    @Column(unique = true)
     private long userId;
 
-    private String status;
+    @ManyToOne
+    @JoinColumn(name = "order_state")
+    private OrderState orderState;
 
-    private Timestamp orderDate;
+    @Column(nullable = false)
+    private LocalTime orderDate;
 
-    private Timestamp confirmationDate;
+    @Column
+    private LocalTime confirmationDate;
 
-    private List<Product> productList;
+    @OneToMany
+    private List<ProductOrder> productOrder;
 }

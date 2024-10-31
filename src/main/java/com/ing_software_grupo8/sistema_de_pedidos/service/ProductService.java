@@ -32,7 +32,7 @@ public class ProductService implements IProductService {
 
     private void createStock(long productId, AdminCreateProductRequestDTO productRequest) {
         Stock stock = new Stock();
-        stock.setProductId(productId);
+        stock.setStockId(productId);
         stock.setStockType(productRequest.getStockType());
         stock.setQuantity(productRequest.getQuantity());
         stockService.createStock(stock);
@@ -78,6 +78,7 @@ public class ProductService implements IProductService {
 
         return new MessageResponseDTO("Producto editado correctamente");
     }
+
     public MessageResponseDTO deleteProduct(ProductRequestDTO productDTO) {
 
         Product product = productRepository.findById(productDTO.getProductId())
