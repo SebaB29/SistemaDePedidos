@@ -9,4 +9,6 @@ public interface IProductService {
     MessageResponseDTO createProduct(AdminCreateProductRequestDTO productRequest);
 
     MessageResponseDTO editProduct(ProductRequestDTO productDTO);
+
+    MessageResponseDTO deleteProduct(ProductRequestDTO productDTO);
 }
