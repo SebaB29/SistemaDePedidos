@@ -3,6 +3,7 @@ package com.ing_software_grupo8.sistema_de_pedidos.service;
 import com.ing_software_grupo8.sistema_de_pedidos.DTO.AdminCreateProductRequestDTO;
 import com.ing_software_grupo8.sistema_de_pedidos.DTO.MessageResponseDTO;
 import com.ing_software_grupo8.sistema_de_pedidos.DTO.ProductRequestDTO;
+import com.ing_software_grupo8.sistema_de_pedidos.DTO.ProductResponseDTO;
 import com.ing_software_grupo8.sistema_de_pedidos.entity.Attribute;
 import com.ing_software_grupo8.sistema_de_pedidos.entity.Product;
 import com.ing_software_grupo8.sistema_de_pedidos.entity.Stock;
@@ -51,7 +52,6 @@ public class ProductService implements IProductService {
                 .orElseThrow(() -> new RuntimeException("Producto no encontrado"));
 
         product.setName(productDTO.getName());
-        product.setWeight(productDTO.getWeight());
 
         List<Attribute> attributes = productDTO.getAttributes().stream()
                 .map(attributeDTO -> {
@@ -77,4 +77,16 @@ public class ProductService implements IProductService {
         productRepository.delete(product);
         return new MessageResponseDTO("Producto eliminado correctamente");
     }
+
+    public List<ProductResponseDTO> getAllProducts() {
+        return productRepository.findAll().stream()
+                .map(product -> new ProductResponseDTO(
+                        product.getName(),
+                        product.getAttributes().stream()
+                                .map(attribute -> new AttributeDTO(attribute.getDescription()))
+                                .collect(Collectors.toList())
+                ))
+                .collect(Collectors.toList());
+    }
+
 }
