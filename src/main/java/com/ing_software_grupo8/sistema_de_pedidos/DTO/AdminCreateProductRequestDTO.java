@@ -1,5 +1,9 @@
 package com.ing_software_grupo8.sistema_de_pedidos.DTO;
 
+import java.util.List;
+
+import com.ing_software_grupo8.sistema_de_pedidos.entity.Attribute;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -19,7 +23,7 @@ public class AdminCreateProductRequestDTO {
 
     private float quantity;
 
-    private String description;
+    private List<AttributeDTO> attributes;
 
     private int weight;
 }

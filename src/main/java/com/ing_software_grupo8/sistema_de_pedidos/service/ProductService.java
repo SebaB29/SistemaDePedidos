@@ -18,40 +18,30 @@ public class ProductService implements IProductService {
 
     @Autowired
     private IProductRepository productRepository;
-    @Autowired
-    private IStockService stockService;
-    @Autowired
-    private IAttributeService attributeService;
 
-    private Product createProductInRepository(AdminCreateProductRequestDTO productRequest) {
-        Product product = new Product();
-        product.setName(productRequest.getProductName());
-        product.setWeight(productRequest.getWeight());
-        return productRepository.save(product);
-    }
-
-    private void createStock(long productId, AdminCreateProductRequestDTO productRequest) {
+    private Stock createStock(AdminCreateProductRequestDTO productRequest) {
         Stock stock = new Stock();
-        stock.setStockId(productId);
         stock.setStockType(productRequest.getStockType());
         stock.setQuantity(productRequest.getQuantity());
-        stockService.createStock(stock);
-    }
-
-    private void createAttribute(long productId, AdminCreateProductRequestDTO productRequest) {
-        Attribute attribute = new Attribute();
-        attribute.setProductId(productId);
-        attribute.setDescription(productRequest.getDescription());
-        attributeService.createAttribute(attribute);
+        return stock;
     }
 
     public MessageResponseDTO createProduct(AdminCreateProductRequestDTO productRequest) {
-        // if (!user.isAdmin())
-        // throw new IllegalArgumentException("Only admins can create products");
-        Product productSaved = createProductInRepository(productRequest);
-        long productSavedId = productSaved.getProductId();
-        createStock(productSavedId, productRequest);
-        createAttribute(productSavedId, productRequest);
+        Stock stock = createStock(productRequest);
+        Product product = new Product();
+        product.setName(productRequest.getProductName());
+        product.setStock(stock);
+        product.setWeight(productRequest.getWeight());
+        List<Attribute> attributes = productRequest.getAttributes().stream()
+                .map(attributeDTO -> {
+                    Attribute attribute = new Attribute();
+                    attribute.setDescription(attributeDTO.getDescription());
+                    attribute.setProductId(product.getProductId());
+                    return attribute;
+                })
+                .collect(Collectors.toList());
+        product.setAttributes(attributes);
+        productRepository.save(product);
         return new MessageResponseDTO("Producto creado");
     }
 

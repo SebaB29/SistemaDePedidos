@@ -7,8 +7,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import java.util.List;
 
-import jakarta.validation.constraints.NotBlank;
-
 @Entity
 @Getter
 @Setter
