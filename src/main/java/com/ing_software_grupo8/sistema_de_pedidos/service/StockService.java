@@ -12,11 +12,11 @@ public class StockService implements IStockService {
     @Autowired
     private IStockRepository stockRepository;
 
-    public void createStock(Stock stock) {
+    public Stock createStock(Stock stock) {
         // if (!user.isAdmin())
         // throw new IllegalArgumentException("Only admins can create Stocks to
         // products");
-        stockRepository.save(stock);
+        return stockRepository.save(stock);
     }
 
 }
