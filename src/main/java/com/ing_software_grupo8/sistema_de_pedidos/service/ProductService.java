@@ -1,9 +1,6 @@
 package com.ing_software_grupo8.sistema_de_pedidos.service;
 
-import com.ing_software_grupo8.sistema_de_pedidos.DTO.AdminCreateProductRequestDTO;
-import com.ing_software_grupo8.sistema_de_pedidos.DTO.MessageResponseDTO;
-import com.ing_software_grupo8.sistema_de_pedidos.DTO.ProductRequestDTO;
-import com.ing_software_grupo8.sistema_de_pedidos.DTO.ProductResponseDTO;
+import com.ing_software_grupo8.sistema_de_pedidos.DTO.*;
 import com.ing_software_grupo8.sistema_de_pedidos.entity.Attribute;
 import com.ing_software_grupo8.sistema_de_pedidos.entity.Product;
 import com.ing_software_grupo8.sistema_de_pedidos.entity.Stock;
@@ -37,7 +34,7 @@ public class ProductService implements IProductService {
                 .map(attributeDTO -> {
                     Attribute attribute = new Attribute();
                     attribute.setDescription(attributeDTO.getDescription());
-                    attribute.setProductId(product.getProductId());
+                    attribute.setProduct(product);
                     return attribute;
                 })
                 .collect(Collectors.toList());
@@ -57,7 +54,7 @@ public class ProductService implements IProductService {
                 .map(attributeDTO -> {
                     Attribute attribute = new Attribute();
                     attribute.setDescription(attributeDTO.getDescription());
-                    attribute.setProductId(product.getProductId());
+                    attribute.setProduct(product);
                     return attribute;
                 })
                 .collect(Collectors.toList());
