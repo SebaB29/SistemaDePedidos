@@ -1,16 +1,17 @@
 package com.ing_software_grupo8.sistema_de_pedidos.DTO;
 
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.util.List;
 
-@Data
+@Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class ProductRequestDTO {
-    private long productId;
-    private String name;
-    private List<AttributeDTO> attributes;
+public class OrderRequestDTO {
+
+    private long userId;
+
+    private List<ProductOrderDTO> productOrderDTOList;
 }
