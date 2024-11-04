@@ -5,12 +5,14 @@ import com.ing_software_grupo8.sistema_de_pedidos.DTO.OrderRequestDTO;
 import com.ing_software_grupo8.sistema_de_pedidos.DTO.ProductOrderDTO;
 import com.ing_software_grupo8.sistema_de_pedidos.entity.Order;
 import com.ing_software_grupo8.sistema_de_pedidos.entity.ProductOrder;
+import com.ing_software_grupo8.sistema_de_pedidos.exception.ApiException;
 import com.ing_software_grupo8.sistema_de_pedidos.repository.IOrderRepository;
 import com.ing_software_grupo8.sistema_de_pedidos.repository.IOrderStateRepository;
 import com.ing_software_grupo8.sistema_de_pedidos.repository.IProductRepository;
 import com.ing_software_grupo8.sistema_de_pedidos.repository.IUserRepository;
 import com.ing_software_grupo8.sistema_de_pedidos.utils.OrderStateEnum;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalTime;
@@ -56,10 +58,10 @@ public class OrderService implements IOrderService{
     }
 
     private void validateOrder(OrderRequestDTO orderRequestDTO){
-        if(!userRepository.existsById(orderRequestDTO.getUserId())) throw new IllegalArgumentException("Usuario no encontrado");
+        if(!userRepository.existsById(orderRequestDTO.getUserId())) throw new ApiException(HttpStatus.BAD_REQUEST.name(), HttpStatus.BAD_REQUEST, "Usuario no encontrado.");
 
         for(ProductOrderDTO productOrderDTO : orderRequestDTO.getProductOrderDTOList()){
-            if(!productRepository.existsById(productOrderDTO.getProductId())) throw new IllegalArgumentException("Product no encontrado");
+            if(!productRepository.existsById(productOrderDTO.getProductId())) throw new ApiException(HttpStatus.BAD_REQUEST.name(), HttpStatus.BAD_REQUEST, "Product no encontrado.");
 
             //TO DO VALIDAR STOCK
         }
