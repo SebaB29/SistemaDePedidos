@@ -13,11 +13,12 @@ import lombok.Setter;
 @AllArgsConstructor
 public class OrderState {
     @Id
-    private long orderStateId;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long orderStateId;
 
-    @Column(unique=true)
+    @Column
     private int stateCode;
 
-    @Column(unique=true)
+    @Column
     private String stateDesc;
 }

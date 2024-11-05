@@ -11,7 +11,7 @@ import java.util.List;
 @NoArgsConstructor
 public class OrderRequestDTO {
 
-    private long userId;
+    private Long userId;
 
     private List<ProductOrderDTO> productOrderDTOList;
 }

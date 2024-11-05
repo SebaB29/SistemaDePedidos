@@ -25,7 +25,7 @@ public class ControllerExceptionHandler {
         return ResponseEntity.status(e.getStatusCode())
                              .body(GenericResponse.builder()
                                                     .message(e.getMessage())
-                                                    .status(e.getCode())
+                                                    .status(e.getStatusCode())
                                                     .build());
     }
 

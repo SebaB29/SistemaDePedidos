@@ -16,18 +16,15 @@ public class Product {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long productId;
+    private Long productId;
 
     @Column(nullable = false)
     private String name;
 
-    @Column(nullable = false)
-    private int weight;
-
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "stock_id")
+    @OneToOne(fetch = FetchType.EAGER, orphanRemoval = true)
+    @JoinColumn(name = "stock_id", nullable = false)
     private Stock stock;
 
-    @OneToMany(mappedBy = "product", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "product", fetch = FetchType.EAGER, orphanRemoval = true)
     private List<Attribute> attributes;
 }
