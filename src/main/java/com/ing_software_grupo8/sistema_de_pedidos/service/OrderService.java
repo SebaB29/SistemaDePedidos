@@ -40,7 +40,7 @@ public class OrderService implements IOrderService{
 
         Order order = new Order();
 
-        order.setUserId(orderRequestDTO.getUserId());
+        order.setUser(userRepository.findById(orderRequestDTO.getUserId()).get());
         order.setOrderDate(LocalTime.now());
         order.setOrderState(orderStateRepository.findByStateCode(OrderStateEnum.CREADO.ordinal()));
         List<ProductOrder> productOrderList = new ArrayList<>();
@@ -58,10 +58,10 @@ public class OrderService implements IOrderService{
     }
 
     private void validateOrder(OrderRequestDTO orderRequestDTO){
-        if(!userRepository.existsById(orderRequestDTO.getUserId())) throw new ApiException(HttpStatus.BAD_REQUEST.name(), HttpStatus.BAD_REQUEST, "Usuario no encontrado.");
+        if(!userRepository.existsById(orderRequestDTO.getUserId())) throw new ApiException(HttpStatus.BAD_REQUEST, "Usuario no encontrado.");
 
         for(ProductOrderDTO productOrderDTO : orderRequestDTO.getProductOrderDTOList()){
-            if(!productRepository.existsById(productOrderDTO.getProductId())) throw new ApiException(HttpStatus.BAD_REQUEST.name(), HttpStatus.BAD_REQUEST, "Product no encontrado.");
+            if(!productRepository.existsById(productOrderDTO.getProductId())) throw new ApiException(HttpStatus.BAD_REQUEST, "Product no encontrado.");
 
             //TO DO VALIDAR STOCK
         }

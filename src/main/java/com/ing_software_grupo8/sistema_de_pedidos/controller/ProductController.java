@@ -41,7 +41,7 @@ public class ProductController {
         return ResponseEntity.ok(GenericResponse.builder()
                 .data(productService.createProduct(productRequest))
                 .message("Producto creado correctamente")
-                .status(HttpStatus.OK)
+                .status(HttpStatus.CREATED)
                 .build());
     }
 

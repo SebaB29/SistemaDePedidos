@@ -1,8 +1,6 @@
 package com.ing_software_grupo8.sistema_de_pedidos.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -16,11 +14,12 @@ import lombok.Setter;
 public class Rol {
 
     @Id
-    private long rolId;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long rolId;
 
-    @Column
+    @Column(nullable = false)
     private String rolType;
 
-    @Column
+    @Column(nullable = false)
     private long rolCode;
 }

@@ -12,8 +12,10 @@ import lombok.Setter;
 @NoArgsConstructor
 @Entity
 public class ProductOrder {
+
     @Id
-    private long productOrderId;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long productOrderId;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name="order_id")

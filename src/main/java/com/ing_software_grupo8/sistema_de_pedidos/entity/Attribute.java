@@ -15,12 +15,15 @@ public class Attribute {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long attributeId;
 
     @ManyToOne
     @JoinColumn(name = "product_id", nullable = false)
     private Product product;
 
+    @Column(nullable = false)
     private String description;
 
+    @Column(name = "attribute_value", nullable = false)
+    private String value;
 }

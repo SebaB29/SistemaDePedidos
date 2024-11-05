@@ -1,7 +1,6 @@
 package com.ing_software_grupo8.sistema_de_pedidos.entity;
 
 import jakarta.persistence.*;
-import jdk.jfr.Relational;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -15,17 +14,19 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
+@Table(name = "customer_order")
 public class Order {
 
     @Id
-    @Column(name="order_id")
-    private long orderId;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long orderId;
 
-    @Column(unique = true)
-    private long userId;
+    @OneToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
 
     @ManyToOne
-    @JoinColumn(name = "order_state")
+    @JoinColumn(nullable = false)
     private OrderState orderState;
 
     @Column(nullable = false)
@@ -34,6 +35,6 @@ public class Order {
     @Column
     private LocalTime confirmationDate;
 
-    @OneToMany
+    @OneToMany(fetch = FetchType.EAGER, orphanRemoval = true)
     private List<ProductOrder> productOrder;
 }

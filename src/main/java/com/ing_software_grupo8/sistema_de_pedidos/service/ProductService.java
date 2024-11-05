@@ -4,9 +4,11 @@ import com.ing_software_grupo8.sistema_de_pedidos.DTO.*;
 import com.ing_software_grupo8.sistema_de_pedidos.entity.Attribute;
 import com.ing_software_grupo8.sistema_de_pedidos.entity.Product;
 import com.ing_software_grupo8.sistema_de_pedidos.entity.Stock;
+import com.ing_software_grupo8.sistema_de_pedidos.exception.ApiException;
 import com.ing_software_grupo8.sistema_de_pedidos.repository.IProductRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -29,7 +31,6 @@ public class ProductService implements IProductService {
         Product product = new Product();
         product.setName(productRequest.getProductName());
         product.setStock(stock);
-        product.setWeight(productRequest.getWeight());
         List<Attribute> attributes = productRequest.getAttributes().stream()
                 .map(attributeDTO -> {
                     Attribute attribute = new Attribute();
@@ -46,7 +47,7 @@ public class ProductService implements IProductService {
     public MessageResponseDTO editProduct(ProductRequestDTO productDTO) {
 
         Product product = productRepository.findById(productDTO.getProductId())
-                .orElseThrow(() -> new RuntimeException("Producto no encontrado"));
+                .orElseThrow(() -> new ApiException(HttpStatus.BAD_REQUEST, "Producto no encontrado"));
 
         product.setName(productDTO.getName());
 
@@ -69,7 +70,7 @@ public class ProductService implements IProductService {
     public MessageResponseDTO deleteProduct(ProductRequestDTO productDTO) {
 
         Product product = productRepository.findById(productDTO.getProductId())
-                .orElseThrow(() -> new RuntimeException("Producto no encontrado"));
+                .orElseThrow(() -> new ApiException(HttpStatus.BAD_REQUEST, "Producto no encontrado"));
 
         productRepository.delete(product);
         return new MessageResponseDTO("Producto eliminado correctamente");
@@ -80,10 +81,9 @@ public class ProductService implements IProductService {
                 .map(product -> new ProductResponseDTO(
                         product.getName(),
                         product.getAttributes().stream()
-                                .map(attribute -> new AttributeDTO(attribute.getDescription()))
+                                .map(attribute -> new AttributeDTO(attribute.getDescription(), attribute.getValue()))
                                 .collect(Collectors.toList())
                 ))
                 .collect(Collectors.toList());
     }
-
 }
