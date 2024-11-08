@@ -1,25 +1,36 @@
 package com.ing_software_grupo8.sistema_de_pedidos.entity;
 
-import com.ing_software_grupo8.sistema_de_pedidos.DTO.UserRequestDTO;
+import java.util.Collection;
+import java.util.List;
+
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+
+import com.ing_software_grupo8.sistema_de_pedidos.role.Role;
+
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Entity
 @Getter
 @Setter
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class User {
+@Table(name = "users")
+@Entity
+public class User implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long userId;
 
     @Column(nullable = false)
-    private String name;
+    private String username;
 
     @Column(nullable = false)
     private String lastName;
@@ -31,7 +42,7 @@ public class User {
     private String password;
 
     @Column(nullable = false)
-    private Number age;
+    private Long age;
 
     @Column(nullable = false)
     private String photo;
@@ -39,16 +50,18 @@ public class User {
     @Column(nullable = false)
     private String gender;
 
-    @Column
+    @Column(nullable = false)
     private String address;
 
-    public User(UserRequestDTO userRequestDTO) {
-        this.name = userRequestDTO.getNombre();
-        this.lastName = userRequestDTO.getApellido();
-        this.email = userRequestDTO.getEmail();
-        this.password = userRequestDTO.getPassword();
-        this.photo = userRequestDTO.getPhoto();
-        this.gender = userRequestDTO.getGender();
-        this.address = userRequestDTO.getAddress();
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    private Role role;
+
+    @Column(nullable = true)
+    private String refreshToken;
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return List.of(new SimpleGrantedAuthority((role.name())));
     }
 }
