@@ -19,7 +19,7 @@ public class GenericResponse<T> {
     T data;
 
     public static class GenericResponseBuilder<T> {
-        public GenericResponseBuilder status(HttpStatus httpStatus) {
+        public GenericResponseBuilder<T> status(HttpStatus httpStatus) {
             this.status = httpStatus.name();
             return this;
         }

@@ -8,3 +8,4 @@ INSERT INTO Product (name, stock_id) VALUES ('Monitor 144hz', 3);
 
 INSERT INTO Attribute (product_id, description, attribute_value) VALUES (1,'Memoria', '256GB');
 INSERT INTO Attribute (product_id, description, attribute_value) VALUES (1,'Modelo', 'Pro-max');
+
