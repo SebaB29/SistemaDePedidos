@@ -2,6 +2,7 @@ package com.ing_software_grupo8.sistema_de_pedidos.service;
 
 import java.util.Optional;
 
+import com.ing_software_grupo8.sistema_de_pedidos.DTO.MessageResponseDTO;
 import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
 
@@ -51,7 +52,6 @@ public class AuthService implements IAuthService {
                     .build();
             return GenericResponse.<AuthResponseDTO>builder()
                     .status(HttpStatus.OK)
-                    .message("Logueado correctamente")
                     .data(authResponse)
                     .build();
         } catch (AuthenticationException e) {
@@ -59,9 +59,9 @@ public class AuthService implements IAuthService {
         }
     }
 
-    public GenericResponse<Void> register(RegisterRequestDTO request) {
+    public GenericResponse<MessageResponseDTO> register(RegisterRequestDTO request) {
         Optional<User> userFound = userRepository.findUserByEmail(request.getEmail());
-        if (!userFound.isEmpty()) {
+        if (userFound.isPresent()) {
             throw new ApiException(HttpStatus.CONFLICT, "Usuario con ese email ya existe.");
         }
         User user = User.builder()
@@ -81,10 +81,9 @@ public class AuthService implements IAuthService {
         } catch (DataAccessException e) {
             throw new ApiException(HttpStatus.INTERNAL_SERVER_ERROR, "Usuario no se pudo guardar.");
         }
-        return GenericResponse.<Void>builder()
+        return GenericResponse.<MessageResponseDTO>builder()
                 .status(HttpStatus.OK)
-                .message("Registrado correctamente")
+                .data(new MessageResponseDTO("Logeado correctamente"))
                 .build();
-
     }
 }

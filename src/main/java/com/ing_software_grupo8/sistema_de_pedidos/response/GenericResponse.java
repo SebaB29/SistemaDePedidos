@@ -13,7 +13,7 @@ public class GenericResponse<T> {
     String status;
 
     @JsonProperty
-    String message;
+    String error;
 
     @JsonProperty
     T data;

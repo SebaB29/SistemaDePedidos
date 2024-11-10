@@ -15,7 +15,7 @@ public class ControllerExceptionHandler {
     public ResponseEntity<GenericResponse> handleException(NoHandlerFoundException e) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
                              .body(GenericResponse.builder()
-                                                  .message(e.getMessage())
+                                                  .error(e.getMessage())
                                                   .status(HttpStatus.NOT_FOUND)
                                                   .build());
     }
@@ -24,7 +24,7 @@ public class ControllerExceptionHandler {
     public ResponseEntity<GenericResponse> handleApiException(ApiException e) {
         return ResponseEntity.status(e.getStatusCode())
                              .body(GenericResponse.builder()
-                                                    .message(e.getMessage())
+                                                    .error(e.getMessage())
                                                     .status(e.getStatusCode())
                                                     .build());
     }
@@ -33,7 +33,7 @@ public class ControllerExceptionHandler {
     public ResponseEntity<GenericResponse> handleException() {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                              .body(GenericResponse.builder()
-                                                  .message("Internal server error")
+                                                  .error("Internal server error")
                                                   .status(HttpStatus.INTERNAL_SERVER_ERROR)
                                                   .build());
     }

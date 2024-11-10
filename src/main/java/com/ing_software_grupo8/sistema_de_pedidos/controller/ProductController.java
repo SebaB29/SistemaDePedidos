@@ -40,7 +40,6 @@ public class ProductController {
             @Valid @RequestBody AdminCreateProductRequestDTO productRequest) {
         return ResponseEntity.ok(GenericResponse.builder()
                 .data(productService.createProduct(productRequest))
-                .message("Producto creado correctamente")
                 .status(HttpStatus.CREATED)
                 .build());
     }
@@ -49,7 +48,6 @@ public class ProductController {
     public ResponseEntity<GenericResponse> editProduct(@RequestBody ProductRequestDTO productDTO) {
         return ResponseEntity.ok(GenericResponse.builder()
                 .data(productService.editProduct(productDTO))
-                .message("Producto editado correctamente")
                 .status(HttpStatus.OK)
                 .build());
     }
@@ -58,7 +56,6 @@ public class ProductController {
     public ResponseEntity<GenericResponse> deleteProduct(@RequestBody ProductRequestDTO productDTO) {
         return ResponseEntity.ok(GenericResponse.builder()
                 .data(productService.deleteProduct(productDTO))
-                .message("Producto eliminado correctamente")
                 .status(HttpStatus.OK)
                 .build());
     }
@@ -68,7 +65,6 @@ public class ProductController {
         List<ProductResponseDTO> products = productService.getAllProducts();
         return ResponseEntity.ok(GenericResponse.builder()
                                                 .data(products)
-                                                .message("Lista de productos obtenida correctamente")
                                                 .status(HttpStatus.OK)
                                                 .build());
     }
