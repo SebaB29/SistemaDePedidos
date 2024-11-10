@@ -1,0 +1,24 @@
+.header-buttons {
+  display: flex;
+  list-style-type: none;
+}
+
+.porperties-list {
+  margin-top: 0;
+}
+
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.product-card {
+  background-color: grey;
+  border-radius: 5px;
+  margin-left: .5rem;
+  margin-right: .5rem;
+  padding: .5rem;
+  display: flex;
+  justify-content: space-evenly;
+}
