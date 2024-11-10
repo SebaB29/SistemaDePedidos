@@ -20,7 +20,6 @@ public class OrderController{
         return ResponseEntity.ok(GenericResponse.builder()
                                                 .data(orderService.create(orderRequestDTO))
                                                 .status(HttpStatus.OK)
-                                                .message("La orden se creo correctamente")
                                                 .build());
     }
 }

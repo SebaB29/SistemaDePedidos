@@ -1,5 +1,6 @@
 package com.ing_software_grupo8.sistema_de_pedidos.controller;
 
+import com.ing_software_grupo8.sistema_de_pedidos.DTO.MessageResponseDTO;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -27,7 +28,7 @@ public class AuthController {
     }
 
     @PostMapping(value = "register")
-    public ResponseEntity<GenericResponse<Void>> register(@RequestBody RegisterRequestDTO request) {
+    public ResponseEntity<GenericResponse<MessageResponseDTO>> register(@RequestBody RegisterRequestDTO request) {
         return ResponseEntity.ok(authService.register(request));
     }
 }

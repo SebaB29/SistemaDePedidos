@@ -19,7 +19,6 @@ public class UserController {
     public ResponseEntity<GenericResponse> editUser(@RequestBody UserRequestDTO userRequestDTO) throws JsonMappingException {
         return ResponseEntity.ok(GenericResponse.builder()
                 .data(userService.editUser(userRequestDTO))
-                .message("Usuario editado correctamente")
                 .status(HttpStatus.OK)
                 .build());
     }
