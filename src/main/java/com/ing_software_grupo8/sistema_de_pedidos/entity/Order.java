@@ -1,28 +1,40 @@
 package com.ing_software_grupo8.sistema_de_pedidos.entity;
 
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.security.Timestamp;
+import java.time.LocalTime;
 import java.util.List;
 
 @Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@Entity
+@Table(name = "customer_order")
 public class Order {
 
-    private long id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long orderId;
 
-    private long userId;
+    @OneToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
 
-    private String status;
+    @ManyToOne
+    @JoinColumn(nullable = false)
+    private OrderState orderState;
 
-    private Timestamp orderDate;
+    @Column(nullable = false)
+    private LocalTime orderDate;
 
-    private Timestamp confirmationDate;
+    @Column
+    private LocalTime confirmationDate;
 
-    private List<Product> productList;
+    @OneToMany(fetch = FetchType.EAGER, orphanRemoval = true)
+    private List<ProductOrder> productOrder;
 }

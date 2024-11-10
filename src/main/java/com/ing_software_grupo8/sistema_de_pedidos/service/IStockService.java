@@ -13,5 +13,4 @@ public interface IStockService {
     Optional<Stock> getStockFrom(long productId);
 
     void editStockFrom(StockDTO StockDTO);
-
 }
