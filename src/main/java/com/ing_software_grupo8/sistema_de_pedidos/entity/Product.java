@@ -25,6 +25,6 @@ public class Product {
     @JoinColumn(name = "stock_id", nullable = false)
     private Stock stock;
 
-    @OneToMany(mappedBy = "product", fetch = FetchType.EAGER, orphanRemoval = true)
+    @OneToMany(mappedBy = "product", fetch = FetchType.EAGER, orphanRemoval = true, cascade = CascadeType.ALL)
     private List<Attribute> attributes;
 }
