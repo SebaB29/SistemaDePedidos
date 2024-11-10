@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -49,18 +50,19 @@ public class ProductService implements IProductService {
         Product product = productRepository.findById(productDTO.getProductId())
                 .orElseThrow(() -> new ApiException(HttpStatus.BAD_REQUEST, "Producto no encontrado"));
 
-        product.setName(productDTO.getName());
+        if (productDTO.getName() != null) {
+            product.setName(productDTO.getName());
+        }
 
-        List<Attribute> attributes = productDTO.getAttributes().stream()
-                .map(attributeDTO -> {
-                    Attribute attribute = new Attribute();
-                    attribute.setDescription(attributeDTO.getDescription());
-                    attribute.setProduct(product);
-                    return attribute;
-                })
-                .collect(Collectors.toList());
+        product.getAttributes().clear();
 
-        product.setAttributes(attributes);
+        for (AttributeDTO attributeDTO : productDTO.getAttributes()) {
+            Attribute attribute = new Attribute();
+            attribute.setDescription(attributeDTO.getDescription());
+            attribute.setValue(attributeDTO.getValue());
+            attribute.setProduct(product);
+            product.getAttributes().add(attribute);
+        }
 
         productRepository.save(product);
 
