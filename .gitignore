@@ -14,7 +14,7 @@ target/
 .sts4-cache
 
 ### Data Base ###
-/data/*.h2.db
+/data/
 
 ### IntelliJ IDEA ###
 .idea
