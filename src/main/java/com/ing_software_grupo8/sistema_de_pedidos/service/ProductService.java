@@ -1,5 +1,11 @@
 package com.ing_software_grupo8.sistema_de_pedidos.service;
 
+import com.ing_software_grupo8.sistema_de_pedidos.DTO.MessageResponseDTO;
+import com.ing_software_grupo8.sistema_de_pedidos.DTO.ProductRequestDTO;
+import com.ing_software_grupo8.sistema_de_pedidos.DTO.StockDTO;
+import com.ing_software_grupo8.sistema_de_pedidos.entity.Attribute;
+import com.ing_software_grupo8.sistema_de_pedidos.entity.Product;
+import com.ing_software_grupo8.sistema_de_pedidos.entity.Stock;
 import com.ing_software_grupo8.sistema_de_pedidos.DTO.*;
 import com.ing_software_grupo8.sistema_de_pedidos.entity.Attribute;
 import com.ing_software_grupo8.sistema_de_pedidos.entity.Product;
@@ -11,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import java.util.List;
+import java.util.Optional;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -19,6 +26,10 @@ public class ProductService implements IProductService {
 
     @Autowired
     private IProductRepository productRepository;
+
+
+    @Autowired
+    IStockService stockService;
 
     private Stock createStock(AdminCreateProductRequestDTO productRequest) {
         Stock stock = new Stock();
@@ -77,15 +88,17 @@ public class ProductService implements IProductService {
         productRepository.delete(product);
         return new MessageResponseDTO("Producto eliminado correctamente");
     }
+    public Optional<Stock> getProductStock(ProductRequestDTO productDTO){
 
-    public List<ProductResponseDTO> getAllProducts() {
-        return productRepository.findAll().stream()
-                .map(product -> new ProductResponseDTO(
-                        product.getName(),
-                        product.getAttributes().stream()
-                                .map(attribute -> new AttributeDTO(attribute.getDescription(), attribute.getValue()))
-                                .collect(Collectors.toList())
-                ))
-                .collect(Collectors.toList());
+        Product product = productRepository.findById(productDTO.getProductId())
+                .orElseThrow(() -> new RuntimeException("Producto no encontrado"));
+        return stockService.getStockFrom(product.getProductId());
+    }
+
+    public MessageResponseDTO editStock(StockDTO stockDTO){
+
+        stockService.editStockFrom(stockDTO);
+
+        return new MessageResponseDTO("Stock editado correctamente");
     }
 }
