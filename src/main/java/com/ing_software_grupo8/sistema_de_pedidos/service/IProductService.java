@@ -1,11 +1,10 @@
 package com.ing_software_grupo8.sistema_de_pedidos.service;
 
-import com.ing_software_grupo8.sistema_de_pedidos.DTO.AdminCreateProductRequestDTO;
-import com.ing_software_grupo8.sistema_de_pedidos.DTO.MessageResponseDTO;
-import com.ing_software_grupo8.sistema_de_pedidos.DTO.ProductRequestDTO;
-import com.ing_software_grupo8.sistema_de_pedidos.DTO.ProductResponseDTO;
+import com.ing_software_grupo8.sistema_de_pedidos.DTO.*;
+import com.ing_software_grupo8.sistema_de_pedidos.entity.Stock;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface IProductService {
 
@@ -16,4 +15,8 @@ public interface IProductService {
     MessageResponseDTO deleteProduct(ProductRequestDTO productDTO);
 
     List<ProductResponseDTO> getAllProducts();
+
+    MessageResponseDTO editStock(StockDTO stockDTO);
+
+    Optional<Stock> getProductStock(ProductRequestDTO productDTO);
 }

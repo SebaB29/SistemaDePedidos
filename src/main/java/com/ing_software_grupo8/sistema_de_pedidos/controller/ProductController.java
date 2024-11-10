@@ -68,13 +68,12 @@ public class ProductController {
                 .build());
     }
     @PutMapping("/product/{productId}/stock")
-    public ResponseEntity<GenericResponse> updateStock(@RequestBody StockDTO stockDTO) {
+    public ResponseEntity<GenericResponse> editStock(@RequestBody StockDTO stockDTO) {
         return ResponseEntity.ok(GenericResponse.builder()
                 .data(productService.editStock(stockDTO))
-                .status(HttpStatus.NO_CONTENT) // El status 204 indica que no hay contenido adicional
+                .status(HttpStatus.OK)
                 .build());
     }
-}
 
     @GetMapping("/product")
     public ResponseEntity<GenericResponse> getAllProducts() {

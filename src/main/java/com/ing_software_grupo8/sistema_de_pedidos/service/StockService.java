@@ -14,9 +14,6 @@ public class StockService implements IStockService {
     private IStockRepository stockRepository;
 
     public void createStock(Stock stock) {
-        // if (!user.isAdmin())
-        // throw new IllegalArgumentException("Only admins can create Stocks to
-        // products");
         stockRepository.save(stock);
     }
 
@@ -31,7 +28,6 @@ public class StockService implements IStockService {
                 .orElseThrow(() -> new RuntimeException("Stock no encontrado"));
 
         stock.setStockType(stockDTO.getStockType());
-        stock.setProductId(stockDTO.getProductId());
         stock.setQuantity(stockDTO.getQuantity());
 
         stockRepository.save(stock);
