@@ -1,5 +1,13 @@
 package com.ing_software_grupo8.sistema_de_pedidos.service;
 
+import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
+
 import com.ing_software_grupo8.sistema_de_pedidos.DTO.MessageResponseDTO;
 import com.ing_software_grupo8.sistema_de_pedidos.DTO.OrderRequestDTO;
 import com.ing_software_grupo8.sistema_de_pedidos.DTO.ProductOrderDTO;
@@ -10,14 +18,8 @@ import com.ing_software_grupo8.sistema_de_pedidos.repository.IOrderRepository;
 import com.ing_software_grupo8.sistema_de_pedidos.repository.IOrderStateRepository;
 import com.ing_software_grupo8.sistema_de_pedidos.repository.IProductRepository;
 import com.ing_software_grupo8.sistema_de_pedidos.repository.IUserRepository;
+import com.ing_software_grupo8.sistema_de_pedidos.rules.RuleManager;
 import com.ing_software_grupo8.sistema_de_pedidos.utils.OrderStateEnum;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Service;
-
-import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.List;
 
 @Service
 public class OrderService implements IOrderService{
@@ -33,9 +35,12 @@ public class OrderService implements IOrderService{
 
     @Autowired
     IOrderStateRepository orderStateRepository;
-
+    
+    @Autowired
+    private RuleManager ruleManager;
 
     public MessageResponseDTO create(OrderRequestDTO orderRequestDTO) {
+
         validateOrder(orderRequestDTO);
 
         Order order = new Order();
@@ -52,6 +57,8 @@ public class OrderService implements IOrderService{
         }
         order.setProductOrder(productOrderList);
 
+        if (!ruleManager.validateOrder(order)) throw new ApiException(HttpStatus.BAD_REQUEST, "Orden no cumple las reglas de negocio");
+
         orderRepository.save(order);
 
         return new MessageResponseDTO("Orden creada correctamente");
@@ -65,5 +72,6 @@ public class OrderService implements IOrderService{
 
             //TO DO VALIDAR STOCK
         }
+
     }
 }

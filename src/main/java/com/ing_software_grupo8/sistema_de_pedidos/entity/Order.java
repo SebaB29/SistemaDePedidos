@@ -1,13 +1,23 @@
 package com.ing_software_grupo8.sistema_de_pedidos.entity;
 
-import jakarta.persistence.*;
+import java.time.LocalTime;
+import java.util.List;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
-import java.time.LocalTime;
-import java.util.List;
 
 @Getter
 @Setter
@@ -26,7 +36,7 @@ public class Order {
     private User user;
 
     @ManyToOne
-    @JoinColumn(nullable = false)
+    @JoinColumn(nullable = true) //ONLY FOR TEST
     private OrderState orderState;
 
     @Column(nullable = false)
@@ -36,5 +46,6 @@ public class Order {
     private LocalTime confirmationDate;
 
     @OneToMany(fetch = FetchType.EAGER, orphanRemoval = true)
+    @JoinColumn(name = "order_id") //Modificacion para poder crear orden. A REVISAR
     private List<ProductOrder> productOrder;
 }
