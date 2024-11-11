@@ -13,7 +13,7 @@ public class InMemoryRuleRepository {
         List<Rule> andChildren = new ArrayList<>();
         andChildren.add(new WeightLimitRule(10.0));
         andChildren.add(new AttributeLimitRule("quantity", 5));
-        andChildren.add(new ExclusiveAttributeRule(List.of("GASEOSOS", "EXPLOSIVOS")));
+        andChildren.add(new ExclusiveAttributeRule(List.of("TipoPan", "Modelo")));
         rules.add(new AndRule(andChildren));
     }
 
