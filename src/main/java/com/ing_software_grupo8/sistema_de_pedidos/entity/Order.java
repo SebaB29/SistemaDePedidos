@@ -1,10 +1,7 @@
 package com.ing_software_grupo8.sistema_de_pedidos.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.LocalTime;
 import java.util.List;
@@ -13,6 +10,7 @@ import java.util.List;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@EqualsAndHashCode
 @Entity
 @Table(name = "customer_order")
 public class Order {
@@ -25,8 +23,8 @@ public class Order {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @ManyToOne
-    @JoinColumn(nullable = false)
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "order_state_id", nullable = false)
     private OrderState orderState;
 
     @Column(nullable = false)
@@ -35,6 +33,6 @@ public class Order {
     @Column
     private LocalTime confirmationDate;
 
-    @OneToMany(fetch = FetchType.EAGER, orphanRemoval = true)
+    @OneToMany(fetch = FetchType.EAGER, orphanRemoval = true, mappedBy = "order")
     private List<ProductOrder> productOrder;
 }

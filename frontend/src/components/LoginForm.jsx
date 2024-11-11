@@ -51,13 +51,12 @@ const LoginForm = () => {
   useEffect(() => {
     if (response === null) return
     if (response.status === 'OK') {
-      window.sessionStorage.setItem('access_token', response.access_token)
-      window.sessionStorage.setItem('refresh_token', response.refresh_token)
-      window.alert(response.message)
+      window.sessionStorage.setItem('access_token', response.data.access_token)
+      window.sessionStorage.setItem('refresh_token', response.data.refresh_token)
+      window.alert('Ingresado correctamente')
       navigate('/products')
     } else {
-      console.log(response)
-      setErrorMessage(response.status + ' : ' + response.statusText)
+      setErrorMessage(response.status + ' : ' + response.error)
     }
   }, [response])
 

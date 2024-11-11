@@ -5,6 +5,9 @@ import Modal from './Modal'
 import { useModal } from '../hooks/useModal'
 import { EditProductForm } from './EditProductForm'
 
+const BUY_ENDPOINT = ''
+const DELETE_ENDPOINT = ''
+
 export const ProductCard = ({ product }) => {
   const [loading, setLoading] = useState(false)
   const [isOpenModal, openModal, closeModal] = useModal(false)
@@ -15,10 +18,9 @@ export const ProductCard = ({ product }) => {
       amount = window.prompt('Cuantos quieres comprar?')
       if (amount === null) return
     }
-    const ENDPOINT = 'agregar producto a la orden'
     setLoading(true)
     helpHttp().post(
-      ENDPOINT,
+      BUY_ENDPOINT,
       {
         body: {
           id: product.id,
@@ -36,9 +38,8 @@ export const ProductCard = ({ product }) => {
   }
 
   const handleDelete = () => {
-    const ENDPOINT = 'eliminar producto'
     helpHttp().del(
-      ENDPOINT,
+      DELETE_ENDPOINT,
       {
         body: {
           id: product.id
@@ -67,8 +68,8 @@ export const ProductCard = ({ product }) => {
           : <></>}
       </article>
       <ul className='porperties-list'>
-        {product.properties.map(propertie => (
-          <li key={propertie.id}>{propertie.name} : {propertie.description}</li>
+        {product.attributes.map((attribute, index) => (
+          <li key={index}>{attribute.description} : {attribute.value}</li>
         ))}
       </ul>
 
