@@ -158,8 +158,8 @@ const RegisterForm = () => {
       {loading && <Loader />}
       {response
         ? response.status === 'OK'
-          ? <Message bgColor='#198754' message={response.message} />
-          : <Message bgColor='#cb0505' message={response.message} />
+          ? <Message bgColor='#198754' message={response.status + ': ' + response.data.message} />
+          : <Message bgColor='#cb0505' message={response.error} />
         : <></>}
     </div>
   )
