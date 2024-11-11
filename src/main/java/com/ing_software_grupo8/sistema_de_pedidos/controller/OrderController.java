@@ -15,11 +15,18 @@ public class OrderController{
     @Autowired
     private IOrderService orderService;
 
+    @GetMapping("/user/{userId}")
+    public ResponseEntity<?> getAll(@PathVariable Long userId){
+        return ResponseEntity.ok(GenericResponse.builder()
+                                                .data(orderService.getAll(userId))
+                                                .status(HttpStatus.OK)
+                                                .build());
+    }
     @PostMapping
     public ResponseEntity<?> create(@RequestBody OrderRequestDTO orderRequestDTO){
         return ResponseEntity.ok(GenericResponse.builder()
                                                 .data(orderService.create(orderRequestDTO))
-                                                .status(HttpStatus.OK)
+                                                .status(HttpStatus.CREATED)
                                                 .build());
     }
 }
