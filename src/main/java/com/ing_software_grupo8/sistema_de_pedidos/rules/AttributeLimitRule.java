@@ -14,7 +14,6 @@ public class AttributeLimitRule implements Rule {
 
     @Override
     public boolean validate(Order order) {
-        // Contar las ocurrencias del atributo en todos los productos de la orden
         long totalOccurrences = order.getProductOrder().stream()
             .flatMap(productOrder -> productOrder.getProduct().getAttributes().stream())
             .filter(attribute -> this.attribute.equals(attribute.getDescription()))
