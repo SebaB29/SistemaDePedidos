@@ -1,12 +1,18 @@
 import Header from '../components/Header'
 import Loader from '../components/Loader'
+import Message from '../components/Message'
 import { helpHttp } from '../helpers/helpHttp'
 import { useFrom } from '../hooks/useForm'
 
+const ENDPOINT = 'http://localhost:8080/product'
+
 const initialForm = {
-  name: '',
-  stock: '',
-  properties: []
+  adminId: '1',
+  productName: '',
+  stockType: '',
+  quantity: '',
+  attributes: [],
+  weight: '200'
 }
 
 const styles = {
@@ -18,17 +24,19 @@ const validationsForm = (form) => {
   const errors = {}
 
   const regex = {
-    name: /^[A-Za-zÑñÁáÉéÍíÓóÚúÜü\s]+$/,
-    stock: /^(0|[1-9][0-9]*)$/
+    productName: /^[A-Za-zÑñÁáÉéÍíÓóÚúÜü\s]+$/,
+    quantity: /^(0|[1-9][0-9]*)$/,
+    stockType: /.*/
   }
 
   const message = {
-    name: "El campo 'Nombre' solo acepta mayusculas, minusculas y espacios en blanco",
-    stock: 'Stock invalido, solo acepta numeros positivos y 0'
+    productName: "El campo 'Nombre' solo acepta mayusculas, minusculas y espacios en blanco",
+    quantity: 'Stock invalido, solo acepta numeros positivos y 0',
+    stockType: ''
   }
 
   Object.keys(form).forEach(el => {
-    if (el === 'properties') return
+    if (el === 'attributes' || el === 'adminId' || el === 'weight') return
     if (!form[el].trim()) {
       errors[el] = 'Este campo es requerido'
     } else if (!regex[el].test(form[el].trim())) {
@@ -40,11 +48,10 @@ const validationsForm = (form) => {
 }
 
 export const CreateProduct = () => {
-  const ENDPOINT = ''
   const {
-    form, errors, loading,
+    form, errors, loading, response,
     handleChange, handleBlur, handleSubmit, handleAddPropertie, handleChangeProp
-  } = useFrom(initialForm, validationsForm, helpHttp.post, ENDPOINT)
+  } = useFrom(initialForm, validationsForm, helpHttp().post, ENDPOINT)
 
   return (
     <>
@@ -53,30 +60,40 @@ export const CreateProduct = () => {
       <form onSubmit={handleSubmit}>
         <input
           type='text'
-          name='name'
+          name='productName'
           placeholder='Nombre del producto'
           onBlur={handleBlur}
           onChange={handleChange}
-          value={form.name}
+          value={form.productName}
           required
         />
-        {errors.name && <p style={styles}>{errors.name}</p>}
+        {errors.productName && <p style={styles}>{errors.productName}</p>}
         <input
           type='text'
-          name='stock'
+          name='stockType'
+          placeholder='Tipo de stock'
+          onBlur={handleBlur}
+          onChange={handleChange}
+          value={form.stockType}
+          required
+        />
+        {errors.stockType && <p style={styles}>{errors.stockType}</p>}
+        <input
+          type='text'
+          name='quantity'
           placeholder='Cantidad'
           onBlur={handleBlur}
           onChange={handleChange}
-          value={form.stock}
+          value={form.quantity}
           required
         />
-        {errors.stock && <p style={styles}>{errors.stock}</p>}
-        {form.properties.map((propertie, index) => (
+        {errors.quantity && <p style={styles}>{errors.quantity}</p>}
+        {form.attributes.map((attribute, index) => (
           <div key={index}>
             <hr />
             <input
               type='text'
-              name='name'
+              name='description'
               placeholder='Propiedad'
               required
               onChange={(e) => handleChangeProp(e, index)}
@@ -84,7 +101,7 @@ export const CreateProduct = () => {
             <input
               index={index}
               type='text'
-              name='description'
+              name='value'
               placeholder='Descripcion'
               onChange={(e) => handleChangeProp(e, index)}
               required
@@ -96,7 +113,7 @@ export const CreateProduct = () => {
         <input type='submit' value='Crear' />
       </form>
       {loading && <Loader />}
-      {/* {!response.ok && <Message bgColor='#ff0000' message={response.message} />} */}
+      {(response !== null && response.status === 'CREATED') && <Message bgColor='#198754' message={response.data.message} />}
 
     </>
   )

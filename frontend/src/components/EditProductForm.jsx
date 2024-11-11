@@ -2,6 +2,8 @@ import Loader from '../components/Loader'
 import { helpHttp } from '../helpers/helpHttp'
 import { useFrom } from '../hooks/useForm'
 
+const ENDPOINT = ''
+
 const styles = {
   color: '#dc3545',
   fontWeight: 'bold'
@@ -33,7 +35,6 @@ const validationsForm = (form) => {
 }
 
 export const EditProductForm = ({ product }) => {
-  const ENDPOINT = ''
   const {
     form, errors, loading,
     handleChange, handleBlur, handleSubmit, handleAddPropertie, handleChangeProp
@@ -62,11 +63,11 @@ export const EditProductForm = ({ product }) => {
           required
         />
         {errors.stock && <p style={styles}>{errors.stock}</p>}
-        {form.properties.map((propertie, index) => (
+        {form.attributes.map((attribute, index) => (
           <div key={index}>
             <hr />
             <input
-              value={propertie.name}
+              value={attribute.description}
               type='text'
               name='name'
               placeholder='Propiedad'
@@ -74,7 +75,7 @@ export const EditProductForm = ({ product }) => {
               onChange={(e) => handleChangeProp(e, index)}
             />
             <input
-              value={propertie.description}
+              value={attribute.value}
               index={index}
               type='text'
               name='value'
