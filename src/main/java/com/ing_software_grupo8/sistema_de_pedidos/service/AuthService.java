@@ -2,21 +2,18 @@ package com.ing_software_grupo8.sistema_de_pedidos.service;
 
 import java.util.Optional;
 
-import com.ing_software_grupo8.sistema_de_pedidos.DTO.MessageResponseDTO;
 import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
-
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.ing_software_grupo8.sistema_de_pedidos.DTO.AuthResponseDTO;
 import com.ing_software_grupo8.sistema_de_pedidos.DTO.LoginRequestDTO;
+import com.ing_software_grupo8.sistema_de_pedidos.DTO.MessageResponseDTO;
 import com.ing_software_grupo8.sistema_de_pedidos.DTO.RegisterRequestDTO;
 import com.ing_software_grupo8.sistema_de_pedidos.entity.User;
 import com.ing_software_grupo8.sistema_de_pedidos.exception.ApiException;
@@ -83,7 +80,7 @@ public class AuthService implements IAuthService {
         }
         return GenericResponse.<MessageResponseDTO>builder()
                 .status(HttpStatus.OK)
-                .data(new MessageResponseDTO("Logeado correctamente"))
+                .data(new MessageResponseDTO("Usuario registrado satisfactoriamente"))
                 .build();
     }
 }

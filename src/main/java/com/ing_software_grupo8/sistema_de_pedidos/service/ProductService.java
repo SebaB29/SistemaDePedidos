@@ -1,21 +1,24 @@
 package com.ing_software_grupo8.sistema_de_pedidos.service;
 
-import com.ing_software_grupo8.sistema_de_pedidos.DTO.MessageResponseDTO;
-import com.ing_software_grupo8.sistema_de_pedidos.DTO.ProductRequestDTO;
-import com.ing_software_grupo8.sistema_de_pedidos.DTO.StockDTO;
-import com.ing_software_grupo8.sistema_de_pedidos.entity.Attribute;
-import com.ing_software_grupo8.sistema_de_pedidos.entity.Product;
-import com.ing_software_grupo8.sistema_de_pedidos.entity.Stock;
-import com.ing_software_grupo8.sistema_de_pedidos.DTO.*;
-import com.ing_software_grupo8.sistema_de_pedidos.exception.ApiException;
-import com.ing_software_grupo8.sistema_de_pedidos.repository.IProductRepository;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
+
+import com.ing_software_grupo8.sistema_de_pedidos.DTO.AdminCreateProductRequestDTO;
+import com.ing_software_grupo8.sistema_de_pedidos.DTO.AttributeDTO;
+import com.ing_software_grupo8.sistema_de_pedidos.DTO.MessageResponseDTO;
+import com.ing_software_grupo8.sistema_de_pedidos.DTO.ProductRequestDTO;
+import com.ing_software_grupo8.sistema_de_pedidos.DTO.ProductResponseDTO;
+import com.ing_software_grupo8.sistema_de_pedidos.DTO.StockDTO;
+import com.ing_software_grupo8.sistema_de_pedidos.entity.Attribute;
+import com.ing_software_grupo8.sistema_de_pedidos.entity.Product;
+import com.ing_software_grupo8.sistema_de_pedidos.entity.Stock;
+import com.ing_software_grupo8.sistema_de_pedidos.exception.ApiException;
+import com.ing_software_grupo8.sistema_de_pedidos.repository.IProductRepository;
 
 @Service
 public class ProductService implements IProductService {
@@ -44,12 +47,15 @@ public class ProductService implements IProductService {
                     Attribute attribute = new Attribute();
                     attribute.setDescription(attributeDTO.getDescription());
                     attribute.setProduct(product);
+                    attribute.setValue(attributeDTO.getValue());
                     return attribute;
                 })
                 .collect(Collectors.toList());
 
         product.setAttributes(attributes);
         productRepository.save(product);
+
+
         return new MessageResponseDTO("Producto creado");
     }
 
@@ -89,6 +95,7 @@ public class ProductService implements IProductService {
     public List<ProductResponseDTO> getAllProducts() {
         return productRepository.findAll().stream()
                 .map(product -> new ProductResponseDTO(
+                        product.getProductId(),
                         product.getName(),
                         product.getAttributes().stream()
                                 .map(attribute -> new AttributeDTO(attribute.getDescription(), attribute.getValue()))
