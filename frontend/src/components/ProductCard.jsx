@@ -59,7 +59,7 @@ export const ProductCard = ({ product }) => {
     <>
       <article className='product-card'>
         <h4>{product.name}</h4>
-        <p>Stock: {product.stock}</p>
+        <p>{product.quantity} {product.stockType}</p>
         {loading
           ? <Loader />
           : <button onClick={handleBuy}>Comprar</button>}

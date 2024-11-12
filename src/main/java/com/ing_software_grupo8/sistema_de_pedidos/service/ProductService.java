@@ -83,12 +83,12 @@ public class ProductService implements IProductService {
         return new MessageResponseDTO("Producto editado correctamente");
     }
 
-    public MessageResponseDTO deleteProduct(ProductRequestDTO productDTO) {
+    public MessageResponseDTO deleteProduct(Long productId) {
 
-        Product product = productRepository.findById(productDTO.getProductId())
+        Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new ApiException(HttpStatus.BAD_REQUEST, "Producto no encontrado"));
 
-        productRepository.delete(product);
+        productRepository.deleteById(productId);
         return new MessageResponseDTO("Producto eliminado correctamente");
     }
 
@@ -104,9 +104,9 @@ public class ProductService implements IProductService {
                 .collect(Collectors.toList());
     }
 
-    public Optional<Stock> getProductStock(ProductRequestDTO productDTO){
+    public Optional<Stock> getProductStock(Long productId){
 
-        Product product = productRepository.findById(productDTO.getProductId())
+        Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new RuntimeException("Producto no encontrado"));
         return stockService.getStockFrom(product.getProductId());
     }

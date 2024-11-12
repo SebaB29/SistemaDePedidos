@@ -14,11 +14,13 @@ const validationsForm = (form) => {
 
   const regex = {
     name: /^[A-Za-zÑñÁáÉéÍíÓóÚúÜü\s]+$/,
-    stock: /^(0|[1-9][0-9]*)$/
+    stock: /^(0|[1-9][0-9]*)$/,
+    stockType: /^[A-Za-zÑñÁáÉéÍíÓóÚúÜü\s]+$/
   }
 
   const message = {
     name: "El campo 'Nombre' solo acepta mayusculas, minusculas y espacios en blanco",
+    stockType: "El campo 'Nombre' solo acepta mayusculas, minusculas y espacios en blanco",
     stock: 'Stock invalido, solo acepta numeros positivos y 0'
   }
 
@@ -38,7 +40,7 @@ export const EditProductForm = ({ product }) => {
   const {
     form, errors, loading,
     handleChange, handleBlur, handleSubmit, handleAddPropertie, handleChangeProp
-  } = useFrom(product, validationsForm, helpHttp.put, ENDPOINT)
+  } = useFrom(product, validationsForm, helpHttp().put, ENDPOINT)
 
   return (
     <>
@@ -55,11 +57,21 @@ export const EditProductForm = ({ product }) => {
         {errors.name && <p style={styles}>{errors.name}</p>}
         <input
           type='text'
+          name='stockType'
+          placeholder='Tipo de Stock'
+          onBlur={handleBlur}
+          onChange={handleChange}
+          value={form.stockType}
+          required
+        />
+        {errors.stockType && <p style={styles}>{errors.stockType}</p>}
+        <input
+          type='text'
           name='stock'
           placeholder='Cantidad'
           onBlur={handleBlur}
           onChange={handleChange}
-          value={form.stock}
+          value={form.quantity}
           required
         />
         {errors.stock && <p style={styles}>{errors.stock}</p>}

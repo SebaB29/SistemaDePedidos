@@ -12,11 +12,11 @@ public interface IProductService {
 
     MessageResponseDTO editProduct(ProductRequestDTO productDTO);
 
-    MessageResponseDTO deleteProduct(ProductRequestDTO productDTO);
+    MessageResponseDTO deleteProduct(Long productId);
 
     List<ProductResponseDTO> getAllProducts();
 
     MessageResponseDTO editStock(StockDTO stockDTO);
 
-    Optional<Stock> getProductStock(ProductRequestDTO productDTO);
+    Optional<Stock> getProductStock(Long productId);
 }
