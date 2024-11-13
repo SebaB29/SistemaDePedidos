@@ -4,5 +4,19 @@ public enum OrderStateEnum {
 
     CREADO,
     PROCESO,
-    ENVIADO
+    ENVIADO;
+
+    @Override
+    public String toString() {
+        switch (this) {
+            case CREADO:
+                return "Creado";
+            case PROCESO:
+                return "En proceso";
+            case ENVIADO:
+                return "Enviado";
+            default:
+                return "";
+        }
+    }
 }
