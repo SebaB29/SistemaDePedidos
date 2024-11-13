@@ -8,11 +8,10 @@ import com.ing_software_grupo8.sistema_de_pedidos.entity.Order;
 
 @Service
 public class RuleManager {
-    private InMemoryRuleRepository ruleRepository;
     private List<Rule> allRules;
 
     public RuleManager() {
-        this.ruleRepository = new InMemoryRuleRepository();
+        InMemoryRuleRepository ruleRepository = new InMemoryRuleRepository();
         this.allRules = ruleRepository.findAll();
     }
 
