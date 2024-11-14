@@ -3,6 +3,7 @@ package com.ing_software_grupo8.sistema_de_pedidos.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 
@@ -19,7 +20,7 @@ public class Order {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long orderId;
 
-    @OneToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
@@ -28,11 +29,8 @@ public class Order {
     private OrderState orderState;
 
     @Column(nullable = false)
-    private LocalTime orderDate;
+    private LocalDateTime orderDate;
 
-    @Column
-    private LocalTime confirmationDate;
-
-    @OneToMany(fetch = FetchType.EAGER, orphanRemoval = true, mappedBy = "order")
+    @OneToMany(fetch = FetchType.EAGER, orphanRemoval = true, mappedBy = "order", cascade = CascadeType.ALL)
     private List<ProductOrder> productOrder;
 }

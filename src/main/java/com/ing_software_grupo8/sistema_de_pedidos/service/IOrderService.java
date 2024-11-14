@@ -9,4 +9,6 @@ public interface IOrderService {
     MessageResponseDTO create(OrderRequestDTO orderRequestDTO);
 
     OrderListDTO getAll(Long userId);
+
+    MessageResponseDTO updateState(OrderRequestDTO orderRequestDTO);
 }

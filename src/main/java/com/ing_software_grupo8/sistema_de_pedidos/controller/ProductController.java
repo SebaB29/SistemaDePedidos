@@ -40,39 +40,39 @@ public class ProductController {
     public ResponseEntity<GenericResponse> createProduct(
             @Valid @RequestBody AdminCreateProductRequestDTO productRequest) {
         return ResponseEntity.ok(GenericResponse.builder()
-                .data(productService.createProduct(productRequest))
-                .status(HttpStatus.CREATED)
-                .build());
+                                                .data(productService.createProduct(productRequest))
+                                                .status(HttpStatus.CREATED)
+                                                .build());
     }
 
     @PutMapping("/product")
     public ResponseEntity<GenericResponse> editProduct(@RequestBody ProductRequestDTO productDTO) {
         return ResponseEntity.ok(GenericResponse.builder()
-                .data(productService.editProduct(productDTO))
-                .status(HttpStatus.OK)
-                .build());
+                                                .data(productService.editProduct(productDTO))
+                                                .status(HttpStatus.OK)
+                                                .build());
     }
 
     @DeleteMapping("/product")
     public ResponseEntity<GenericResponse> deleteProduct(@RequestBody ProductRequestDTO productDTO) {
         return ResponseEntity.ok(GenericResponse.builder()
-                .data(productService.deleteProduct(productDTO))
-                .status(HttpStatus.OK)
-                .build());
+                                                .data(productService.deleteProduct(productDTO))
+                                                .status(HttpStatus.OK)
+                                                .build());
     }
     @GetMapping("/product/{productId}/stock")
     public ResponseEntity<GenericResponse> getStock(@RequestBody ProductRequestDTO productDTO) {
         return ResponseEntity.ok(GenericResponse.builder()
-                .data(productService.getProductStock(productDTO))
-                .status(HttpStatus.OK)
-                .build());
+                                                .data(productService.getProductStock(productDTO))
+                                                .status(HttpStatus.OK)
+                                                .build());
     }
     @PutMapping("/product/{productId}/stock")
     public ResponseEntity<GenericResponse> editStock(@RequestBody StockDTO stockDTO) {
         return ResponseEntity.ok(GenericResponse.builder()
-                .data(productService.editStock(stockDTO))
-                .status(HttpStatus.OK)
-                .build());
+                                                .data(productService.editStock(stockDTO))
+                                                .status(HttpStatus.OK)
+                                                .build());
     }
 
     @GetMapping("/product")
