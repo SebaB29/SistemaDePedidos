@@ -3,6 +3,9 @@ package com.ing_software_grupo8.sistema_de_pedidos.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalTime;
+import java.util.List;
+
 @Getter
 @Setter
 @AllArgsConstructor
