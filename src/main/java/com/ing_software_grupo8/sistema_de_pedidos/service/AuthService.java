@@ -83,7 +83,7 @@ public class AuthService implements IAuthService {
         }
         return GenericResponse.<MessageResponseDTO>builder()
                 .status(HttpStatus.OK)
-                .data(new MessageResponseDTO("Logeado correctamente"))
+                .data(new MessageResponseDTO("Registrado correctamente"))
                 .build();
     }
 }

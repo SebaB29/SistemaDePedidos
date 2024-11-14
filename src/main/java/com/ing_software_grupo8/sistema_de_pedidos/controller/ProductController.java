@@ -4,6 +4,7 @@ import com.ing_software_grupo8.sistema_de_pedidos.DTO.AdminCreateProductRequestD
 import com.ing_software_grupo8.sistema_de_pedidos.DTO.MessageResponseDTO;
 import com.ing_software_grupo8.sistema_de_pedidos.service.IProductService;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 
 import com.ing_software_grupo8.sistema_de_pedidos.DTO.ProductRequestDTO;
@@ -38,28 +39,31 @@ public class ProductController {
 
     @PostMapping("/product")
     public ResponseEntity<GenericResponse> createProduct(
-            @Valid @RequestBody AdminCreateProductRequestDTO productRequest) {
+            @Valid @RequestBody AdminCreateProductRequestDTO productRequest, HttpServletRequest request) {
         return ResponseEntity.ok(GenericResponse.builder()
-                .data(productService.createProduct(productRequest))
+                .data(productService.createProduct(productRequest, request))
                 .status(HttpStatus.CREATED)
                 .build());
     }
 
     @PutMapping("/product")
-    public ResponseEntity<GenericResponse> editProduct(@RequestBody ProductRequestDTO productDTO) {
+    public ResponseEntity<GenericResponse> editProduct(@RequestBody ProductRequestDTO productDTO,
+            HttpServletRequest request) {
         return ResponseEntity.ok(GenericResponse.builder()
-                .data(productService.editProduct(productDTO))
+                .data(productService.editProduct(productDTO, request))
                 .status(HttpStatus.OK)
                 .build());
     }
 
     @DeleteMapping("/product")
-    public ResponseEntity<GenericResponse> deleteProduct(@RequestBody ProductRequestDTO productDTO) {
+    public ResponseEntity<GenericResponse> deleteProduct(@RequestBody ProductRequestDTO productDTO,
+            HttpServletRequest request) {
         return ResponseEntity.ok(GenericResponse.builder()
-                .data(productService.deleteProduct(productDTO))
+                .data(productService.deleteProduct(productDTO, request))
                 .status(HttpStatus.OK)
                 .build());
     }
+
     @GetMapping("/product/{productId}/stock")
     public ResponseEntity<GenericResponse> getStock(@RequestBody ProductRequestDTO productDTO) {
         return ResponseEntity.ok(GenericResponse.builder()
@@ -67,10 +71,11 @@ public class ProductController {
                 .status(HttpStatus.OK)
                 .build());
     }
+
     @PutMapping("/product/{productId}/stock")
-    public ResponseEntity<GenericResponse> editStock(@RequestBody StockDTO stockDTO) {
+    public ResponseEntity<GenericResponse> editStock(@RequestBody StockDTO stockDTO, HttpServletRequest request) {
         return ResponseEntity.ok(GenericResponse.builder()
-                .data(productService.editStock(stockDTO))
+                .data(productService.editStock(stockDTO, request))
                 .status(HttpStatus.OK)
                 .build());
     }
@@ -79,8 +84,8 @@ public class ProductController {
     public ResponseEntity<GenericResponse> getAllProducts() {
         List<ProductResponseDTO> products = productService.getAllProducts();
         return ResponseEntity.ok(GenericResponse.builder()
-                                                .data(products)
-                                                .status(HttpStatus.OK)
-                                                .build());
+                .data(products)
+                .status(HttpStatus.OK)
+                .build());
     }
 }
