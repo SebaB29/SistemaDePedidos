@@ -31,7 +31,7 @@ public class UserService implements IUserService {
         validateUser(userRequestDTO);
 
         User user = User.builder()
-                .username(userRequestDTO.getUserName())
+                .username(userRequestDTO.getUsername())
                 .lastName(userRequestDTO.getLastName())
                 .email(userRequestDTO.getEmail())
                 .password(userRequestDTO.getPassword())
@@ -46,9 +46,9 @@ public class UserService implements IUserService {
     }
 
     private void validateUser(UserRequestDTO userRequestDTO) {
-        if (userRequestDTO.getUserName().isEmpty())
+        if (userRequestDTO.getUsername().isEmpty())
             throw new IllegalArgumentException();
-        if(Objects.equals(userRequestDTO.getUserName(), "")) throw new IllegalArgumentException();
+        if(Objects.equals(userRequestDTO.getUsername(), "")) throw new IllegalArgumentException();
     }
 
     @Override
@@ -62,12 +62,21 @@ public class UserService implements IUserService {
 
         userRepository.save(user);
 
-        return new MessageResponseDTO("Producto editado correctamente");
+        return new MessageResponseDTO("Usuario editado correctamente");
     }
 
     @Transactional
     public Optional<User> findUserByEmail(String email) {
         return userRepository.findUserByEmail(email);
+    }
+
+    @Override
+    public Optional<User> getUser(String userEmail){
+        User user = findUserByEmail(userEmail)
+                .orElseThrow(() -> new ApiException(HttpStatus.BAD_REQUEST, "Usuario no encontrado"));
+
+
+        return Optional.ofNullable(user);
     }
 
 }

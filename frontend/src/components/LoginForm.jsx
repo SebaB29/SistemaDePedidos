@@ -60,10 +60,15 @@ const LoginForm = () => {
     }
   }, [response])
 
+  const handleSubmitLogin = (e) => {
+    window.sessionStorage.setItem('email', form.email)
+    handleSubmit(e)
+  }
+
   return (
     <div>
       <h2>Login</h2>
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmitLogin}>
         <input
           type='email'
           name='email'

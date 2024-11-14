@@ -1,8 +1,9 @@
+import { useEffect } from 'react'
 import Loader from '../components/Loader'
 import { helpHttp } from '../helpers/helpHttp'
 import { useFrom } from '../hooks/useForm'
 
-const ENDPOINT = ''
+const ENDPOINT = 'http://localhost:8080/product'
 
 const styles = {
   color: '#dc3545',
@@ -13,19 +14,15 @@ const validationsForm = (form) => {
   const errors = {}
 
   const regex = {
-    name: /^[A-Za-zÑñÁáÉéÍíÓóÚúÜü\s]+$/,
-    stock: /^(0|[1-9][0-9]*)$/,
-    stockType: /^[A-Za-zÑñÁáÉéÍíÓóÚúÜü\s]+$/
+    product_name: /^[A-Za-zÑñÁáÉéÍíÓóÚúÜü\s]+$/
   }
 
   const message = {
-    name: "El campo 'Nombre' solo acepta mayusculas, minusculas y espacios en blanco",
-    stockType: "El campo 'Nombre' solo acepta mayusculas, minusculas y espacios en blanco",
-    stock: 'Stock invalido, solo acepta numeros positivos y 0'
+    product_name: "El campo 'Nombre' solo acepta mayusculas, minusculas y espacios en blanco"
   }
 
   Object.keys(form).forEach(el => {
-    if (el !== 'name' || el !== 'stock') return
+    if (el !== 'product_name') return
     if (!form[el].trim()) {
       errors[el] = 'Este campo es requerido'
     } else if (!regex[el].test(form[el].trim())) {
@@ -37,51 +34,46 @@ const validationsForm = (form) => {
 }
 
 export const EditProductForm = ({ product }) => {
+  const initialForm = {
+    product_name: product.name,
+    product_id: product.productId,
+    attributes: product.attributes
+  }
   const {
-    form, errors, loading,
+    form, errors, loading, response,
     handleChange, handleBlur, handleSubmit, handleAddPropertie, handleChangeProp
-  } = useFrom(product, validationsForm, helpHttp().put, ENDPOINT)
+  } = useFrom(initialForm, validationsForm, helpHttp().put, ENDPOINT)
+
+  useEffect(() => {
+    if (response === null) return
+    if (response.status === 'OK') {
+      window.alert(response.data.message)
+      window.location.reload()
+    } else {
+      window.alert(response.error)
+    }
+  }, [response])
 
   return (
     <>
       <form onSubmit={handleSubmit}>
         <input
           type='text'
-          name='name'
+          name='product_name'
           placeholder='Nombre del producto'
           onBlur={handleBlur}
           onChange={handleChange}
-          value={form.name}
+          value={form.product_name}
           required
         />
-        {errors.name && <p style={styles}>{errors.name}</p>}
-        <input
-          type='text'
-          name='stockType'
-          placeholder='Tipo de Stock'
-          onBlur={handleBlur}
-          onChange={handleChange}
-          value={form.stockType}
-          required
-        />
-        {errors.stockType && <p style={styles}>{errors.stockType}</p>}
-        <input
-          type='text'
-          name='stock'
-          placeholder='Cantidad'
-          onBlur={handleBlur}
-          onChange={handleChange}
-          value={form.quantity}
-          required
-        />
-        {errors.stock && <p style={styles}>{errors.stock}</p>}
+        {errors.product_name && <p style={styles}>{errors.product_name}</p>}
         {form.attributes.map((attribute, index) => (
           <div key={index}>
             <hr />
             <input
               value={attribute.description}
               type='text'
-              name='name'
+              name='description'
               placeholder='Propiedad'
               required
               onChange={(e) => handleChangeProp(e, index)}
@@ -97,13 +89,12 @@ export const EditProductForm = ({ product }) => {
             />
           </div>
         ))}
+        <hr />
         <button onClick={handleAddPropertie}>Agregar propiedad</button>
         <br /><br />
         <input type='submit' value='Editar' />
       </form>
       {loading && <Loader />}
-      {/* {!response.ok && <Message bgColor='#ff0000' message={response.message} />} */}
-
     </>
   )
 }

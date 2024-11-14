@@ -1,24 +1,15 @@
+import { useEffect } from 'react'
 import { helpHttp } from '../helpers/helpHttp'
 import { useFrom } from '../hooks/useForm'
 import Loader from './Loader'
-import Message from './Message'
-
-const initialForm = {
-  name: window.sessionStorage.getItem('name'),
-  last_name: window.sessionStorage.getItem('last_name'),
-  age: window.sessionStorage.getItem('age'),
-  password: window.sessionStorage.getItem('password'),
-  photo: window.sessionStorage.getItem('photo'),
-  gender: window.sessionStorage.getItem('gender'),
-  address: window.sessionStorage.getItem('address')
-}
 
 const validationsForm = (form) => {
   const errors = {}
 
   const regex = {
-    name: /^[A-Za-zÑñÁáÉéÍíÓóÚúÜü\s]+$/,
-    last_name: /^[A-Za-zÑñÁáÉéÍíÓóÚúÜü\s]+$/,
+    username: /^[A-Za-zÑñÁáÉéÍíÓóÚúÜü\s]+$/,
+    lastName: /^[A-Za-zÑñÁáÉéÍíÓóÚúÜü\s]+$/,
+    email: /.*/,
     password: /.*/,
     age: /^(1[89]|[2-9][0-9]|1[01][0-9]|120)$/,
     photo: /^(https?:\/\/.*\.(?:jpg|jpeg|png))$/i,
@@ -27,8 +18,8 @@ const validationsForm = (form) => {
   }
 
   const message = {
-    name: "El campo 'Nombre' solo acepta mayusculas, minusculas y espacios en blanco",
-    last_name: "El campo 'Apellido' solo acepta mayusculas, minusculas y espacios en blanco",
+    username: "El campo 'Nombre' solo acepta mayusculas, minusculas y espacios en blanco",
+    lastName: "El campo 'Apellido' solo acepta mayusculas, minusculas y espacios en blanco",
     password: '',
     age: 'Debes ser mayor de 18 y menor de 120',
     photo: 'El campo foto solo acepta urls de imagenes jpg, jpeg y png',
@@ -52,8 +43,18 @@ const styles = {
   fontWeight: 'bold'
 }
 
-export const EditAccountForm = () => {
-  const ENDPOINT = ''
+export const EditAccountForm = ({ data }) => {
+  const ENDPOINT = 'http://localhost:8080/user'
+  const initialForm = {
+    username: data.username,
+    lastName: data.lastName,
+    email: data.email,
+    age: data.age.toString(),
+    password: '',
+    photo: data.photo,
+    gender: data.gender,
+    address: data.address
+  }
   const {
     form,
     errors,
@@ -64,29 +65,40 @@ export const EditAccountForm = () => {
     handleSubmit
   } = useFrom(initialForm, validationsForm, helpHttp().put, ENDPOINT)
 
+  useEffect(() => {
+    if (response === null) return
+    console.log(response)
+    if (response.status === 'OK') {
+      window.alert(response.data.message)
+      window.location.reload()
+    } else {
+      window.alert(response.error)
+    }
+  }, [response])
+
   return (
     <div>
       <form onSubmit={handleSubmit}>
         <input
           type='text'
-          name='name'
+          name='username'
           placeholder='Escribe tu nombre'
           onBlur={handleBlur}
           onChange={handleChange}
-          value={form.name}
+          value={form.username}
           required
         />
-        {errors.name && <p style={styles}>{errors.name}</p>}
+        {errors.username && <p style={styles}>{errors.username}</p>}
         <input
           type='text'
-          name='last_name'
+          name='lastName'
           placeholder='Escribe tu Apellido'
           onBlur={handleBlur}
           onChange={handleChange}
-          value={form.last_name}
+          value={form.lastName}
           required
         />
-        {errors.last_name && <p style={styles}>{errors.last_name}</p>}
+        {errors.lastName && <p style={styles}>{errors.lastName}</p>}
         <input
           type='number'
           placeholder='Edad'
@@ -99,16 +111,6 @@ export const EditAccountForm = () => {
           required
         />
         {errors.age && <p style={styles}>{errors.age}</p>}
-        <input
-          type='password'
-          name='password'
-          placeholder='Escribe tu Contraseña'
-          onBlur={handleBlur}
-          onChange={handleChange}
-          value={form.password}
-          required
-        />
-        {errors.password && <p style={styles}>{errors.password}</p>}
         <input
           type='url'
           name='photo'
@@ -139,10 +141,19 @@ export const EditAccountForm = () => {
           required
         />
         {errors.address && <p style={styles}>{errors.address}</p>}
+        <input
+          type='password'
+          name='password'
+          placeholder='Escribe tu Contraseña'
+          onBlur={handleBlur}
+          onChange={handleChange}
+          value={form.password}
+          required
+        />
+        {errors.password && <p style={styles}>{errors.password}</p>}
         <input type='submit' value='Aceptar' />
       </form>
       {loading && <Loader />}
-      {response && <Message bgColor='#198754' message='Se obtuvo una respuesta del server' />}
     </div>
   )
 }

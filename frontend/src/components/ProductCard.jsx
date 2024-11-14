@@ -4,13 +4,15 @@ import Loader from './Loader'
 import Modal from './Modal'
 import { useModal } from '../hooks/useModal'
 import { EditProductForm } from './EditProductForm'
+import { EditProductStockForm } from './EditProductStockForm'
 
 const BUY_ENDPOINT = ''
 const DELETE_ENDPOINT = ''
 
 export const ProductCard = ({ product }) => {
   const [loading, setLoading] = useState(false)
-  const [isOpenModal, openModal, closeModal] = useModal(false)
+  const [isOpenEditProductModal, openEditProductModal, closeEditProductModal] = useModal(false)
+  const [isOpenEditStockModal, openEditStockModal, closeEditStockModal] = useModal(false)
 
   const handleBuy = (e) => {
     let amount
@@ -63,9 +65,12 @@ export const ProductCard = ({ product }) => {
         {loading
           ? <Loader />
           : <button onClick={handleBuy}>Comprar</button>}
-        {window.sessionStorage.getItem('admin')
-          ? <><button onClick={openModal}>Editar</button><button onClick={handleDelete}>Eliminar</button></>
-          : <></>}
+        {window.sessionStorage.getItem('admin') &&
+          <>
+            <button onClick={openEditProductModal}>Editar Producto</button>
+            <button onClick={handleDelete}>Eliminar</button>
+            <button onClick={openEditStockModal}>Editar Stock</button>
+          </>}
       </article>
       <ul className='porperties-list'>
         {product.attributes.map((attribute, index) => (
@@ -73,9 +78,13 @@ export const ProductCard = ({ product }) => {
         ))}
       </ul>
 
-      <Modal isOpen={isOpenModal} closeModal={closeModal}>
+      <Modal isOpen={isOpenEditProductModal} closeModal={closeEditProductModal}>
         <h3>Editar {product.name}</h3>
         <EditProductForm product={product} />
+      </Modal>
+      <Modal isOpen={isOpenEditStockModal} closeModal={closeEditStockModal}>
+        <h3>Stock de {product.name}</h3>
+        <EditProductStockForm product={product} />
       </Modal>
     </>
   )

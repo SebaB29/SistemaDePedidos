@@ -31,7 +31,6 @@ export const Products = () => {
         for (let i = 0; i < res.data.length; i++) {
           const product = res.data[i]
           const stockRes = await fetch(`http://localhost:8080/product/${product.productId}/stock`)
-          // chequear caso de error
           const stock = await stockRes.json()
           newData = [...newData, { ...product, ...stock.data }]
         }

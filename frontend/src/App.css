@@ -22,3 +22,8 @@ header {
   display: flex;
   justify-content: space-evenly;
 }
+
+.user-image {
+  height: 200px;
+  width: 200px;
+}
