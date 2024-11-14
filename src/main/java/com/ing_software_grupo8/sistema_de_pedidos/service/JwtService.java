@@ -113,4 +113,9 @@ public class JwtService implements IJwtService {
         }
     }
 
+    @Override
+    public boolean isSameUser(User user, String token) {
+        return user.getEmail().equals(getEmailFromToken(token));
+    }
+
 }
