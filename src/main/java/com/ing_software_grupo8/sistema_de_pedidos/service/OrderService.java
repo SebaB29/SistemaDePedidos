@@ -8,6 +8,9 @@ import com.ing_software_grupo8.sistema_de_pedidos.repository.IOrderStateReposito
 import com.ing_software_grupo8.sistema_de_pedidos.repository.IProductRepository;
 import com.ing_software_grupo8.sistema_de_pedidos.repository.IUserRepository;
 import com.ing_software_grupo8.sistema_de_pedidos.utils.OrderStateEnum;
+
+import jakarta.servlet.http.HttpServletRequest;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -32,7 +35,9 @@ public class OrderService implements IOrderService{
     @Autowired
     IOrderStateRepository orderStateRepository;
 
-    public MessageResponseDTO updateState(OrderRequestDTO orderRequestDTO){
+    @Autowired
+    IJwtService jwtService;
+    public MessageResponseDTO updateState(OrderRequestDTO orderRequestDTO, HttpServletRequest httpServletRequest){
         Order order = orderRepository.findById(orderRequestDTO.getOrderId())
                 .orElseThrow(() -> new ApiException(HttpStatus.BAD_REQUEST, "La orden no existe."));
         OrderState orderState = orderStateRepository.findByStateCode(orderRequestDTO.getOrderState());
@@ -40,7 +45,7 @@ public class OrderService implements IOrderService{
         if(orderState.getStateCode() == OrderStateEnum.CANCELADO.ordinal()) {
             cancelOrder(order);
         }else{
-            validateChangeState("");
+            validateChangeState(httpServletRequest);
         }
         order.setOrderState(orderState);
         orderRepository.save(order);
@@ -54,12 +59,15 @@ public class OrderService implements IOrderService{
         return productOrders;
     }
 
-    public OrderListDTO getAll(Long userId){
+    public OrderListDTO getAll(Long userId) {
         Optional<User> user = userRepository.findById(userId);
-        if(user.isEmpty()){ throw new ApiException(HttpStatus.BAD_REQUEST, "Usuario no encontrado."); }
+        if (!user.isPresent()) {
+            throw new ApiException(HttpStatus.BAD_REQUEST, "Usuario no encontrado.");
+        }
         List<Order> orders = orderRepository.findAllByUser(user.get());
+
         List<OrderResponseDTO> orderResponseDTOList = new ArrayList<>();
-        for(Order order : orders){
+        for (Order order : orders) {
             OrderResponseDTO orderResponseDTO = new OrderResponseDTO();
             orderResponseDTO.setOrderState(order.getOrderState().getStateDesc());
             orderResponseDTO.setCreationDate(order.getOrderDate().toString());
@@ -70,8 +78,8 @@ public class OrderService implements IOrderService{
         return new OrderListDTO(orderResponseDTOList);
     }
 
-    public MessageResponseDTO create(OrderRequestDTO orderRequestDTO) {
-        validateOrder(orderRequestDTO);
+    public MessageResponseDTO create(OrderRequestDTO orderRequestDTO, HttpServletRequest request) {
+        validateOrder(orderRequestDTO, request);
 
         Order order = new Order();
 
@@ -81,6 +89,7 @@ public class OrderService implements IOrderService{
         List<ProductOrder> productOrderList = new ArrayList<>();
         for(ProductOrderDTO productOrderDTO : orderRequestDTO.getProductOrderDTOList()){
             Product product = productRepository.findById(productOrderDTO.getProductId()).get();
+            validateStock(product, productOrderDTO.getQuantity());
             discountStock(product, productOrderDTO.getQuantity());
             ProductOrder productOrder = new ProductOrder();
             productOrder.setOrderQuantity(productOrderDTO.getQuantity());
@@ -95,32 +104,36 @@ public class OrderService implements IOrderService{
         return new MessageResponseDTO("Orden creada correctamente");
     }
 
-    private List<ProductResponseDTO> getOrderProductListDTO(Order order){
+    private List<ProductResponseDTO> getOrderProductListDTO(Order order) {
         List<ProductResponseDTO> productResponseDTOList = new ArrayList<>();
-        for(ProductOrder productOrder : order.getProductOrder()){
+        for (ProductOrder productOrder : order.getProductOrder()) {
             ProductResponseDTO productResponseDTO = new ProductResponseDTO();
             productResponseDTO.setQuantity(productOrder.getOrderQuantity());
             productResponseDTO.setName(productOrder.getProduct().getName());
-            List<AttributeDTO> attributeDTOListt = new ArrayList<>();
-            for(Attribute attribute : productOrder.getProduct().getAttributes()){
+            List<AttributeDTO> attributeDTOList = new ArrayList<>();
+            for (Attribute attribute : productOrder.getProduct().getAttributes()) {
                 AttributeDTO attributeDTO = new AttributeDTO();
                 attributeDTO.setDescription(attribute.getDescription());
                 attributeDTO.setValue(attribute.getValue());
-                attributeDTOListt.add(attributeDTO);
+                attributeDTOList.add(attributeDTO);
             }
-            productResponseDTO.setAttributes(attributeDTOListt);
+            productResponseDTO.setAttributes(attributeDTOList);
             productResponseDTOList.add(productResponseDTO);
         }
         return productResponseDTOList;
     }
 
-
-    private void validateOrder(OrderRequestDTO orderRequestDTO){
-        if(orderRequestDTO.getUserId() != null && !userRepository.existsById(orderRequestDTO.getUserId())) throw new ApiException(HttpStatus.BAD_REQUEST, "Usuario no encontrado.");
+    private void validateOrder(OrderRequestDTO orderRequestDTO, HttpServletRequest request) {
+        if (!jwtService.tokenHasRoleUser(request))
+            throw new ApiException(HttpStatus.UNAUTHORIZED, "No tienes autorizacion");
+        if (!userRepository.existsById(orderRequestDTO.getUserId()))
+            throw new ApiException(HttpStatus.BAD_REQUEST, "Usuario no encontrado.");
         if(orderRequestDTO.getProductOrderDTOList().isEmpty()) throw new ApiException(HttpStatus.BAD_REQUEST, "Debes agregar al menos un producto a la orden.");
-        for(ProductOrderDTO productOrderDTO : orderRequestDTO.getProductOrderDTOList()){
-            if(!productRepository.existsById(productOrderDTO.getProductId())) throw new ApiException(HttpStatus.BAD_REQUEST, "Product no encontrado.");
-            if(productOrderDTO.getQuantity() <= 0) throw new ApiException(HttpStatus.BAD_REQUEST, "La cantidad debe ser mayor a 0");
+        for (ProductOrderDTO productOrderDTO : orderRequestDTO.getProductOrderDTOList()) {
+            if (!productRepository.existsById(productOrderDTO.getProductId()))
+                throw new ApiException(HttpStatus.BAD_REQUEST, "Product no encontrado.");
+            if (productOrderDTO.getQuantity() <= 0)
+                throw new ApiException(HttpStatus.BAD_REQUEST, "La cantidad debe ser mayor a 0");
         }
     }
 
@@ -129,11 +142,18 @@ public class OrderService implements IOrderService{
         if(Duration.between(order.getOrderDate(), LocalDateTime.now()).toHours() >= 24) throw new ApiException(HttpStatus.BAD_REQUEST, "La orden fue creada hace mas de 24 horas.");
     }
 
-    private void validateChangeState(String token){
-        //Validate user
+    private void validateChangeState(HttpServletRequest request){
+        if (!jwtService.tokenHasRoleAdmin(request))
+            throw new ApiException(HttpStatus.UNAUTHORIZED, "No tienes autorizacion");
     }
 
-    private void discountStock(Product product, float orderQuantity){
-        if(!product.getStock().discountStock(orderQuantity)) throw new ApiException(HttpStatus.BAD_REQUEST, "El stock disponible es menor al solicitado.");
+    private void discountStock(Product product, float orderQuantity) {
+        if (!product.getStock().discountStock(orderQuantity))
+            throw new ApiException(HttpStatus.BAD_REQUEST, "El stock disponible es menor al solicitado.");
+    }
+
+    private void validateStock(Product product, float orderQuantity) {
+        if (product.getStock().getQuantity() < orderQuantity)
+            throw new ApiException(HttpStatus.BAD_REQUEST, "El stock disponible es menor al solicitado.");
     }
 }

@@ -18,13 +18,13 @@ export const useFrom = (initialForm, validateForm, customFetch, endpint) => {
 
   const handleChangeProp = (e, index) => {
     const { name, value } = e.target
-    const nextProps = [...form.properties]
-    if (name === 'name') {
-      nextProps.splice(index, 1, { ...form.properties[index], name: value })
+    const nextProps = [...form.attributes]
+    if (name === 'description') {
+      nextProps.splice(index, 1, { ...form.attributes[index], description: value })
     } else {
-      nextProps.splice(index, 1, { ...form.properties[index], description: value })
+      nextProps.splice(index, 1, { ...form.attributes[index], value })
     }
-    const newForm = { ...form, properties: nextProps }
+    const newForm = { ...form, attributes: nextProps }
     setForm(newForm)
     setErrors(validateForm(newForm))
   }
@@ -32,7 +32,7 @@ export const useFrom = (initialForm, validateForm, customFetch, endpint) => {
   const handleAddPropertie = () => {
     const newForm = {
       ...form,
-      properties: form.properties.concat({ name: '', description: '' })
+      attributes: form.attributes.concat({ description: '', value: '' })
     }
     setForm(newForm)
     setErrors(validateForm(newForm))
@@ -61,6 +61,14 @@ export const useFrom = (initialForm, validateForm, customFetch, endpint) => {
           setLoading(false)
           setResponse(res)
           setForm(initialForm)
+        })
+        .catch(err => {
+          setLoading(false)
+          setResponse({
+            status: '500',
+            error: err,
+            data: null
+          })
         })
     }
   }

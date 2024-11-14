@@ -4,25 +4,13 @@ export const helpHttp = () => {
       accept: 'application/json'
     }
 
-    const controller = new AbortController()
-    options.signal = controller.signal
-
     options.headers = options.headers ? { ...options.headers, ...defaultHeader } : defaultHeader
 
     options.body = JSON.stringify(options.body) || false
     if (!options.body) delete options.body
 
-    setTimeout(() => controller.abort(), 3000)
-
     return fetch(endpint, options)
-      .then(res => res.ok
-        ? res.json()
-        : Promise.reject(Object.assign(new Error(), {
-          err: true,
-          status: res.status || '00',
-          statusText: res.statusText || 'Ocurrió un error'
-        })))
-      .catch(err => err)
+      .then(res => res.json())
   }
 
   const get = (url, options = {}) => {
