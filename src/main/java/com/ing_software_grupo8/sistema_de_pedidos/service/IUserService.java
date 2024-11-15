@@ -14,4 +14,6 @@ public interface IUserService {
     MessageResponseDTO createUser(UserRequestDTO userRequestDTO, HttpServletRequest request);
 
     MessageResponseDTO editUser(UserRequestDTO userRequestDTO, HttpServletRequest request) throws JsonMappingException;
+
+    Optional<User> getUser(String userEmail);;
 }

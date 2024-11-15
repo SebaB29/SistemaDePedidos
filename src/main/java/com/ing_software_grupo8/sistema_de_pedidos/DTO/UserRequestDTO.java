@@ -14,7 +14,7 @@ import lombok.Setter;
 public class UserRequestDTO {
 
     @JsonProperty(defaultValue = "")
-    public String username;
+    public String userName;
 
     @JsonProperty(defaultValue = "")
     private String lastName;
