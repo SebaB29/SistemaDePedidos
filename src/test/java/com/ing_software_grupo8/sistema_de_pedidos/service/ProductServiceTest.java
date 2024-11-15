@@ -6,12 +6,14 @@ import com.ing_software_grupo8.sistema_de_pedidos.entity.Product;
 import com.ing_software_grupo8.sistema_de_pedidos.entity.Stock;
 import com.ing_software_grupo8.sistema_de_pedidos.exception.ApiException;
 import com.ing_software_grupo8.sistema_de_pedidos.repository.IProductRepository;
+import jakarta.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.http.HttpStatus;
+import org.springframework.mock.web.MockHttpServletRequest;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -29,6 +31,9 @@ public class ProductServiceTest {
     @Mock
     private IStockService stockService;
 
+    @Mock
+    private IJwtService jwtService;
+
     @InjectMocks
     private ProductService productService;
 
@@ -39,6 +44,7 @@ public class ProductServiceTest {
 
     @Test
     void testCreateProduct() {
+        HttpServletRequest servletRequest = new MockHttpServletRequest();
         AdminCreateProductRequestDTO request = new AdminCreateProductRequestDTO();
         request.setProductName("Producto Test");
         request.setQuantity(10);
@@ -48,9 +54,10 @@ public class ProductServiceTest {
         request.setAttributes(Arrays.asList(attributeDTO));
 
         Stock stock = new Stock();
+        when(!jwtService.tokenHasRoleAdmin(servletRequest)).thenReturn(true);
         doNothing().when(stockService).createStock(stock);
 
-        MessageResponseDTO response = productService.createProduct(request);
+        MessageResponseDTO response = productService.createProduct(request, servletRequest);
 
         assertEquals("Producto creado", response.getMessage());
         verify(productRepository, times(1)).save(any(Product.class));
@@ -59,6 +66,7 @@ public class ProductServiceTest {
 
     @Test
     void testEditProduct() {
+        HttpServletRequest servletRequest = new MockHttpServletRequest();
         ProductRequestDTO request = new ProductRequestDTO();
         request.setProductId(1L);
         request.setName("Producto Editado");
@@ -75,9 +83,10 @@ public class ProductServiceTest {
         attributes.add(originalAttribute);
         product.setAttributes(attributes);
 
+        when(!jwtService.tokenHasRoleAdmin(servletRequest)).thenReturn(true);
         when(productRepository.findById(1L)).thenReturn(Optional.of(product));
 
-        MessageResponseDTO response = productService.editProduct(request);
+        MessageResponseDTO response = productService.editProduct(request, servletRequest);
 
         assertEquals("Producto editado correctamente", response.getMessage());
         verify(productRepository, times(1)).save(product);
@@ -86,25 +95,29 @@ public class ProductServiceTest {
 
     @Test
     void testEditProduct_ProductNotFound() {
+        HttpServletRequest servletRequest = new MockHttpServletRequest();
         ProductRequestDTO request = new ProductRequestDTO();
         request.setProductId(999L);
 
+        when(!jwtService.tokenHasRoleAdmin(servletRequest)).thenReturn(true);
         when(productRepository.findById(999L)).thenReturn(Optional.empty());
 
-        ApiException exception = assertThrows(ApiException.class, () -> productService.editProduct(request));
+        ApiException exception = assertThrows(ApiException.class, () -> productService.editProduct(request, servletRequest));
         assertEquals(HttpStatus.BAD_REQUEST, exception.getStatus());
         assertEquals("Producto no encontrado", exception.getMessage());
     }
 
     @Test
     void testDeleteProduct() {
+        HttpServletRequest servletRequest = new MockHttpServletRequest();
         ProductRequestDTO request = new ProductRequestDTO();
         request.setProductId(1L);
 
         Product product = new Product();
+        when(!jwtService.tokenHasRoleAdmin(servletRequest)).thenReturn(true);
         when(productRepository.findById(1L)).thenReturn(Optional.of(product));
 
-        MessageResponseDTO response = productService.deleteProduct(request);
+        MessageResponseDTO response = productService.deleteProduct(request, servletRequest);
 
         assertEquals("Producto eliminado correctamente", response.getMessage());
         verify(productRepository, times(1)).delete(product);
@@ -112,12 +125,14 @@ public class ProductServiceTest {
 
     @Test
     void testDeleteProduct_ProductNotFound() {
+        HttpServletRequest servletRequest = new MockHttpServletRequest();
         ProductRequestDTO request = new ProductRequestDTO();
         request.setProductId(999L);
 
+        when(!jwtService.tokenHasRoleAdmin(servletRequest)).thenReturn(true);
         when(productRepository.findById(999L)).thenReturn(Optional.empty());
 
-        ApiException exception = assertThrows(ApiException.class, () -> productService.deleteProduct(request));
+        ApiException exception = assertThrows(ApiException.class, () -> productService.deleteProduct(request, servletRequest));
         assertEquals(HttpStatus.BAD_REQUEST, exception.getStatus());
         assertEquals("Producto no encontrado", exception.getMessage());
     }
@@ -171,10 +186,13 @@ public class ProductServiceTest {
 
     @Test
     void testEditStock() {
+        HttpServletRequest servletRequest = new MockHttpServletRequest();
         StockDTO stockDTO = new StockDTO();
         stockDTO.setQuantity(20);
 
-        MessageResponseDTO response = productService.editStock(stockDTO);
+        when(!jwtService.tokenHasRoleAdmin(servletRequest)).thenReturn(true);
+
+        MessageResponseDTO response = productService.editStock(stockDTO, servletRequest);
 
         assertEquals("Stock editado correctamente", response.getMessage());
         verify(stockService, times(1)).editStockFrom(stockDTO);
