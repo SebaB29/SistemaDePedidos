@@ -4,9 +4,11 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.ing_software_grupo8.sistema_de_pedidos.DTO.MessageResponseDTO;
 import com.ing_software_grupo8.sistema_de_pedidos.DTO.UserRequestDTO;
 
+import jakarta.servlet.http.HttpServletRequest;
+
 public interface IUserService {
 
-    MessageResponseDTO createUser(UserRequestDTO userRequestDTO);
+    MessageResponseDTO createUser(UserRequestDTO userRequestDTO, HttpServletRequest request);
 
-    MessageResponseDTO editUser(UserRequestDTO userRequestDTO) throws JsonMappingException;
+    MessageResponseDTO editUser(UserRequestDTO userRequestDTO, HttpServletRequest request) throws JsonMappingException;
 }
