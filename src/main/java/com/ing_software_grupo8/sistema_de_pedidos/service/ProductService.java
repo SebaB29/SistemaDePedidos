@@ -25,6 +25,10 @@ import com.ing_software_grupo8.sistema_de_pedidos.entity.Stock;
 import com.ing_software_grupo8.sistema_de_pedidos.exception.ApiException;
 import com.ing_software_grupo8.sistema_de_pedidos.repository.IProductRepository;
 
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
 @Service
 public class ProductService implements IProductService {
 
@@ -93,10 +97,10 @@ public class ProductService implements IProductService {
         return new MessageResponseDTO("Producto editado correctamente");
     }
 
-    public MessageResponseDTO deleteProduct(ProductRequestDTO productDTO, HttpServletRequest request) {
+    public MessageResponseDTO deleteProduct(Long productId, HttpServletRequest request) {
         if (!jwtService.tokenHasRoleAdmin(request))
             throw new ApiException(HttpStatus.UNAUTHORIZED, "No tienes autorizacion");
-        Product product = productRepository.findById(productDTO.getProductId())
+        Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new ApiException(HttpStatus.BAD_REQUEST, "Producto no encontrado"));
 
         productRepository.deleteById(productId);
@@ -114,7 +118,7 @@ public class ProductService implements IProductService {
                 .collect(Collectors.toList());
     }
 
-    public Optional<Stock> getProductStock(ProductRequestDTO productDTO) {
+    public Optional<Stock> getProductStock(Long productId) {
 
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new RuntimeException("Producto no encontrado"));

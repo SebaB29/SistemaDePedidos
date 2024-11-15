@@ -14,7 +14,7 @@ public interface IProductService {
 
     MessageResponseDTO editProduct(ProductRequestDTO productDTO, HttpServletRequest request);
 
-    MessageResponseDTO deleteProduct(ProductRequestDTO productDTO, HttpServletRequest request);
+    MessageResponseDTO deleteProduct(Long productId, HttpServletRequest request);
 
     List<ProductResponseDTO> getAllProducts();
 
