@@ -4,6 +4,7 @@ import com.ing_software_grupo8.sistema_de_pedidos.DTO.AuthResponseDTO;
 import com.ing_software_grupo8.sistema_de_pedidos.DTO.LoginRequestDTO;
 import com.ing_software_grupo8.sistema_de_pedidos.DTO.MessageResponseDTO;
 import com.ing_software_grupo8.sistema_de_pedidos.DTO.RegisterRequestDTO;
+import com.ing_software_grupo8.sistema_de_pedidos.DTO.RestorePasswordRequestDTO;
 import com.ing_software_grupo8.sistema_de_pedidos.response.GenericResponse;
 
 public interface IAuthService {
@@ -12,4 +13,5 @@ public interface IAuthService {
 
     GenericResponse<AuthResponseDTO> login(LoginRequestDTO request);
 
+    GenericResponse<MessageResponseDTO> restore(RestorePasswordRequestDTO request);
 }
