@@ -21,6 +21,8 @@ public interface IJwtService {
 
     boolean isTokenExpired(String token);
 
+    boolean isSameUser(User user, String token);
+
     boolean tokenHasRoleAdmin(HttpServletRequest request);
 
     String getTokenFromRequest(HttpServletRequest request);
