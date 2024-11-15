@@ -27,3 +27,16 @@ header {
   height: 200px;
   width: 200px;
 }
+
+.barra-superior-products {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.carrito {
+  background-color: rgb(179, 179, 179);
+  padding: .5rem;
+  margin: .5rem;
+  border-radius: .5rem;
+}

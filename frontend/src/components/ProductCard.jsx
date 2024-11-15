@@ -1,42 +1,23 @@
-import { useState } from 'react'
 import { helpHttp } from '../helpers/helpHttp'
-import Loader from './Loader'
 import Modal from './Modal'
 import { useModal } from '../hooks/useModal'
 import { EditProductForm } from './EditProductForm'
 import { EditProductStockForm } from './EditProductStockForm'
 
-const BUY_ENDPOINT = ''
 const DELETE_ENDPOINT = ''
 
-export const ProductCard = ({ product }) => {
-  const [loading, setLoading] = useState(false)
+export const ProductCard = ({ product, setCarrito, itemsCarrito }) => {
   const [isOpenEditProductModal, openEditProductModal, closeEditProductModal] = useModal(false)
   const [isOpenEditStockModal, openEditStockModal, closeEditStockModal] = useModal(false)
 
   const handleBuy = (e) => {
-    let amount
-    while (!/^(0|[1-9][0-9]*)$/.test(amount)) {
-      amount = window.prompt('Cuantos quieres comprar?')
-      if (amount === null) return
+    let quantity
+    while (!/^(0|[1-9][0-9]*)$/.test(quantity)) {
+      quantity = window.prompt('Cuantos quieres comprar?')
+      if (quantity === null) return
     }
-    setLoading(true)
-    helpHttp().post(
-      BUY_ENDPOINT,
-      {
-        body: {
-          id: product.id,
-          amount
-        },
-        headers: {
-          'Content-Type': 'Application/json',
-          Accept: 'application/json'
-        }
-      })
-      .then(res => {
-        setLoading(false)
-        window.alert(res)
-      })
+    setCarrito([...itemsCarrito, { productId: product.productId, quantity, name: product.name }])
+    e.target.style.display = 'none'
   }
 
   const handleDelete = () => {
@@ -62,10 +43,8 @@ export const ProductCard = ({ product }) => {
       <article className='product-card'>
         <h4>{product.name}</h4>
         <p>{product.quantity} {product.stockType}</p>
-        {loading
-          ? <Loader />
-          : <button onClick={handleBuy}>Comprar</button>}
-        {window.sessionStorage.getItem('admin') &&
+        <button onClick={handleBuy}>Agregar al carrito</button>
+        {window.sessionStorage.getItem('rol') === 'ADMIN' &&
           <>
             <button onClick={openEditProductModal}>Editar Producto</button>
             <button onClick={handleDelete}>Eliminar</button>

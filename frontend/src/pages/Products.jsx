@@ -7,12 +7,14 @@ import { ProductCard } from '../components/ProductCard'
 import { useNavigate } from 'react-router-dom'
 import { helpHttp } from '../helpers/helpHttp'
 import Message from '../components/Message'
+import { Carrito } from '../components/Carrito'
 
 const ENDPOINT = 'http://localhost:8080/product'
 
 export const Products = () => {
   const [loading, setLoading] = useState(false)
   const [response, setResponse] = useState({})
+  const [carrito, setCarrito] = useState([])
   const navigate = useNavigate()
 
   useEffect(() => {
@@ -51,10 +53,12 @@ export const Products = () => {
     <>
       <Header title='Productos' />
       <Main>
-        <ProductsForm setLoading={setLoading} setProducts={setResponse} />
-        {window.sessionStorage.getItem('admin')
-          ? <><button onClick={() => navigate('/create_product')}>Agregar Producto</button><hr /></>
-          : <></>}
+        <div className='barra-superior-products'>
+          <ProductsForm setLoading={setLoading} setProducts={setResponse} />
+          <Carrito items={carrito} />
+        </div>
+        {window.sessionStorage.getItem('rol') === 'ADMIN' &&
+          <><button onClick={() => navigate('/create_product')}>Agregar Producto</button><hr /></>}
         {loading && <Loader />}
         {response.status &&
           response.status === 'OK'
@@ -62,6 +66,8 @@ export const Products = () => {
             <ProductCard
               key={index}
               product={product}
+              itemsCarrito={carrito}
+              setCarrito={setCarrito}
             />
           ))
           : <Message bgColor='#ff0000' message={response.status + ': ' + response.error} />}
