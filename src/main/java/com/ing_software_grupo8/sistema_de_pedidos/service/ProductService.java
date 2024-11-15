@@ -1,8 +1,13 @@
 package com.ing_software_grupo8.sistema_de_pedidos.service;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
+import com.ing_software_grupo8.sistema_de_pedidos.entity.Attribute;
+import com.ing_software_grupo8.sistema_de_pedidos.entity.Product;
+import com.ing_software_grupo8.sistema_de_pedidos.entity.Stock;
+import com.ing_software_grupo8.sistema_de_pedidos.DTO.*;
+import com.ing_software_grupo8.sistema_de_pedidos.exception.ApiException;
+import com.ing_software_grupo8.sistema_de_pedidos.repository.IProductRepository;
+
+import jakarta.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -29,6 +34,9 @@ public class ProductService implements IProductService {
     @Autowired
     IStockService stockService;
 
+    @Autowired
+    IJwtService jwtService;
+
     private Stock createStock(AdminCreateProductRequestDTO productRequest) {
         Stock stock = new Stock();
         stock.setStockType(productRequest.getStockType());
@@ -37,7 +45,9 @@ public class ProductService implements IProductService {
         return stock;
     }
 
-    public MessageResponseDTO createProduct(AdminCreateProductRequestDTO productRequest) {
+    public MessageResponseDTO createProduct(AdminCreateProductRequestDTO productRequest, HttpServletRequest request) {
+        if (!jwtService.tokenHasRoleAdmin(request))
+            throw new ApiException(HttpStatus.UNAUTHORIZED, "No tienes autorizacion");
         Stock stock = createStock(productRequest);
         Product product = new Product();
         product.setName(productRequest.getProductName());
@@ -51,7 +61,6 @@ public class ProductService implements IProductService {
                     return attribute;
                 })
                 .collect(Collectors.toList());
-
         product.setAttributes(attributes);
         productRepository.save(product);
 
@@ -59,8 +68,9 @@ public class ProductService implements IProductService {
         return new MessageResponseDTO("Producto creado");
     }
 
-    public MessageResponseDTO editProduct(ProductRequestDTO productDTO) {
-
+    public MessageResponseDTO editProduct(ProductRequestDTO productDTO, HttpServletRequest request) {
+        if (!jwtService.tokenHasRoleAdmin(request))
+            throw new ApiException(HttpStatus.UNAUTHORIZED, "No tienes autorizacion");
         Product product = productRepository.findById(productDTO.getProductId())
                 .orElseThrow(() -> new ApiException(HttpStatus.BAD_REQUEST, "Producto no encontrado"));
 
@@ -83,9 +93,10 @@ public class ProductService implements IProductService {
         return new MessageResponseDTO("Producto editado correctamente");
     }
 
-    public MessageResponseDTO deleteProduct(Long productId) {
-
-        Product product = productRepository.findById(productId)
+    public MessageResponseDTO deleteProduct(ProductRequestDTO productDTO, HttpServletRequest request) {
+        if (!jwtService.tokenHasRoleAdmin(request))
+            throw new ApiException(HttpStatus.UNAUTHORIZED, "No tienes autorizacion");
+        Product product = productRepository.findById(productDTO.getProductId())
                 .orElseThrow(() -> new ApiException(HttpStatus.BAD_REQUEST, "Producto no encontrado"));
 
         productRepository.deleteById(productId);
@@ -99,20 +110,20 @@ public class ProductService implements IProductService {
                         product.getName(),
                         product.getAttributes().stream()
                                 .map(attribute -> new AttributeDTO(attribute.getDescription(), attribute.getValue()))
-                                .collect(Collectors.toList())
-                ))
+                                .collect(Collectors.toList())))
                 .collect(Collectors.toList());
     }
 
-    public Optional<Stock> getProductStock(Long productId){
+    public Optional<Stock> getProductStock(ProductRequestDTO productDTO) {
 
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new RuntimeException("Producto no encontrado"));
         return stockService.getStockFrom(product.getProductId());
     }
 
-    public MessageResponseDTO editStock(StockDTO stockDTO){
-
+    public MessageResponseDTO editStock(StockDTO stockDTO, HttpServletRequest request) {
+        if (!jwtService.tokenHasRoleAdmin(request))
+            throw new ApiException(HttpStatus.UNAUTHORIZED, "No tienes autorizacion");
         stockService.editStockFrom(stockDTO);
 
         return new MessageResponseDTO("Stock editado correctamente");

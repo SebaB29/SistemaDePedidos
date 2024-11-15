@@ -7,6 +7,8 @@ import com.ing_software_grupo8.sistema_de_pedidos.DTO.UserRequestDTO;
 import com.ing_software_grupo8.sistema_de_pedidos.entity.User;
 import com.ing_software_grupo8.sistema_de_pedidos.exception.ApiException;
 import com.ing_software_grupo8.sistema_de_pedidos.repository.IUserRepository;
+
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -26,9 +28,12 @@ public class UserService implements IUserService {
     @Autowired
     ObjectMapper objectMapper;
 
+    @Autowired
+    IJwtService jwtService;
+
     @Override
-    public MessageResponseDTO createUser(UserRequestDTO userRequestDTO) {
-        validateUser(userRequestDTO);
+    public MessageResponseDTO createUser(UserRequestDTO userRequestDTO, HttpServletRequest request) {
+        validateUser(userRequestDTO, request);
 
         User user = User.builder()
                 .username(userRequestDTO.getUsername())
@@ -45,14 +50,21 @@ public class UserService implements IUserService {
         return new MessageResponseDTO("El usuario se creo correctamente");
     }
 
-    private void validateUser(UserRequestDTO userRequestDTO) {
-        if (userRequestDTO.getUsername().isEmpty())
+    private void validateUser(UserRequestDTO userRequestDTO, HttpServletRequest request) {
+        if (!jwtService.tokenHasRoleAdmin(request))
+            throw new ApiException(HttpStatus.UNAUTHORIZED, "No tienes autorizacion");
+        if (userRequestDTO.getUserName().isEmpty())
             throw new IllegalArgumentException();
-        if(Objects.equals(userRequestDTO.getUsername(), "")) throw new IllegalArgumentException();
+        if (Objects.equals(userRequestDTO.getUserName(), ""))
+            throw new IllegalArgumentException();
     }
 
     @Override
-    public MessageResponseDTO editUser(UserRequestDTO userRequestDTO) throws JsonMappingException {
+    public MessageResponseDTO editUser(UserRequestDTO userRequestDTO, HttpServletRequest request)
+            throws JsonMappingException {
+        if (!jwtService.tokenHasRoleAdmin(request))
+            throw new ApiException(HttpStatus.UNAUTHORIZED, "No tienes autorizacion");
+
         User user = findUserByEmail(userRequestDTO.getEmail())
                 .orElseThrow(() -> new ApiException(HttpStatus.BAD_REQUEST, "Usuario no encontrado"));
 
