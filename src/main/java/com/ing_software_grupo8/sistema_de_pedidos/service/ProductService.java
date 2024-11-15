@@ -48,6 +48,7 @@ public class ProductService implements IProductService {
                     Attribute attribute = new Attribute();
                     attribute.setDescription(attributeDTO.getDescription());
                     attribute.setProduct(product);
+                    attribute.setValue(attributeDTO.getValue());
                     return attribute;
                 })
                 .collect(Collectors.toList());
