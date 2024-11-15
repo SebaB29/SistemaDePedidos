@@ -36,7 +36,7 @@ public class UserService implements IUserService {
         validateUser(userRequestDTO, request);
 
         User user = User.builder()
-                .username(userRequestDTO.getUsername())
+                .username(userRequestDTO.getUserName())
                 .lastName(userRequestDTO.getLastName())
                 .email(userRequestDTO.getEmail())
                 .password(userRequestDTO.getPassword())
@@ -83,8 +83,8 @@ public class UserService implements IUserService {
     }
 
     @Override
-    public Optional<User> getUser(String userEmail){
-        User user = findUserByEmail(userEmail)
+    public Optional<User> getUser(String userId){
+        User user = userRepository.findById(Long.valueOf(userId))
                 .orElseThrow(() -> new ApiException(HttpStatus.BAD_REQUEST, "Usuario no encontrado"));
 
 
