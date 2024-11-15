@@ -156,11 +156,9 @@ const RegisterForm = () => {
         <input type='submit' value='Registrarme' />
       </form>
       {loading && <Loader />}
-      {response
-        ? response.status === 'OK'
-          ? <Message bgColor='#198754' message={response.status + ': ' + response.data.message} />
-          : <Message bgColor='#cb0505' message={response.error} />
-        : <></>}
+      {response && response.status === 'OK'
+        ? <Message bgColor='#198754' message={response.status + ': ' + response.data.message} />
+        : response && <Message bgColor='#cb0505' message={response.error} />}
     </div>
   )
 }

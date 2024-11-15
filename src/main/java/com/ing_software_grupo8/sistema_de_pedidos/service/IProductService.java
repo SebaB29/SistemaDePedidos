@@ -20,5 +20,5 @@ public interface IProductService {
 
     MessageResponseDTO editStock(StockDTO stockDTO, HttpServletRequest request);
 
-    Optional<Stock> getProductStock(ProductRequestDTO productDTO);
+    Optional<Stock> getProductStock(Long productId);
 }

@@ -18,6 +18,14 @@ public class UserController {
     @Autowired
     private IUserService userService;
 
+    @GetMapping("/user/{userEmail}")
+    public ResponseEntity<GenericResponse> getUser(@PathVariable String userEmail) throws JsonMappingException {
+        return ResponseEntity.ok(GenericResponse.builder()
+                .data(userService.getUser(userEmail))
+                .status(HttpStatus.OK)
+                .build());
+    }
+
     @PutMapping("/user")
     public ResponseEntity<GenericResponse> editUser(@RequestBody UserRequestDTO userRequestDTO,
             HttpServletRequest request)

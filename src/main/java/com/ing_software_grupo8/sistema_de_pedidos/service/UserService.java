@@ -36,7 +36,7 @@ public class UserService implements IUserService {
         validateUser(userRequestDTO, request);
 
         User user = User.builder()
-                .username(userRequestDTO.getUserName())
+                .username(userRequestDTO.getUsername())
                 .lastName(userRequestDTO.getLastName())
                 .email(userRequestDTO.getEmail())
                 .password(userRequestDTO.getPassword())
@@ -74,12 +74,21 @@ public class UserService implements IUserService {
 
         userRepository.save(user);
 
-        return new MessageResponseDTO("Producto editado correctamente");
+        return new MessageResponseDTO("Usuario editado correctamente");
     }
 
     @Transactional
     public Optional<User> findUserByEmail(String email) {
         return userRepository.findUserByEmail(email);
+    }
+
+    @Override
+    public Optional<User> getUser(String userEmail){
+        User user = findUserByEmail(userEmail)
+                .orElseThrow(() -> new ApiException(HttpStatus.BAD_REQUEST, "Usuario no encontrado"));
+
+
+        return Optional.ofNullable(user);
     }
 
 }

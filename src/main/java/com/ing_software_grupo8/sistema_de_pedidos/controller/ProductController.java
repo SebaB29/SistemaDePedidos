@@ -65,9 +65,9 @@ public class ProductController {
     }
 
     @GetMapping("/product/{productId}/stock")
-    public ResponseEntity<GenericResponse> getStock(@RequestBody ProductRequestDTO productDTO) {
+    public ResponseEntity<GenericResponse> getStock(@PathVariable Long productId) {
         return ResponseEntity.ok(GenericResponse.builder()
-                .data(productService.getProductStock(productDTO))
+                .data(productService.getProductStock(productId))
                 .status(HttpStatus.OK)
                 .build());
     }

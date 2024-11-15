@@ -1,7 +1,7 @@
 --STOCK
-INSERT INTO Stock (stock_type, quantity) VALUES ( 'Unidad', 5.0);
+INSERT INTO Stock (stock_type, quantity) VALUES ( 'Unidades', 5.0);
 INSERT INTO Stock (stock_type, quantity) VALUES (  'KG', 40.5);
-INSERT INTO Stock (stock_type, quantity) VALUES ( 'Unidad', 1);
+INSERT INTO Stock (stock_type, quantity) VALUES ( 'Unidades', 1);
 
 --PRODUCT
 INSERT INTO Product (name, stock_id) VALUES ( 'Iphone',1);
