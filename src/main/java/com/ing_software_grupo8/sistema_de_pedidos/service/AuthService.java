@@ -15,12 +15,14 @@ import com.ing_software_grupo8.sistema_de_pedidos.DTO.AuthResponseDTO;
 import com.ing_software_grupo8.sistema_de_pedidos.DTO.LoginRequestDTO;
 import com.ing_software_grupo8.sistema_de_pedidos.DTO.MessageResponseDTO;
 import com.ing_software_grupo8.sistema_de_pedidos.DTO.RegisterRequestDTO;
+import com.ing_software_grupo8.sistema_de_pedidos.DTO.RestorePasswordRequestDTO;
 import com.ing_software_grupo8.sistema_de_pedidos.entity.User;
 import com.ing_software_grupo8.sistema_de_pedidos.exception.ApiException;
 import com.ing_software_grupo8.sistema_de_pedidos.repository.IUserRepository;
 import com.ing_software_grupo8.sistema_de_pedidos.response.GenericResponse;
 import com.ing_software_grupo8.sistema_de_pedidos.role.Role;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -82,5 +84,24 @@ public class AuthService implements IAuthService {
                 .status(HttpStatus.OK)
                 .data(new MessageResponseDTO("Registrado correctamente"))
                 .build();
+    }
+
+    public GenericResponse<MessageResponseDTO> restore(RestorePasswordRequestDTO request) {
+        
+        User user = findUserByEmail(request.getEmail())
+            .orElseThrow(() -> new ApiException(HttpStatus.BAD_REQUEST, "Usuario no encontrado"));
+
+        user.setPassword(passwordEncoder.encode(request.getNewPassword()));
+
+        userRepository.save(user);
+        return GenericResponse.<MessageResponseDTO>builder()
+                .status(HttpStatus.OK)
+                .data(new MessageResponseDTO("Registrado correctamente"))
+                .build();
+    }
+    
+    @Transactional
+    public Optional<User> findUserByEmail(String email) {
+        return userRepository.findUserByEmail(email);
     }
 }

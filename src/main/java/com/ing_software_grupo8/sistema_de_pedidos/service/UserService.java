@@ -1,5 +1,12 @@
 package com.ing_software_grupo8.sistema_de_pedidos.service;
 
+import java.util.Objects;
+import java.util.Optional;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
+
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ing_software_grupo8.sistema_de_pedidos.DTO.MessageResponseDTO;
@@ -10,14 +17,6 @@ import com.ing_software_grupo8.sistema_de_pedidos.repository.IUserRepository;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Service;
-
-import java.util.Optional;
-
-import java.util.Map;
-import java.util.Objects;
 
 @Service
 public class UserService implements IUserService {
@@ -29,7 +28,7 @@ public class UserService implements IUserService {
     ObjectMapper objectMapper;
 
     @Autowired
-    IJwtService jwtService;
+    IJwtService jwtService;    
 
     @Override
     public MessageResponseDTO createUser(UserRequestDTO userRequestDTO, HttpServletRequest request) {
@@ -62,15 +61,19 @@ public class UserService implements IUserService {
     @Override
     public MessageResponseDTO editUser(UserRequestDTO userRequestDTO, HttpServletRequest request)
             throws JsonMappingException {
-        if (!jwtService.tokenHasRoleAdmin(request))
-            throw new ApiException(HttpStatus.UNAUTHORIZED, "No tienes autorizacion");
-
+                
         User user = findUserByEmail(userRequestDTO.getEmail())
-                .orElseThrow(() -> new ApiException(HttpStatus.BAD_REQUEST, "Usuario no encontrado"));
-
-        Map<String, Object> userUpdates = objectMapper.convertValue(userRequestDTO, Map.class);
-
-        objectMapper.updateValue(user, userUpdates);
+            .orElseThrow(() -> new ApiException(HttpStatus.BAD_REQUEST, "Usuario no encontrado"));
+        if (!jwtService.isSameUser(user, jwtService.getTokenFromRequest(request)))
+            throw new ApiException(HttpStatus.UNAUTHORIZED, "No tienes autorizacion");
+            
+        user.setUsername(userRequestDTO.getUserName());
+        user.setLastName(userRequestDTO.getLastName());
+        user.setEmail(userRequestDTO.getEmail());
+        user.setAge(userRequestDTO.getAge());
+        user.setPhoto(userRequestDTO.getPhoto());
+        user.setGender(userRequestDTO.getGender());
+        user.setAddress(userRequestDTO.getAddress());
 
         userRepository.save(user);
 

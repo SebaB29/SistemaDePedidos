@@ -28,4 +28,5 @@ public interface IJwtService {
     String getTokenFromRequest(HttpServletRequest request);
 
     <T> T getClaim(String token, Function<Claims, T> claimsResolver);
+
 }
