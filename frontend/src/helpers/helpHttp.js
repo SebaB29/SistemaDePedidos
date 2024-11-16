@@ -4,6 +4,13 @@ export const helpHttp = () => {
       accept: 'application/json'
     }
 
+    // if (window.sessionStorage.getItem('access_token')) {
+    //   defaultHeader = {
+    //     ...defaultHeader,
+    //     Authorization: `Bearer ${window.sessionStorage.getItem('access_token')}`
+    //   }
+    // }
+
     options.headers = options.headers ? { ...options.headers, ...defaultHeader } : defaultHeader
 
     options.body = JSON.stringify(options.body) || false

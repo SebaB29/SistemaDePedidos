@@ -13,12 +13,21 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
+@RequestMapping("/user")
 public class UserController {
 
     @Autowired
     private IUserService userService;
 
-    @PutMapping("/user")
+    @GetMapping("/user/{userId}")
+    public ResponseEntity<GenericResponse> getUser(@PathVariable String userId) throws JsonMappingException {
+        return ResponseEntity.ok(GenericResponse.builder()
+                .data(userService.getUser(userId))
+                .status(HttpStatus.OK)
+                .build());
+    }
+
+    @PutMapping
     public ResponseEntity<GenericResponse> editUser(@RequestBody UserRequestDTO userRequestDTO,
             HttpServletRequest request)
             throws JsonMappingException {

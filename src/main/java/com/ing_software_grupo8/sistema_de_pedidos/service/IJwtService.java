@@ -25,7 +25,10 @@ public interface IJwtService {
 
     boolean tokenHasRoleAdmin(HttpServletRequest request);
 
+    boolean tokenHasRoleUser(HttpServletRequest request);
+
     String getTokenFromRequest(HttpServletRequest request);
 
     <T> T getClaim(String token, Function<Claims, T> claimsResolver);
+
 }
