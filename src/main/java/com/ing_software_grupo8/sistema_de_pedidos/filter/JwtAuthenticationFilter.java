@@ -7,6 +7,10 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 import com.ing_software_grupo8.sistema_de_pedidos.service.IJwtService;
 
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.MalformedJwtException;
+import io.jsonwebtoken.UnsupportedJwtException;
+import io.jsonwebtoken.security.SignatureException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -45,6 +49,17 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 return;
             }
             filterChain.doFilter(request, response);
+        }
+
+        catch (SignatureException e) {
+            exception.write(response, HttpStatus.UNAUTHORIZED, "El token es invalido");
+        } catch (MalformedJwtException e) {
+            exception.write(response, HttpStatus.UNAUTHORIZED, "El token esta mal formado");
+        } catch (UnsupportedJwtException e) {
+            exception.write(response, HttpStatus.UNAUTHORIZED,
+                    "El algoritmo de firma del token no es soportado por el sistema");
+        } catch (ExpiredJwtException e) {
+            exception.write(response, HttpStatus.FORBIDDEN, "El token expiro");
         } catch (Exception e) {
             exception.write(response, HttpStatus.INTERNAL_SERVER_ERROR, "Ocurrio un error inesperado");
         }

@@ -17,7 +17,6 @@ import com.ing_software_grupo8.sistema_de_pedidos.entity.User;
 import com.ing_software_grupo8.sistema_de_pedidos.role.Role;
 
 import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
@@ -115,11 +114,7 @@ public class JwtService implements IJwtService {
 
     @Override
     public boolean isTokenExpired(String token) {
-        try {
-            return getExpiration(token).before(new Date());
-        } catch (ExpiredJwtException e) {
-            return true;
-        }
+        return getExpiration(token).before(new Date());
     }
 
     @Override
