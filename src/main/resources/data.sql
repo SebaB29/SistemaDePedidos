@@ -17,12 +17,13 @@ INSERT INTO users (username, last_name, email, password, age, photo, gender, add
 VALUES ('nombre', 'apellido', 'algo@fiuba.com', 'pass123', 25, 'asdasd', 'male', 'av123', 'USER');
 
 --ORDER STATE
-INSERT INTO order_state(state_code, state_desc) VALUES(1, 'Creada');
-INSERT INTO order_state(state_code, state_desc) VALUES(2, 'En proceso');
-INSERT INTO order_state(state_code, state_desc) VALUES(3, 'Enviado');
+INSERT INTO order_state(state_code, state_desc) VALUES(0, 'Confirmado');
+INSERT INTO order_state(state_code, state_desc) VALUES(1, 'En proceso');
+INSERT INTO order_state(state_code, state_desc) VALUES(2, 'Enviado');
+INSERT INTO order_state(state_code, state_desc) VALUES(3, 'Cancelado');
 
 --ORDER
-INSERT INTO customer_order(user_id, order_state_id, order_date, confirmation_date) VALUES (1, 1, '12:30:00', '12:45:00');
+INSERT INTO customer_order(user_id, order_state_id, order_date) VALUES (1, 1, '2024-11-14T14:35:10.123');
 
 --ORDER DETAIL
 INSERT INTO product_order(order_id, product_id, order_quantity) VALUES(1, 1, 5.0);
