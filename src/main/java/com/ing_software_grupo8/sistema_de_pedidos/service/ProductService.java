@@ -100,7 +100,7 @@ public class ProductService implements IProductService {
     public MessageResponseDTO deleteProduct(Long productId, HttpServletRequest request) {
         if (!jwtService.tokenHasRoleAdmin(request))
             throw new ApiException(HttpStatus.UNAUTHORIZED, "No tienes autorizacion");
-        Product product = productRepository.findById(productId)
+        productRepository.findById(productId)
                 .orElseThrow(() -> new ApiException(HttpStatus.BAD_REQUEST, "Producto no encontrado"));
 
         List<ProductOrder> op = productOrderRepository.findByProduct_ProductId(productId);

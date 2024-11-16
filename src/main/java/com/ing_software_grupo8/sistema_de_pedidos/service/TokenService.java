@@ -5,7 +5,6 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.stereotype.Service;
 
@@ -26,9 +25,6 @@ public class TokenService implements ITokenService {
 
     @Autowired
     IJwtService jwtService;
-
-    @Autowired
-    AuthenticationManager authenticationManager;
 
     @Override
     public GenericResponse<AuthResponseDTO> refreshToken(TokenRequestDTO tokenRequestDTO, HttpServletRequest request) {

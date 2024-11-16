@@ -4,9 +4,6 @@ import java.util.Optional;
 
 import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -32,21 +29,23 @@ public class AuthService implements IAuthService {
     private final IBasicService basicService;
     private final IJwtService jwtService;
     private final PasswordEncoder passwordEncoder;
-    private final AuthenticationManager authenticationManager;
     private final IUserRepository userRepository;
 
     public GenericResponse<AuthResponseDTO> login(HttpServletRequest request) {
         try {
             String email = basicService.getEmailFromToken(request);
             String password = basicService.getPasswordFromRequest(request);
-            Authentication authentication = authenticationManager
-                    .authenticate(new UsernamePasswordAuthenticationToken(email, password));
-            User user = (User) authentication.getPrincipal();
-            String accessToken = jwtService.createAccessToken(user);
-            String refreshToken = jwtService.createRefreshToken(user);
-            user.setRefreshToken(refreshToken);
+            Optional<User> user = userRepository.findUserByEmail(email);
+            if (!user.isPresent())
+                throw new ApiException(HttpStatus.NOT_FOUND, "El usuario no esta registrado");
+            User userFound = user.get();
+            if (!passwordEncoder.matches(password, userFound.getPassword()))
+                throw new ApiException(HttpStatus.UNAUTHORIZED, "Credenciales no validas");
+            String accessToken = jwtService.createAccessToken(userFound);
+            String refreshToken = jwtService.createRefreshToken(userFound);
+            userFound.setRefreshToken(refreshToken);
             try {
-                userRepository.save(user);
+                userRepository.save(userFound);
             } catch (DataAccessException e) {
                 throw new ApiException(HttpStatus.INTERNAL_SERVER_ERROR, "Usuario no se pudo guardar.");
             }
@@ -92,7 +91,7 @@ public class AuthService implements IAuthService {
     public GenericResponse<MessageResponseDTO> restore(RestorePasswordRequestDTO request) {
 
         User user = findUserByEmail(request.getEmail())
-            .orElseThrow(() -> new ApiException(HttpStatus.BAD_REQUEST, "Usuario no encontrado"));
+                .orElseThrow(() -> new ApiException(HttpStatus.BAD_REQUEST, "Usuario no encontrado"));
 
         user.setPassword(passwordEncoder.encode(request.getNewPassword()));
 
