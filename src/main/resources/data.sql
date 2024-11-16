@@ -15,6 +15,8 @@ INSERT INTO Attribute (product_id, description, attribute_value) VALUES (1,'Mode
 --USER
 INSERT INTO users (username, last_name, email, password, age, photo, gender, address, role)
 VALUES ('nombre', 'apellido', 'algo@fiuba.com', 'pass123', 25, 'asdasd', 'male', 'av123', 'USER');
+INSERT INTO users (username, last_name, email, password, age, photo, gender, address, role)
+VALUES ('UserAdmin', 'AdminLastName', 'admin@gmail.com', 'pass123', 25, 'https://photo.png/', 'male', 'calle 123', 'ADMIN');
 
 --ORDER STATE
 INSERT INTO order_state(state_code, state_desc) VALUES(0, 'Confirmado');
