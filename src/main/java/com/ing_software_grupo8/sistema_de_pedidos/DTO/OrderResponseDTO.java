@@ -18,9 +18,6 @@ public class OrderResponseDTO {
     @JsonProperty(value = "creation_date")
     private String creationDate;
 
-    @JsonProperty(value = "confirmation_date")
-    private String confimationDate;
-
     @JsonProperty(value = "product_list")
     private List<ProductResponseDTO> productDTOList;
 }
