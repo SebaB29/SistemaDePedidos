@@ -36,29 +36,25 @@ public class AuthService implements IAuthService {
     private final IUserRepository userRepository;
 
     public GenericResponse<AuthResponseDTO> login(HttpServletRequest request) {
+        String email = basicService.getEmailFromToken(request);
+        String password = basicService.getPasswordFromRequest(request);
+        User user = authenticate(email, password);
+        String accessToken = jwtService.createAccessToken(user);
+        String refreshToken = jwtService.createRefreshToken(user);
+        user.setRefreshToken(refreshToken);
         try {
-            String email = basicService.getEmailFromToken(request);
-            String password = basicService.getPasswordFromRequest(request);
-            Authentication authentication = authenticationManager
-                    .authenticate(new UsernamePasswordAuthenticationToken(email, password));
-            User user = (User) authentication.getPrincipal();
-            String accessToken = jwtService.createAccessToken(user);
-            String refreshToken = jwtService.createRefreshToken(user);
-            user.setRefreshToken(refreshToken);
-            try {
-                userRepository.save(user);
-            } catch (DataAccessException e) {
-                throw new ApiException(HttpStatus.INTERNAL_SERVER_ERROR, "Usuario no se pudo guardar.");
-            }
-            AuthResponseDTO authResponse = AuthResponseDTO.builder().accessToken(accessToken).refreshToken(refreshToken)
-                    .build();
-            return GenericResponse.<AuthResponseDTO>builder()
-                    .status(HttpStatus.OK)
-                    .data(authResponse)
-                    .build();
-        } catch (AuthenticationException e) {
-            throw new ApiException(HttpStatus.UNAUTHORIZED, "Credenciales no validas.");
+            userRepository.save(user);
+        } catch (DataAccessException e) {
+            throw new ApiException(HttpStatus.INTERNAL_SERVER_ERROR, "Usuario no se pudo guardar.");
         }
+        AuthResponseDTO authResponse = AuthResponseDTO.builder()
+                                                      .accessToken(accessToken)
+                                                      .refreshToken(refreshToken)
+                                                      .build();
+        return GenericResponse.<AuthResponseDTO>builder()
+                .status(HttpStatus.OK)
+                .data(authResponse)
+                .build();
     }
 
     public GenericResponse<MessageResponseDTO> register(RegisterRequestDTO request) {
@@ -106,5 +102,16 @@ public class AuthService implements IAuthService {
     @Transactional
     public Optional<User> findUserByEmail(String email) {
         return userRepository.findUserByEmail(email);
+    }
+
+    private User authenticate(String userEmail, String password) {
+        User user = userRepository.findUserByEmail(userEmail)
+                .orElseThrow(() -> new ApiException(HttpStatus.UNAUTHORIZED, "Usuario o contraseña invalidos"));
+
+        if (!user.getPassword().equals(password)) {
+            throw new ApiException(HttpStatus.UNAUTHORIZED, "Usuario o contraseña invalidos");
+        }
+
+        return user;
     }
 }
