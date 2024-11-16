@@ -7,6 +7,7 @@ import com.ing_software_grupo8.sistema_de_pedidos.repository.IOrderRepository;
 import com.ing_software_grupo8.sistema_de_pedidos.repository.IOrderStateRepository;
 import com.ing_software_grupo8.sistema_de_pedidos.repository.IProductRepository;
 import com.ing_software_grupo8.sistema_de_pedidos.repository.IUserRepository;
+import com.ing_software_grupo8.sistema_de_pedidos.rules.RuleManager;
 import com.ing_software_grupo8.sistema_de_pedidos.utils.OrderStateEnum;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -34,6 +35,9 @@ public class OrderService implements IOrderService{
 
     @Autowired
     IOrderStateRepository orderStateRepository;
+
+    @Autowired
+    RuleManager ruleManager;
 
     @Autowired
     IJwtService jwtService;
@@ -98,6 +102,10 @@ public class OrderService implements IOrderService{
             productOrderList.add(productOrder);
         }
         order.setProductOrder(productOrderList);
+
+        if (!ruleManager.validateOrder(order)) {
+            throw new ApiException(HttpStatus.BAD_REQUEST, "La orden no cumple con las reglas definidas.");
+        }
 
         orderRepository.save(order);
 
