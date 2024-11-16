@@ -12,7 +12,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.ing_software_grupo8.sistema_de_pedidos.DTO.AuthResponseDTO;
-import com.ing_software_grupo8.sistema_de_pedidos.DTO.LoginRequestDTO;
 import com.ing_software_grupo8.sistema_de_pedidos.DTO.MessageResponseDTO;
 import com.ing_software_grupo8.sistema_de_pedidos.DTO.RegisterRequestDTO;
 import com.ing_software_grupo8.sistema_de_pedidos.DTO.RestorePasswordRequestDTO;
@@ -22,6 +21,7 @@ import com.ing_software_grupo8.sistema_de_pedidos.repository.IUserRepository;
 import com.ing_software_grupo8.sistema_de_pedidos.response.GenericResponse;
 import com.ing_software_grupo8.sistema_de_pedidos.role.Role;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 
@@ -29,15 +29,18 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class AuthService implements IAuthService {
 
+    private final IBasicService basicService;
     private final IJwtService jwtService;
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
     private final IUserRepository userRepository;
 
-    public GenericResponse<AuthResponseDTO> login(LoginRequestDTO request) {
+    public GenericResponse<AuthResponseDTO> login(HttpServletRequest request) {
         try {
+            String email = basicService.getEmailFromToken(request);
+            String password = basicService.getPasswordFromRequest(request);
             Authentication authentication = authenticationManager
-                    .authenticate(new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
+                    .authenticate(new UsernamePasswordAuthenticationToken(email, password));
             User user = (User) authentication.getPrincipal();
             String accessToken = jwtService.createAccessToken(user);
             String refreshToken = jwtService.createRefreshToken(user);
@@ -87,7 +90,7 @@ public class AuthService implements IAuthService {
     }
 
     public GenericResponse<MessageResponseDTO> restore(RestorePasswordRequestDTO request) {
-        
+
         User user = findUserByEmail(request.getEmail())
             .orElseThrow(() -> new ApiException(HttpStatus.BAD_REQUEST, "Usuario no encontrado"));
 
@@ -99,7 +102,7 @@ public class AuthService implements IAuthService {
                 .data(new MessageResponseDTO("Registrado correctamente"))
                 .build();
     }
-    
+
     @Transactional
     public Optional<User> findUserByEmail(String email) {
         return userRepository.findUserByEmail(email);

@@ -2,9 +2,10 @@ package com.ing_software_grupo8.sistema_de_pedidos.service;
 
 import com.ing_software_grupo8.sistema_de_pedidos.entity.Attribute;
 import com.ing_software_grupo8.sistema_de_pedidos.entity.Product;
+import com.ing_software_grupo8.sistema_de_pedidos.entity.ProductOrder;
 import com.ing_software_grupo8.sistema_de_pedidos.entity.Stock;
-import com.ing_software_grupo8.sistema_de_pedidos.DTO.*;
 import com.ing_software_grupo8.sistema_de_pedidos.exception.ApiException;
+import com.ing_software_grupo8.sistema_de_pedidos.repository.IProductOrderRepository;
 import com.ing_software_grupo8.sistema_de_pedidos.repository.IProductRepository;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -19,11 +20,6 @@ import com.ing_software_grupo8.sistema_de_pedidos.DTO.MessageResponseDTO;
 import com.ing_software_grupo8.sistema_de_pedidos.DTO.ProductRequestDTO;
 import com.ing_software_grupo8.sistema_de_pedidos.DTO.ProductResponseDTO;
 import com.ing_software_grupo8.sistema_de_pedidos.DTO.StockDTO;
-import com.ing_software_grupo8.sistema_de_pedidos.entity.Attribute;
-import com.ing_software_grupo8.sistema_de_pedidos.entity.Product;
-import com.ing_software_grupo8.sistema_de_pedidos.entity.Stock;
-import com.ing_software_grupo8.sistema_de_pedidos.exception.ApiException;
-import com.ing_software_grupo8.sistema_de_pedidos.repository.IProductRepository;
 
 import java.util.List;
 import java.util.Optional;
@@ -33,7 +29,10 @@ import java.util.stream.Collectors;
 public class ProductService implements IProductService {
 
     @Autowired
-    private IProductRepository productRepository;
+    IProductRepository productRepository;
+
+    @Autowired
+    IProductOrderRepository productOrderRepository;
 
     @Autowired
     IStockService stockService;
@@ -53,6 +52,9 @@ public class ProductService implements IProductService {
         if (!jwtService.tokenHasRoleAdmin(request))
             throw new ApiException(HttpStatus.UNAUTHORIZED, "No tienes autorizacion");
         Stock stock = createStock(productRequest);
+        List<Product> productsSameName = productRepository.findAllByName(productRequest.getProductName());
+        if (!productsSameName.isEmpty())
+            throw new ApiException(HttpStatus.CONFLICT, "Ya existe este producto");
         Product product = new Product();
         product.setName(productRequest.getProductName());
         product.setStock(stock);
@@ -67,8 +69,6 @@ public class ProductService implements IProductService {
                 .collect(Collectors.toList());
         product.setAttributes(attributes);
         productRepository.save(product);
-
-
         return new MessageResponseDTO("Producto creado");
     }
 
@@ -103,6 +103,11 @@ public class ProductService implements IProductService {
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new ApiException(HttpStatus.BAD_REQUEST, "Producto no encontrado"));
 
+        List<ProductOrder> op = productOrderRepository.findByProduct_ProductId(productId);
+        if (!op.isEmpty()) {
+            throw new ApiException(HttpStatus.CONFLICT,
+                    "El producto no puede ser eliminado, ya que pertenece a una orden");
+        }
         productRepository.deleteById(productId);
         return new MessageResponseDTO("Producto eliminado correctamente");
     }
