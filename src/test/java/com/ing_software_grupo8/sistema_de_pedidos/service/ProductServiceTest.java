@@ -117,7 +117,7 @@ public class ProductServiceTest {
         when(!jwtService.tokenHasRoleAdmin(servletRequest)).thenReturn(true);
         when(productRepository.findById(1L)).thenReturn(Optional.of(product));
 
-        MessageResponseDTO response = productService.deleteProduct(request, servletRequest);
+        MessageResponseDTO response = productService.deleteProduct(request.getProductId(), servletRequest);
 
         assertEquals("Producto eliminado correctamente", response.getMessage());
         verify(productRepository, times(1)).delete(product);
@@ -132,7 +132,7 @@ public class ProductServiceTest {
         when(!jwtService.tokenHasRoleAdmin(servletRequest)).thenReturn(true);
         when(productRepository.findById(999L)).thenReturn(Optional.empty());
 
-        ApiException exception = assertThrows(ApiException.class, () -> productService.deleteProduct(request, servletRequest));
+        ApiException exception = assertThrows(ApiException.class, () -> productService.deleteProduct(request.getProductId(), servletRequest));
         assertEquals(HttpStatus.BAD_REQUEST, exception.getStatus());
         assertEquals("Producto no encontrado", exception.getMessage());
     }
@@ -178,7 +178,7 @@ public class ProductServiceTest {
         when(productRepository.findById(1L)).thenReturn(Optional.of(product));
         when(stockService.getStockFrom(1L)).thenReturn(Optional.of(stock));
 
-        Optional<Stock> result = productService.getProductStock(request);
+        Optional<Stock> result = productService.getProductStock(request.getProductId());
 
         assertTrue(result.isPresent());
         assertEquals(stock, result.get());

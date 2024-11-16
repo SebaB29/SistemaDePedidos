@@ -11,4 +11,6 @@ public interface IOrderService {
     MessageResponseDTO create(OrderRequestDTO orderRequestDTO, HttpServletRequest request);
 
     OrderListDTO getAll(Long userId);
+
+    MessageResponseDTO updateState(OrderRequestDTO orderRequestDTO, HttpServletRequest httpServletRequest);
 }

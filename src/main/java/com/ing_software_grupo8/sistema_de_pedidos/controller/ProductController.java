@@ -55,19 +55,19 @@ public class ProductController {
                 .build());
     }
 
-    @DeleteMapping("/product")
-    public ResponseEntity<GenericResponse> deleteProduct(@RequestBody ProductRequestDTO productDTO,
+    @DeleteMapping("/product/{productId}")
+    public ResponseEntity<GenericResponse> deleteProduct(@PathVariable Long productId,
             HttpServletRequest request) {
         return ResponseEntity.ok(GenericResponse.builder()
-                .data(productService.deleteProduct(productDTO, request))
+                .data(productService.deleteProduct(productId, request))
                 .status(HttpStatus.OK)
                 .build());
     }
 
     @GetMapping("/product/{productId}/stock")
-    public ResponseEntity<GenericResponse> getStock(@RequestBody ProductRequestDTO productDTO) {
+    public ResponseEntity<GenericResponse> getStock(@PathVariable Long productId) {
         return ResponseEntity.ok(GenericResponse.builder()
-                .data(productService.getProductStock(productDTO))
+                .data(productService.getProductStock(productId))
                 .status(HttpStatus.OK)
                 .build());
     }
