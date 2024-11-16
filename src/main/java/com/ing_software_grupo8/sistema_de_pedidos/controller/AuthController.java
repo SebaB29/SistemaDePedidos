@@ -9,13 +9,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.ing_software_grupo8.sistema_de_pedidos.DTO.AuthResponseDTO;
-import com.ing_software_grupo8.sistema_de_pedidos.DTO.LoginRequestDTO;
 import com.ing_software_grupo8.sistema_de_pedidos.DTO.MessageResponseDTO;
 import com.ing_software_grupo8.sistema_de_pedidos.DTO.RegisterRequestDTO;
 import com.ing_software_grupo8.sistema_de_pedidos.DTO.RestorePasswordRequestDTO;
 import com.ing_software_grupo8.sistema_de_pedidos.response.GenericResponse;
 import com.ing_software_grupo8.sistema_de_pedidos.service.IAuthService;
 
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -26,7 +26,7 @@ public class AuthController {
     private final IAuthService authService;
 
     @PostMapping(value = "login")
-    public ResponseEntity<GenericResponse<AuthResponseDTO>> login(@RequestBody LoginRequestDTO request) {
+    public ResponseEntity<GenericResponse<AuthResponseDTO>> login(HttpServletRequest request) {
         return ResponseEntity.ok(authService.login(request));
     }
 
