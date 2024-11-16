@@ -19,7 +19,7 @@ import com.ing_software_grupo8.sistema_de_pedidos.entity.User;
 import com.ing_software_grupo8.sistema_de_pedidos.exception.ApiException;
 import com.ing_software_grupo8.sistema_de_pedidos.repository.IUserRepository;
 import com.ing_software_grupo8.sistema_de_pedidos.response.GenericResponse;
-import com.ing_software_grupo8.sistema_de_pedidos.role.Role;
+import com.ing_software_grupo8.sistema_de_pedidos.utils.RoleEnum;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
@@ -71,7 +71,7 @@ public class AuthService implements IAuthService {
                 .age(request.getAge())
                 .gender(request.getGender())
                 .address(request.getAddress())
-                .role(Role.USER)
+                .role(RoleEnum.USER)
                 .build();
 
         try {
