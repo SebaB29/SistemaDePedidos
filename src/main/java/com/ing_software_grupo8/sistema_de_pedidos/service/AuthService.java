@@ -4,7 +4,6 @@ import java.util.Optional;
 
 import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -34,6 +33,8 @@ public class AuthService implements IAuthService {
     public GenericResponse<AuthResponseDTO> login(HttpServletRequest request) {
         String email = basicService.getEmailFromToken(request);
         String password = basicService.getPasswordFromRequest(request);
+        System.out.println(email);
+        System.out.println(password);
         User user = authenticate(email, password);
         String accessToken = jwtService.createAccessToken(user);
         String refreshToken = jwtService.createRefreshToken(user);
@@ -104,7 +105,7 @@ public class AuthService implements IAuthService {
         User user = userRepository.findUserByEmail(userEmail)
                 .orElseThrow(() -> new ApiException(HttpStatus.UNAUTHORIZED, "Usuario o contraseña invalidos"));
 
-        if (!user.getPassword().equals(password)) {
+        if (!passwordEncoder.matches(password, user.getPassword())) {
             throw new ApiException(HttpStatus.UNAUTHORIZED, "Usuario o contraseña invalidos");
         }
 
