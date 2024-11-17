@@ -14,146 +14,175 @@ import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
-public class OrderService implements IOrderService{
+public class OrderService implements IOrderService {
 
     @Autowired
-    IOrderRepository orderRepository;
+    private IOrderRepository orderRepository;
 
     @Autowired
-    IUserRepository userRepository;
+    private IUserRepository userRepository;
 
     @Autowired
-    IProductRepository productRepository;
+    private IProductRepository productRepository;
 
     @Autowired
-    IOrderStateRepository orderStateRepository;
+    private IOrderStateRepository orderStateRepository;
 
     @Autowired
-    IJwtService jwtService;
-    public MessageResponseDTO updateState(OrderRequestDTO orderRequestDTO, HttpServletRequest httpServletRequest){
-        Order order = orderRepository.findById(orderRequestDTO.getOrderId())
-                .orElseThrow(() -> new ApiException(HttpStatus.BAD_REQUEST, "La orden no existe."));
-        OrderState orderState = orderStateRepository.findByStateCode(orderRequestDTO.getOrderState());
-        if(orderState == null) throw new ApiException(HttpStatus.BAD_REQUEST, "El estado a modificar es invalido.");
-        if(orderState.getStateCode() == OrderStateEnum.CANCELADO.ordinal()) {
-            cancelOrder(order);
-        }else{
-            validateChangeState(httpServletRequest);
-        }
-        order.setOrderState(orderState);
-        orderRepository.save(order);
-        return new MessageResponseDTO("Se actualizo el estado de la orden a: " + order.getOrderState().getStateDesc());
-    }
+    private IJwtService jwtService;
 
-    private List<ProductOrder> cancelOrder(Order order){
-        validateCancelOrder(order);
-        List<ProductOrder> productOrders = order.getProductOrder();
-        productOrders.forEach(x -> x.getProduct().getStock().addStock(x.getOrderQuantity()));
-        return productOrders;
-    }
-
-    public OrderListDTO getAll(Long userId) {
-        Optional<User> user = userRepository.findById(userId);
-        if (!user.isPresent()) {
-            throw new ApiException(HttpStatus.BAD_REQUEST, "Usuario no encontrado.");
-        }
-        List<Order> orders = orderRepository.findAllByUser(user.get());
-
-        List<OrderResponseDTO> orderResponseDTOList = new ArrayList<>();
-        for (Order order : orders) {
-            OrderResponseDTO orderResponseDTO = new OrderResponseDTO();
-            orderResponseDTO.setOrderState(order.getOrderState().getStateDesc());
-            orderResponseDTO.setCreationDate(order.getOrderDate().toString());
-            orderResponseDTO.setProductDTOList(getOrderProductListDTO(order));
-            orderResponseDTOList.add(orderResponseDTO);
-        }
-
-        return new OrderListDTO(orderResponseDTOList);
-    }
-
+    @Override
     public MessageResponseDTO create(OrderRequestDTO orderRequestDTO, HttpServletRequest request) {
-        validateOrder(orderRequestDTO, request);
+        validateOrderProducts(orderRequestDTO.getProductOrderDTOList());
 
         Order order = new Order();
-
-        order.setUser(userRepository.findById(orderRequestDTO.getUserId()).get());
+        order.setUser(findUserById(orderRequestDTO.getUserId()));
         order.setOrderDate(LocalDateTime.now());
-        order.setOrderState(orderStateRepository.findByStateCode(OrderStateEnum.CONFIRMADO.ordinal()));
-        List<ProductOrder> productOrderList = new ArrayList<>();
-        for(ProductOrderDTO productOrderDTO : orderRequestDTO.getProductOrderDTOList()){
-            Product product = productRepository.findById(productOrderDTO.getProductId()).get();
-            validateStock(product, productOrderDTO.getQuantity());
-            discountStock(product, productOrderDTO.getQuantity());
-            ProductOrder productOrder = new ProductOrder();
-            productOrder.setOrderQuantity(productOrderDTO.getQuantity());
-            productOrder.setProduct(product);
-            productOrder.setOrder(order);
-            productOrderList.add(productOrder);
-        }
-        order.setProductOrder(productOrderList);
+        order.setOrderState(findOrderStateByCode(OrderStateEnum.CONFIRMADO.ordinal()));
 
+        List<ProductOrder> productOrders = orderRequestDTO.getProductOrderDTOList().stream()
+                .map(dto -> createProductOrder(dto, order))
+                .collect(Collectors.toList());
+
+        order.setProductOrder(productOrders);
         orderRepository.save(order);
 
         return new MessageResponseDTO("Orden creada correctamente");
     }
 
-    private List<ProductResponseDTO> getOrderProductListDTO(Order order) {
-        List<ProductResponseDTO> productResponseDTOList = new ArrayList<>();
-        for (ProductOrder productOrder : order.getProductOrder()) {
-            ProductResponseDTO productResponseDTO = new ProductResponseDTO();
-            productResponseDTO.setQuantity(productOrder.getOrderQuantity());
-            productResponseDTO.setName(productOrder.getProduct().getName());
-            List<AttributeDTO> attributeDTOList = new ArrayList<>();
-            for (Attribute attribute : productOrder.getProduct().getAttributes()) {
-                AttributeDTO attributeDTO = new AttributeDTO();
-                attributeDTO.setDescription(attribute.getDescription());
-                attributeDTO.setValue(attribute.getValue());
-                attributeDTOList.add(attributeDTO);
+    @Override
+    public MessageResponseDTO updateState(OrderRequestDTO orderRequestDTO, HttpServletRequest request) {
+        Order order = findOrderById(orderRequestDTO.getOrderId());
+        OrderState orderState = findOrderStateByCode(orderRequestDTO.getOrderState());
+
+        if (orderState.getStateCode() == OrderStateEnum.CANCELADO.ordinal()) {
+            cancelOrder(order);
+        } else {
+            validateAdminAuthorization(request);
+        }
+
+        order.setOrderState(orderState);
+        orderRepository.save(order);
+
+        return new MessageResponseDTO("Se actualizó el estado de la orden a: " + order.getOrderState().getStateDesc());
+    }
+
+    @Override
+    public OrderListDTO getAll(Long userId) {
+        User user = findUserById(userId);
+        List<Order> orders = orderRepository.findAllByUser(user);
+
+        List<OrderResponseDTO> orderResponseDTOList = orders.stream()
+                .map(this::mapToOrderResponseDTO)
+                .collect(Collectors.toList());
+
+        return new OrderListDTO(orderResponseDTOList);
+    }
+
+    // Métodos auxiliares
+
+    private void validateOrderProducts(List<ProductOrderDTO> productOrderDTOList) {
+        if (productOrderDTOList.isEmpty()) {
+            throw new ApiException(HttpStatus.BAD_REQUEST, "Debes agregar al menos un producto a la orden.");
+        }
+
+        for (ProductOrderDTO productOrderDTO : productOrderDTOList) {
+            Product product = findProductById(productOrderDTO.getProductId());
+            if (product.getStock().getQuantity() < productOrderDTO.getQuantity()) {
+                throw new ApiException(HttpStatus.BAD_REQUEST, "El stock disponible es menor al solicitado para el producto.");
             }
-            productResponseDTO.setAttributes(attributeDTOList);
-            productResponseDTOList.add(productResponseDTO);
-        }
-        return productResponseDTOList;
-    }
-
-    private void validateOrder(OrderRequestDTO orderRequestDTO, HttpServletRequest request) {
-        if (!jwtService.tokenHasRoleUser(request))
-            throw new ApiException(HttpStatus.UNAUTHORIZED, "No tienes autorizacion");
-        if (!userRepository.existsById(orderRequestDTO.getUserId()))
-            throw new ApiException(HttpStatus.BAD_REQUEST, "Usuario no encontrado.");
-        if(orderRequestDTO.getProductOrderDTOList().isEmpty()) throw new ApiException(HttpStatus.BAD_REQUEST, "Debes agregar al menos un producto a la orden.");
-        for (ProductOrderDTO productOrderDTO : orderRequestDTO.getProductOrderDTOList()) {
-            if (!productRepository.existsById(productOrderDTO.getProductId()))
-                throw new ApiException(HttpStatus.BAD_REQUEST, "Product no encontrado.");
-            if (productOrderDTO.getQuantity() <= 0)
-                throw new ApiException(HttpStatus.BAD_REQUEST, "La cantidad debe ser mayor a 0");
         }
     }
 
-    private void validateCancelOrder(Order order){
-        if(order.getOrderState().getStateCode() != OrderStateEnum.CONFIRMADO.ordinal()) throw new ApiException(HttpStatus.BAD_REQUEST, "La orden no puede ser cancelada porque se encuentra en estado " + order.getOrderState().getStateDesc());
-        if(Duration.between(order.getOrderDate(), LocalDateTime.now()).toHours() >= 24) throw new ApiException(HttpStatus.BAD_REQUEST, "La orden fue creada hace mas de 24 horas.");
+    private void validateAdminAuthorization(HttpServletRequest request) {
+        if (!jwtService.tokenHasRoleAdmin(request)) {
+            throw new ApiException(HttpStatus.UNAUTHORIZED, "No tienes autorización");
+        }
     }
 
-    private void validateChangeState(HttpServletRequest request){
-        if (!jwtService.tokenHasRoleAdmin(request))
-            throw new ApiException(HttpStatus.UNAUTHORIZED, "No tienes autorizacion");
+    private void validateCancelableOrder(Order order) {
+        if (order.getOrderState().getStateCode() != OrderStateEnum.CONFIRMADO.ordinal()) {
+            throw new ApiException(HttpStatus.BAD_REQUEST, "La orden no puede ser cancelada porque no está confirmada.");
+        }
+        if (Duration.between(order.getOrderDate(), LocalDateTime.now()).toHours() >= 24) {
+            throw new ApiException(HttpStatus.BAD_REQUEST, "La orden fue creada hace más de 24 horas.");
+        }
     }
 
-    private void discountStock(Product product, float orderQuantity) {
-        if (!product.getStock().discountStock(orderQuantity))
+    private ProductOrder createProductOrder(ProductOrderDTO productOrderDTO, Order order) {
+        Product product = findProductById(productOrderDTO.getProductId());
+        discountStock(product, productOrderDTO.getQuantity());
+
+        ProductOrder productOrder = new ProductOrder();
+        productOrder.setOrderQuantity(productOrderDTO.getQuantity());
+        productOrder.setProduct(product);
+        productOrder.setOrder(order);
+
+        return productOrder;
+    }
+
+    private void discountStock(Product product, float quantity) {
+        if (!product.getStock().discountStock(quantity)) {
             throw new ApiException(HttpStatus.BAD_REQUEST, "El stock disponible es menor al solicitado.");
+        }
     }
 
-    private void validateStock(Product product, float orderQuantity) {
-        if (product.getStock().getQuantity() < orderQuantity)
-            throw new ApiException(HttpStatus.BAD_REQUEST, "El stock disponible es menor al solicitado.");
+    private void cancelOrder(Order order) {
+        validateCancelableOrder(order);
+
+        order.getProductOrder().forEach(productOrder -> {
+            Product product = productOrder.getProduct();
+            product.getStock().addStock(productOrder.getOrderQuantity());
+        });
+    }
+
+    private OrderResponseDTO mapToOrderResponseDTO(Order order) {
+        return new OrderResponseDTO(
+                order.getOrderState().getStateDesc(),
+                order.getOrderDate().toString(),
+                order.getProductOrder().stream()
+                        .map(this::mapToProductResponseDTO)
+                        .collect(Collectors.toList())
+        );
+    }
+
+    private ProductResponseDTO mapToProductResponseDTO(ProductOrder productOrder) {
+        List<AttributeDTO> attributes = productOrder.getProduct().getAttributes().stream()
+                .map(attr -> new AttributeDTO(attr.getDescription(), attr.getValue()))
+                .collect(Collectors.toList());
+
+        return new ProductResponseDTO(
+                productOrder.getProduct().getProductId(),
+                productOrder.getProduct().getName(),
+                attributes
+        );
+    }
+
+    private User findUserById(Long userId) {
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new ApiException(HttpStatus.BAD_REQUEST, "Usuario no encontrado."));
+    }
+
+    private Product findProductById(Long productId) {
+        return productRepository.findById(productId)
+                .orElseThrow(() -> new ApiException(HttpStatus.BAD_REQUEST, "Producto no encontrado."));
+    }
+
+    private Order findOrderById(Long orderId) {
+        return orderRepository.findById(orderId)
+                .orElseThrow(() -> new ApiException(HttpStatus.BAD_REQUEST, "La orden no existe."));
+    }
+
+    private OrderState findOrderStateByCode(int stateCode) {
+        return Optional.ofNullable(orderStateRepository.findByStateCode(stateCode))
+                .orElseThrow(() -> new ApiException(HttpStatus.BAD_REQUEST, "El estado a modificar es inválido."));
     }
 }
