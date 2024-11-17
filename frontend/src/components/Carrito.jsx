@@ -6,13 +6,13 @@ const CREATE_ORDER_ENDPOINT = 'http://localhost:8080/order'
 export const Carrito = ({ items }) => {
   const handleCreateOrder = () => {
     const productOrderList = items.map(item => {
-      return { productId: item.productId, quantity: item.quantity }
+      return { productId: Number(item.productId), quantity: parseFloat(item.quantity) }
     })
     helpHttp().post(
       CREATE_ORDER_ENDPOINT,
       {
         body: {
-          userId: window.sessionStorage.getItem('user_id'),
+          userId: Number(window.sessionStorage.getItem('user_id')),
           productOrderDTOList: productOrderList
         },
         headers: {

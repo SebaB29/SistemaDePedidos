@@ -103,8 +103,8 @@ public class OrderService implements IOrderService {
     }
 
     private void validateOrder(OrderRequestDTO orderRequestDTO, HttpServletRequest request) {
-        if (!jwtService.tokenHasRoleAdmin(request))
-            throw new ApiException(HttpStatus.UNAUTHORIZED, "No tienes autorizacion");
+//        if (!jwtService.tokenHasRoleAdmin(request))
+//            throw new ApiException(HttpStatus.UNAUTHORIZED, "No tienes autorizacion");
         if (!userRepository.existsById(orderRequestDTO.getUserId()))
             throw new ApiException(HttpStatus.BAD_REQUEST, "Usuario no encontrado.");
 

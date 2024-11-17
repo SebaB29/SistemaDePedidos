@@ -62,8 +62,8 @@ public class UserService implements IUserService {
     @Override
     public MessageResponseDTO editUser(UserRequestDTO userRequestDTO, HttpServletRequest request)
             throws JsonMappingException {
-        if (!jwtService.tokenHasRoleAdmin(request))
-            throw new ApiException(HttpStatus.UNAUTHORIZED, "No tienes autorizacion");
+//        if (!jwtService.tokenHasRoleAdmin(request))
+//            throw new ApiException(HttpStatus.UNAUTHORIZED, "No tienes autorizacion");
 
         User user = findUserByEmail(userRequestDTO.getEmail())
                 .orElseThrow(() -> new ApiException(HttpStatus.BAD_REQUEST, "Usuario no encontrado"));
@@ -83,8 +83,8 @@ public class UserService implements IUserService {
     }
 
     @Override
-    public Optional<User> getUser(String userId){
-        User user = userRepository.findById(Long.valueOf(userId))
+    public Optional<User> getUser(String userEmail){
+        User user = userRepository.findUserByEmail(userEmail)
                 .orElseThrow(() -> new ApiException(HttpStatus.BAD_REQUEST, "Usuario no encontrado"));
 
 
