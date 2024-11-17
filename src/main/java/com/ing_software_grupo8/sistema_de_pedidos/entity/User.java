@@ -5,8 +5,6 @@ import java.util.List;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
-
 import com.ing_software_grupo8.sistema_de_pedidos.utils.RoleEnum;
 
 import jakarta.persistence.*;
@@ -23,7 +21,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "users")
-public class User implements UserDetails {
+public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -60,12 +58,6 @@ public class User implements UserDetails {
     @Column(nullable = true)
     private String refreshToken;
 
-    @Override
-    public String getUsername() {
-        return email;
-    };
-
-    @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority((role.name())));
     }
