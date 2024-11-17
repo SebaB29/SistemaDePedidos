@@ -33,8 +33,6 @@ public class AuthService implements IAuthService {
     public GenericResponse<AuthResponseDTO> login(HttpServletRequest request) {
         String email = basicService.getEmailFromToken(request);
         String password = basicService.getPasswordFromRequest(request);
-        System.out.println(email);
-        System.out.println(password);
         User user = authenticate(email, password);
         String accessToken = jwtService.createAccessToken(user);
         String refreshToken = jwtService.createRefreshToken(user);
