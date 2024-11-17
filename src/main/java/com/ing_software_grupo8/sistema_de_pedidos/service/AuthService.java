@@ -16,7 +16,7 @@ import com.ing_software_grupo8.sistema_de_pedidos.entity.User;
 import com.ing_software_grupo8.sistema_de_pedidos.exception.ApiException;
 import com.ing_software_grupo8.sistema_de_pedidos.repository.IUserRepository;
 import com.ing_software_grupo8.sistema_de_pedidos.response.GenericResponse;
-import com.ing_software_grupo8.sistema_de_pedidos.role.Role;
+import com.ing_software_grupo8.sistema_de_pedidos.utils.RoleEnum;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
@@ -32,32 +32,25 @@ public class AuthService implements IAuthService {
     private final IUserRepository userRepository;
 
     public GenericResponse<AuthResponseDTO> login(HttpServletRequest request) {
+        String email = basicService.getEmailFromToken(request);
+        String password = basicService.getPasswordFromRequest(request);
+        User user = authenticate(email, password);
+        String accessToken = jwtService.createAccessToken(user);
+        String refreshToken = jwtService.createRefreshToken(user);
+        user.setRefreshToken(refreshToken);
         try {
-            String email = basicService.getEmailFromToken(request);
-            String password = basicService.getPasswordFromRequest(request);
-            Optional<User> user = userRepository.findUserByEmail(email);
-            if (!user.isPresent())
-                throw new ApiException(HttpStatus.NOT_FOUND, "El usuario no esta registrado");
-            User userFound = user.get();
-            if (!passwordEncoder.matches(password, userFound.getPassword()))
-                throw new ApiException(HttpStatus.UNAUTHORIZED, "Credenciales no validas");
-            String accessToken = jwtService.createAccessToken(userFound);
-            String refreshToken = jwtService.createRefreshToken(userFound);
-            userFound.setRefreshToken(refreshToken);
-            try {
-                userRepository.save(userFound);
-            } catch (DataAccessException e) {
-                throw new ApiException(HttpStatus.INTERNAL_SERVER_ERROR, "Usuario no se pudo guardar.");
-            }
-            AuthResponseDTO authResponse = AuthResponseDTO.builder().accessToken(accessToken).refreshToken(refreshToken)
-                    .build();
-            return GenericResponse.<AuthResponseDTO>builder()
-                    .status(HttpStatus.OK)
-                    .data(authResponse)
-                    .build();
-        } catch (AuthenticationException e) {
-            throw new ApiException(HttpStatus.UNAUTHORIZED, "Credenciales no validas.");
+            userRepository.save(user);
+        } catch (DataAccessException e) {
+            throw new ApiException(HttpStatus.INTERNAL_SERVER_ERROR, "Usuario no se pudo guardar.");
         }
+        AuthResponseDTO authResponse = AuthResponseDTO.builder()
+                .accessToken(accessToken)
+                .refreshToken(refreshToken)
+                .build();
+        return GenericResponse.<AuthResponseDTO>builder()
+                .status(HttpStatus.OK)
+                .data(authResponse)
+                .build();
     }
 
     public GenericResponse<MessageResponseDTO> register(RegisterRequestDTO request) {
@@ -74,7 +67,7 @@ public class AuthService implements IAuthService {
                 .age(request.getAge())
                 .gender(request.getGender())
                 .address(request.getAddress())
-                .role(Role.USER)
+                .role(RoleEnum.USER)
                 .build();
 
         try {
@@ -105,5 +98,16 @@ public class AuthService implements IAuthService {
     @Transactional
     public Optional<User> findUserByEmail(String email) {
         return userRepository.findUserByEmail(email);
+    }
+
+    private User authenticate(String userEmail, String password) {
+        User user = userRepository.findUserByEmail(userEmail)
+                .orElseThrow(() -> new ApiException(HttpStatus.UNAUTHORIZED, "Usuario o contraseña invalidos"));
+
+        if (!user.getPassword().equals(password)) {
+            throw new ApiException(HttpStatus.UNAUTHORIZED, "Usuario o contraseña invalidos");
+        }
+
+        return user;
     }
 }

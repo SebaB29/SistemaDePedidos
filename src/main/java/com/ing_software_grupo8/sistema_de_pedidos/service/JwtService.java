@@ -14,7 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import com.ing_software_grupo8.sistema_de_pedidos.entity.User;
-import com.ing_software_grupo8.sistema_de_pedidos.role.Role;
+import com.ing_software_grupo8.sistema_de_pedidos.utils.RoleEnum;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -97,7 +97,7 @@ public class JwtService implements IJwtService {
     public boolean tokenHasRoleAdmin(HttpServletRequest request) {
         String token = getTokenFromRequest(request);
         List<String> roles = getClaim(token, claims -> claims.get("roles", List.class));
-        return roles != null && roles.contains(Role.ADMIN.name());
+        return roles != null && roles.contains(RoleEnum.ADMIN.name());
     }
 
     @Override
@@ -105,7 +105,7 @@ public class JwtService implements IJwtService {
     public boolean tokenHasRoleUser(HttpServletRequest request) {
         String token = getTokenFromRequest(request);
         List<String> roles = getClaim(token, claims -> claims.get("roles", List.class));
-        return roles != null && roles.contains(Role.USER.name());
+        return roles != null && roles.contains(RoleEnum.USER.name());
     }
 
     private Date getExpiration(String token) {
