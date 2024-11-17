@@ -5,9 +5,6 @@ import java.util.Optional;
 import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -31,8 +28,6 @@ public class AuthService implements IAuthService {
 
     private final IBasicService basicService;
     private final IJwtService jwtService;
-    private final PasswordEncoder passwordEncoder;
-    private final AuthenticationManager authenticationManager;
     private final IUserRepository userRepository;
 
     public GenericResponse<AuthResponseDTO> login(HttpServletRequest request) {
@@ -66,7 +61,7 @@ public class AuthService implements IAuthService {
                 .username(request.getUsername())
                 .lastName(request.getLastName())
                 .photo(request.getPhoto())
-                .password(passwordEncoder.encode(request.getPassword()))
+                .password(request.getPassword())
                 .email(request.getEmail())
                 .age(request.getAge())
                 .gender(request.getGender())
@@ -90,7 +85,7 @@ public class AuthService implements IAuthService {
         User user = findUserByEmail(request.getEmail())
             .orElseThrow(() -> new ApiException(HttpStatus.BAD_REQUEST, "Usuario no encontrado"));
 
-        user.setPassword(passwordEncoder.encode(request.getNewPassword()));
+        user.setPassword(request.getNewPassword());
 
         userRepository.save(user);
         return GenericResponse.<MessageResponseDTO>builder()
