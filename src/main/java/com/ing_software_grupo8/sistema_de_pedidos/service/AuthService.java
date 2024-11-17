@@ -4,7 +4,6 @@ import java.util.Optional;
 
 import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.ing_software_grupo8.sistema_de_pedidos.DTO.AuthResponseDTO;
@@ -27,7 +26,6 @@ public class AuthService implements IAuthService {
 
     private final IBasicService basicService;
     private final IJwtService jwtService;
-    private final PasswordEncoder passwordEncoder;
     private final IUserRepository userRepository;
 
     public GenericResponse<AuthResponseDTO> login(HttpServletRequest request) {
@@ -61,7 +59,7 @@ public class AuthService implements IAuthService {
                 .username(request.getUsername())
                 .lastName(request.getLastName())
                 .photo(request.getPhoto())
-                .password(passwordEncoder.encode(request.getPassword()))
+                .password(request.getPassword())
                 .email(request.getEmail())
                 .age(request.getAge())
                 .gender(request.getGender())
@@ -85,7 +83,7 @@ public class AuthService implements IAuthService {
         User user = findUserByEmail(request.getEmail())
                 .orElseThrow(() -> new ApiException(HttpStatus.BAD_REQUEST, "Usuario no encontrado"));
 
-        user.setPassword(passwordEncoder.encode(request.getNewPassword()));
+        user.setPassword(request.getNewPassword());
 
         userRepository.save(user);
         return GenericResponse.<MessageResponseDTO>builder()
@@ -103,7 +101,7 @@ public class AuthService implements IAuthService {
         User user = userRepository.findUserByEmail(userEmail)
                 .orElseThrow(() -> new ApiException(HttpStatus.UNAUTHORIZED, "Usuario o contraseña invalidos"));
 
-        if (!passwordEncoder.matches(password, user.getPassword())) {
+        if (!password.equals(user.getPassword())) {
             throw new ApiException(HttpStatus.UNAUTHORIZED, "Usuario o contraseña invalidos");
         }
 
