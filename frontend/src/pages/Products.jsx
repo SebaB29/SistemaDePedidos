@@ -7,12 +7,14 @@ import { ProductCard } from '../components/ProductCard'
 import { useNavigate } from 'react-router-dom'
 import { helpHttp } from '../helpers/helpHttp'
 import Message from '../components/Message'
+import { Carrito } from '../components/Carrito'
 
 const ENDPOINT = 'http://localhost:8080/product'
 
 export const Products = () => {
   const [loading, setLoading] = useState(false)
   const [response, setResponse] = useState({})
+  const [carrito, setCarrito] = useState([])
   const navigate = useNavigate()
 
   useEffect(() => {
@@ -25,9 +27,17 @@ export const Products = () => {
           Accept: 'application/json'
         }
       })
-      .then(res => {
+      .then(async res => {
+        if (res.status !== 'OK') throw res
+        let newData = []
+        for (let i = 0; i < res.data.length; i++) {
+          const product = res.data[i]
+          const stockRes = await fetch(`http://localhost:8080/product/${product.productId}/stock`)
+          const stock = await stockRes.json()
+          newData = [...newData, { ...product, ...stock.data }]
+        }
         setLoading(false)
-        setResponse(res)
+        setResponse({ ...res, data: newData })
       })
       .catch(err => {
         setLoading(false)
@@ -43,21 +53,24 @@ export const Products = () => {
     <>
       <Header title='Productos' />
       <Main>
-        <ProductsForm setLoading={setLoading} setProducts={setResponse} />
-        {window.sessionStorage.getItem('admin')
-          ? <><button onClick={() => navigate('/create_product')}>Agregar Producto</button><hr /></>
-          : <></>}
+        <div className='barra-superior-products'>
+          <ProductsForm setLoading={setLoading} setProducts={setResponse} />
+          <Carrito items={carrito} />
+        </div>
+        {window.sessionStorage.getItem('rol') === 'ADMIN' &&
+          <><button onClick={() => navigate('/create_product')}>Agregar Producto</button><hr /></>}
         {loading && <Loader />}
-        {response.status
-          ? response.status === 'OK'
-            ? response.data.map((product, index) => (
-              <ProductCard
-                key={index}
-                product={product}
-              />
-            ))
-            : <Message bgColor='#ff0000' message={response.status + ': ' + response.message} />
-          : <></>}
+        {response.status &&
+          response.status === 'OK'
+          ? response.data.map((product, index) => (
+            <ProductCard
+              key={index}
+              product={product}
+              itemsCarrito={carrito}
+              setCarrito={setCarrito}
+            />
+          ))
+          : <Message bgColor='#ff0000' message={response.status + ': ' + response.error} />}
       </Main>
     </>
   )

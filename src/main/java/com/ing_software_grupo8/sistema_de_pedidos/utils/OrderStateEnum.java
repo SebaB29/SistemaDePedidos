@@ -9,17 +9,11 @@ public enum OrderStateEnum {
 
     @Override
     public String toString() {
-        switch (this) {
-            case CONFIRMADO:
-                return "Confirmado";
-            case PROCESO:
-                return "En proceso";
-            case ENVIADO:
-                return "Enviado";
-            case CANCELADO:
-                return "Cancelado";
-            default:
-                return "";
-        }
+        return switch (this) {
+            case CONFIRMADO -> "Confirmado";
+            case PROCESO -> "En proceso";
+            case ENVIADO -> "Enviado";
+            case CANCELADO -> "Cancelado";
+        };
     }
 }

@@ -15,7 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import com.ing_software_grupo8.sistema_de_pedidos.entity.User;
-import com.ing_software_grupo8.sistema_de_pedidos.role.Role;
+import com.ing_software_grupo8.sistema_de_pedidos.utils.RoleEnum;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -24,8 +24,10 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.RequiredArgsConstructor;
 
 @Service
+@RequiredArgsConstructor
 public class JwtService implements IJwtService {
 
     private static final String SECRET_KEY = "586E3272357538782F413F4428472B4B6250655368566B597033733676397924";
@@ -98,7 +100,14 @@ public class JwtService implements IJwtService {
     public boolean tokenHasRoleAdmin(HttpServletRequest request) {
         String token = getTokenFromRequest(request);
         List<String> roles = getClaim(token, claims -> claims.get("roles", List.class));
-        return roles != null && roles.contains(Role.ADMIN.name());
+        return roles != null && roles.contains(RoleEnum.ADMIN.name());
+    }
+
+    @SuppressWarnings("unchecked")
+    public boolean tokenHasRoleUser(HttpServletRequest request) {
+        String token = getTokenFromRequest(request);
+        List<String> roles = getClaim(token, claims -> claims.get("roles", List.class));
+        return roles != null && roles.contains(RoleEnum.USER.name());
     }
 
     @SuppressWarnings("unchecked")
@@ -118,6 +127,11 @@ public class JwtService implements IJwtService {
         } catch (ExpiredJwtException e) {
             return true;
         }
+    }
+
+    @Override
+    public boolean isSameUser(User user, String token) {
+        return user.getEmail().equals(getEmailFromToken(token));
     }
 
 }

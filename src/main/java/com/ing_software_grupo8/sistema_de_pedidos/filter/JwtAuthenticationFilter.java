@@ -1,4 +1,4 @@
-package com.ing_software_grupo8.sistema_de_pedidos.jwt;
+package com.ing_software_grupo8.sistema_de_pedidos.filter;
 
 import java.io.IOException;
 import java.util.HashMap;

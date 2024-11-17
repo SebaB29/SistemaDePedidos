@@ -1,7 +1,7 @@
 --STOCK
-INSERT INTO Stock (stock_type, quantity) VALUES ( 'Unidad', 5.0);
+INSERT INTO Stock (stock_type, quantity) VALUES ( 'Unidades', 5.0);
 INSERT INTO Stock (stock_type, quantity) VALUES (  'KG', 40.5);
-INSERT INTO Stock (stock_type, quantity) VALUES ( 'Unidad', 1);
+INSERT INTO Stock (stock_type, quantity) VALUES ( 'Unidades', 1);
 
 --PRODUCT
 INSERT INTO Product (name, stock_id) VALUES ( 'Iphone',1);
@@ -15,6 +15,8 @@ INSERT INTO Attribute (product_id, description, attribute_value) VALUES (1,'Mode
 --USER
 INSERT INTO users (username, last_name, email, password, age, photo, gender, address, role)
 VALUES ('nombre', 'apellido', 'algo@fiuba.com', 'pass123', 25, 'asdasd', 'male', 'av123', 'USER');
+INSERT INTO users (username, last_name, email, password, age, photo, gender, address, role)
+VALUES ('UserAdmin', 'AdminLastName', 'admin@gmail.com', 'pass123', 25, 'https://photo.png/', 'male', 'calle 123', 'ADMIN');
 
 --ORDER STATE
 INSERT INTO order_state(state_code, state_desc) VALUES(0, 'Confirmado');
@@ -23,7 +25,7 @@ INSERT INTO order_state(state_code, state_desc) VALUES(2, 'Enviado');
 INSERT INTO order_state(state_code, state_desc) VALUES(3, 'Cancelado');
 
 --ORDER
-INSERT INTO customer_order(user_id, order_state_id, order_date) VALUES (1, 1, '2024-11-11T14:35:10.123');
+INSERT INTO customer_order(user_id, order_state_id, order_date) VALUES (1, 1, '2024-11-14T14:35:10.123');
 
 --ORDER DETAIL
 INSERT INTO product_order(order_id, product_id, order_quantity) VALUES(1, 1, 5.0);
