@@ -10,7 +10,7 @@ public interface IOrderService {
 
     MessageResponseDTO create(OrderRequestDTO orderRequestDTO, HttpServletRequest request);
 
-    OrderListDTO getAll(Long userId);
+    OrderListDTO getAll(Long userId, HttpServletRequest request);
 
     MessageResponseDTO updateState(OrderRequestDTO orderRequestDTO, HttpServletRequest httpServletRequest);
 }

@@ -4,8 +4,6 @@ import java.util.Optional;
 
 import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.ing_software_grupo8.sistema_de_pedidos.DTO.AuthResponseDTO;
@@ -43,9 +41,9 @@ public class AuthService implements IAuthService {
             throw new ApiException(HttpStatus.INTERNAL_SERVER_ERROR, "Usuario no se pudo guardar.");
         }
         AuthResponseDTO authResponse = AuthResponseDTO.builder()
-                                                      .accessToken(accessToken)
-                                                      .refreshToken(refreshToken)
-                                                      .build();
+                .accessToken(accessToken)
+                .refreshToken(refreshToken)
+                .build();
         return GenericResponse.<AuthResponseDTO>builder()
                 .status(HttpStatus.OK)
                 .data(authResponse)
@@ -83,7 +81,7 @@ public class AuthService implements IAuthService {
     public GenericResponse<MessageResponseDTO> restore(RestorePasswordRequestDTO request) {
 
         User user = findUserByEmail(request.getEmail())
-            .orElseThrow(() -> new ApiException(HttpStatus.BAD_REQUEST, "Usuario no encontrado"));
+                .orElseThrow(() -> new ApiException(HttpStatus.BAD_REQUEST, "Usuario no encontrado"));
 
         user.setPassword(request.getNewPassword());
 
@@ -103,7 +101,7 @@ public class AuthService implements IAuthService {
         User user = userRepository.findUserByEmail(userEmail)
                 .orElseThrow(() -> new ApiException(HttpStatus.UNAUTHORIZED, "Usuario o contraseña invalidos"));
 
-        if (!user.getPassword().equals(password)) {
+        if (!password.equals(user.getPassword())) {
             throw new ApiException(HttpStatus.UNAUTHORIZED, "Usuario o contraseña invalidos");
         }
 

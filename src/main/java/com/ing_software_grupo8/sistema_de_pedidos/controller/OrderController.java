@@ -16,10 +16,10 @@ public class OrderController {
     @Autowired
     private IOrderService orderService;
 
-    @GetMapping("/user/{userId}")
-    public ResponseEntity<?> getAll(@PathVariable Long userId) {
+    @GetMapping()
+    public ResponseEntity<?> getAll(@RequestParam(required = false) Long userId, HttpServletRequest request) {
         return ResponseEntity.ok(GenericResponse.builder()
-                .data(orderService.getAll(userId))
+                .data(orderService.getAll(userId, request))
                 .status(HttpStatus.OK)
                 .build());
     }
