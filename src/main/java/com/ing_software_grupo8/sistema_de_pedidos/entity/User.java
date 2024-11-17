@@ -7,7 +7,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import com.ing_software_grupo8.sistema_de_pedidos.role.Role;
+import com.ing_software_grupo8.sistema_de_pedidos.utils.RoleEnum;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -55,7 +55,7 @@ public class User implements UserDetails {
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
-    private Role role;
+    private RoleEnum role;
 
     @Column(nullable = true)
     private String refreshToken;
