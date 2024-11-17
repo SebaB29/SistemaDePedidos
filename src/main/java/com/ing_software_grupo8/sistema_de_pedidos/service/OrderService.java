@@ -41,6 +41,7 @@ public class OrderService implements IOrderService {
 
     @Override
     public MessageResponseDTO create(OrderRequestDTO orderRequestDTO, HttpServletRequest request) {
+        validateUserAuthorization(request);
         validateOrderProducts(orderRequestDTO.getProductOrderDTOList());
 
         Order order = new Order();
@@ -64,6 +65,7 @@ public class OrderService implements IOrderService {
         OrderState orderState = findOrderStateByCode(orderRequestDTO.getOrderState());
 
         if (orderState.getStateCode() == OrderStateEnum.CANCELADO.ordinal()) {
+            validateUserAuthorization(request);
             cancelOrder(order);
         } else {
             validateAdminAuthorization(request);
@@ -76,10 +78,13 @@ public class OrderService implements IOrderService {
     }
 
     @Override
-    public OrderListDTO getAll(Long userId) {
-        User user = findUserById(userId);
-        List<Order> orders = orderRepository.findAllByUser(user);
-
+    public OrderListDTO getAll(Long userId, HttpServletRequest request) {
+        if (userId == null) {
+            validateAdminAuthorization(request);
+        } else {
+            validateUserAuthorization(request);
+        }
+        List<Order> orders = userId == null ? orderRepository.findAll() : orderRepository.findAllByUser(findUserById(userId));
         List<OrderResponseDTO> orderResponseDTOList = orders.stream()
                 .map(this::mapToOrderResponseDTO)
                 .collect(Collectors.toList());
@@ -104,6 +109,12 @@ public class OrderService implements IOrderService {
 
     private void validateAdminAuthorization(HttpServletRequest request) {
         if (!jwtService.tokenHasRoleAdmin(request)) {
+            throw new ApiException(HttpStatus.UNAUTHORIZED, "No tienes autorización");
+        }
+    }
+
+    private void validateUserAuthorization(HttpServletRequest request) {
+        if (!jwtService.tokenHasRoleUser(request)) {
             throw new ApiException(HttpStatus.UNAUTHORIZED, "No tienes autorización");
         }
     }
