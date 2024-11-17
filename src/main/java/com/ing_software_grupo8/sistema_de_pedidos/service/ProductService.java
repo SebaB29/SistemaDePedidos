@@ -3,8 +3,8 @@ package com.ing_software_grupo8.sistema_de_pedidos.service;
 import com.ing_software_grupo8.sistema_de_pedidos.entity.Attribute;
 import com.ing_software_grupo8.sistema_de_pedidos.entity.Product;
 import com.ing_software_grupo8.sistema_de_pedidos.entity.Stock;
-import com.ing_software_grupo8.sistema_de_pedidos.DTO.*;
 import com.ing_software_grupo8.sistema_de_pedidos.exception.ApiException;
+import com.ing_software_grupo8.sistema_de_pedidos.repository.IProductOrderRepository;
 import com.ing_software_grupo8.sistema_de_pedidos.repository.IProductRepository;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -19,11 +19,6 @@ import com.ing_software_grupo8.sistema_de_pedidos.DTO.MessageResponseDTO;
 import com.ing_software_grupo8.sistema_de_pedidos.DTO.ProductRequestDTO;
 import com.ing_software_grupo8.sistema_de_pedidos.DTO.ProductResponseDTO;
 import com.ing_software_grupo8.sistema_de_pedidos.DTO.StockDTO;
-import com.ing_software_grupo8.sistema_de_pedidos.entity.Attribute;
-import com.ing_software_grupo8.sistema_de_pedidos.entity.Product;
-import com.ing_software_grupo8.sistema_de_pedidos.entity.Stock;
-import com.ing_software_grupo8.sistema_de_pedidos.exception.ApiException;
-import com.ing_software_grupo8.sistema_de_pedidos.repository.IProductRepository;
 
 import java.util.List;
 import java.util.Optional;
@@ -33,7 +28,10 @@ import java.util.stream.Collectors;
 public class ProductService implements IProductService {
 
     @Autowired
-    private IProductRepository productRepository;
+    IProductRepository productRepository;
+
+    @Autowired
+    IProductOrderRepository productOrderRepository;
 
     @Autowired
     IStockService stockService;
@@ -41,67 +39,42 @@ public class ProductService implements IProductService {
     @Autowired
     IJwtService jwtService;
 
-    private Stock createStock(AdminCreateProductRequestDTO productRequest) {
-        Stock stock = new Stock();
-        stock.setStockType(productRequest.getStockType());
-        stock.setQuantity(productRequest.getQuantity());
-        stockService.createStock(stock);
-        return stock;
-    }
-
     public MessageResponseDTO createProduct(AdminCreateProductRequestDTO productRequest, HttpServletRequest request) {
-        if (!jwtService.tokenHasRoleAdmin(request))
-            throw new ApiException(HttpStatus.UNAUTHORIZED, "No tienes autorizacion");
+        verifyAdminRole(request);
+        validateProductNameUniqueness(productRequest.getProductName());
+
         Stock stock = createStock(productRequest);
         Product product = new Product();
         product.setName(productRequest.getProductName());
         product.setStock(stock);
-        List<Attribute> attributes = productRequest.getAttributes().stream()
-                .map(attributeDTO -> {
-                    Attribute attribute = new Attribute();
-                    attribute.setDescription(attributeDTO.getDescription());
-                    attribute.setProduct(product);
-                    attribute.setValue(attributeDTO.getValue());
-                    return attribute;
-                })
-                .collect(Collectors.toList());
-        product.setAttributes(attributes);
+        product.setAttributes(mapAttributes(productRequest.getAttributes(), product));
+
         productRepository.save(product);
-
-
         return new MessageResponseDTO("Producto creado");
     }
 
     public MessageResponseDTO editProduct(ProductRequestDTO productDTO, HttpServletRequest request) {
-        if (!jwtService.tokenHasRoleAdmin(request))
-            throw new ApiException(HttpStatus.UNAUTHORIZED, "No tienes autorizacion");
-        Product product = productRepository.findById(productDTO.getProductId())
-                .orElseThrow(() -> new ApiException(HttpStatus.BAD_REQUEST, "Producto no encontrado"));
+        verifyAdminRole(request);
 
+        Product product = findProductById(productDTO.getProductId());
         if (productDTO.getName() != null) {
             product.setName(productDTO.getName());
         }
 
         product.getAttributes().clear();
-
-        for (AttributeDTO attributeDTO : productDTO.getAttributes()) {
-            Attribute attribute = new Attribute();
-            attribute.setDescription(attributeDTO.getDescription());
-            attribute.setValue(attributeDTO.getValue());
-            attribute.setProduct(product);
-            product.getAttributes().add(attribute);
-        }
-
+        product.getAttributes().addAll(mapAttributes(productDTO.getAttributes(), product));
         productRepository.save(product);
-
         return new MessageResponseDTO("Producto editado correctamente");
     }
 
     public MessageResponseDTO deleteProduct(Long productId, HttpServletRequest request) {
-        if (!jwtService.tokenHasRoleAdmin(request))
-            throw new ApiException(HttpStatus.UNAUTHORIZED, "No tienes autorizacion");
-        Product product = productRepository.findById(productId)
-                .orElseThrow(() -> new ApiException(HttpStatus.BAD_REQUEST, "Producto no encontrado"));
+        verifyAdminRole(request);
+        findProductById(productId);
+
+        if (!productOrderRepository.findByProduct_ProductId(productId).isEmpty()) {
+            throw new ApiException(HttpStatus.CONFLICT,
+                    "El producto no puede ser eliminado, ya que pertenece a una orden");
+        }
 
         productRepository.deleteById(productId);
         return new MessageResponseDTO("Producto eliminado correctamente");
@@ -118,18 +91,51 @@ public class ProductService implements IProductService {
                 .collect(Collectors.toList());
     }
 
-    public Optional<Stock> getProductStock(Long productId) {
-
-        Product product = productRepository.findById(productId)
-                .orElseThrow(() -> new RuntimeException("Producto no encontrado"));
-        return stockService.getStockFrom(product.getProductId());
+    private Stock createStock(AdminCreateProductRequestDTO productRequest) {
+        Stock stock = new Stock();
+        stock.setStockType(productRequest.getStockType());
+        stock.setQuantity(productRequest.getQuantity());
+        stockService.createStock(stock);
+        return stock;
     }
 
     public MessageResponseDTO editStock(StockDTO stockDTO, HttpServletRequest request) {
-        if (!jwtService.tokenHasRoleAdmin(request))
-            throw new ApiException(HttpStatus.UNAUTHORIZED, "No tienes autorizacion");
+        verifyAdminRole(request);
         stockService.editStockFrom(stockDTO);
-
         return new MessageResponseDTO("Stock editado correctamente");
+    }
+
+    public Optional<Stock> getProductStock(Long productId) {
+        Product product = findProductById(productId);
+        return stockService.getStockFrom(product.getProductId());
+    }
+
+    private Product findProductById(Long productId) {
+        return productRepository.findById(productId)
+                .orElseThrow(() -> new ApiException(HttpStatus.BAD_REQUEST, "Producto no encontrado"));
+    }
+
+    private void verifyAdminRole(HttpServletRequest request) {
+        if (!jwtService.tokenHasRoleAdmin(request)) {
+            throw new ApiException(HttpStatus.UNAUTHORIZED, "No tienes autorización");
+        }
+    }
+
+    private void validateProductNameUniqueness(String productName) {
+        if (!productRepository.findAllByName(productName).isEmpty()) {
+            throw new ApiException(HttpStatus.CONFLICT, "Ya existe este producto");
+        }
+    }
+
+    private List<Attribute> mapAttributes(List<AttributeDTO> attributeDTOs, Product product) {
+        return attributeDTOs.stream()
+                .map(attributeDTO -> {
+                    Attribute attribute = new Attribute();
+                    attribute.setDescription(attributeDTO.getDescription());
+                    attribute.setValue(attributeDTO.getValue());
+                    attribute.setProduct(product);
+                    return attribute;
+                })
+                .collect(Collectors.toList());
     }
 }

@@ -13,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
+@RequestMapping("/user")
 public class UserController {
 
     @Autowired
@@ -26,7 +27,7 @@ public class UserController {
                 .build());
     }
 
-    @PutMapping("/user")
+    @PutMapping
     public ResponseEntity<GenericResponse> editUser(@RequestBody UserRequestDTO userRequestDTO,
             HttpServletRequest request)
             throws JsonMappingException {

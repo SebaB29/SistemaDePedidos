@@ -10,22 +10,22 @@ import java.util.stream.Collectors;
 
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import com.ing_software_grupo8.sistema_de_pedidos.entity.User;
-import com.ing_software_grupo8.sistema_de_pedidos.role.Role;
+import com.ing_software_grupo8.sistema_de_pedidos.utils.RoleEnum;
 
 import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.RequiredArgsConstructor;
 
 @Service
+@RequiredArgsConstructor
 public class JwtService implements IJwtService {
 
     private static final String SECRET_KEY = "586E3272357538782F413F4428472B4B6250655368566B597033733676397924";
@@ -64,13 +64,9 @@ public class JwtService implements IJwtService {
         return Keys.hmacShaKeyFor(keyBytes);
     }
 
+    @Override
     public String getEmailFromToken(String token) {
         return getClaim(token, Claims::getSubject);
-    }
-
-    public boolean isTokenValid(String token, UserDetails user) {
-        final String email = getEmailFromToken(token);
-        return (email.equals(user.getUsername()) && !isTokenExpired(token));
     }
 
     private Claims getAllClaims(String token) {
@@ -82,11 +78,13 @@ public class JwtService implements IJwtService {
                 .getBody();
     }
 
+    @Override
     public <T> T getClaim(String token, Function<Claims, T> claimsResolver) {
         final Claims claims = getAllClaims(token);
         return claimsResolver.apply(claims);
     }
 
+    @Override
     public String getTokenFromRequest(HttpServletRequest request) {
         final String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
         if (StringUtils.hasText(authHeader) && authHeader.startsWith("Bearer "))
@@ -94,23 +92,29 @@ public class JwtService implements IJwtService {
         return null;
     }
 
+    @Override
     @SuppressWarnings("unchecked")
     public boolean tokenHasRoleAdmin(HttpServletRequest request) {
         String token = getTokenFromRequest(request);
         List<String> roles = getClaim(token, claims -> claims.get("roles", List.class));
-        return roles != null && roles.contains(Role.ADMIN.name());
+        return roles != null && roles.contains(RoleEnum.ADMIN.name());
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public boolean tokenHasRoleUser(HttpServletRequest request) {
+        String token = getTokenFromRequest(request);
+        List<String> roles = getClaim(token, claims -> claims.get("roles", List.class));
+        return roles != null && roles.contains(RoleEnum.USER.name());
     }
 
     private Date getExpiration(String token) {
         return getClaim(token, Claims::getExpiration);
     }
 
+    @Override
     public boolean isTokenExpired(String token) {
-        try {
-            return getExpiration(token).before(new Date());
-        } catch (ExpiredJwtException e) {
-            return true;
-        }
+        return getExpiration(token).before(new Date());
     }
 
     @Override
