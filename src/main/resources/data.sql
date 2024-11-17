@@ -9,8 +9,11 @@ INSERT INTO Stock (stock_type, quantity)
 VALUES
     ('Unidades', 100.0),
     ('Unidades', 100.0),
-    ('Unidades', 20.0),
-    ('KG', 10.0);
+    ('Unidades', 30.0),
+    ('KG', 10.0),
+    ('Unidades', 40.0),
+    ('Unidades', 30.0),
+    ('Unidades', 30.0);
 
 --PRODUCT
 INSERT INTO Product (name, stock_id)
@@ -18,7 +21,10 @@ VALUES
     ('Pesa',1),
     ('Remera',2),
     ('Cerveza',3),
-    ('Asado',4);
+    ('Asado',4),
+    ('Tequila', 5),
+    ('Fernet', 6),
+    ('Vodka', 7);
 
 --ATTRIBUTE
 INSERT INTO Attribute (product_id, description, attribute_value)
@@ -26,7 +32,14 @@ VALUES
     (1,'peso', '10'),
     (2,'material', 'algodón'),
     (3,'alcoholType', 'negra'),
-    (4,'corte', 'banderita');
+    (4,'corte', 'banderita'),
+    (3,'peso', '20.0'),
+    (5,'peso', '20.0'),
+    (6,'peso', '30.0'),
+    (7,'peso', '40.0'),
+    (5,'alcoholType', 'Blanco'),
+    (6,'alcoholType', 'Hierbas'),
+    (7,'alcoholType', 'Blanco');
 
 --ORDER STATE
 INSERT INTO order_state(state_code, state_desc)
