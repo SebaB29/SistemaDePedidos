@@ -4,6 +4,14 @@ VALUES
     ('UserAdmin', 'AdminLastName', 'admin@gmail.com', 'pass123', 40, 'https://photoAdmin.png/', 'male', 'calle 123', 'ADMIN'),
     ('NormalUser', 'UserLastName', 'normalUser@fiuba.com', 'pass123', 25, 'https://photoNormalUser.png/', 'male', 'calle 124', 'USER');
 
+--STOCK
+INSERT INTO Stock (stock_type, quantity)
+VALUES
+    ('Unidades', 100.0),
+    ('Unidades', 100.0),
+    ('Unidades', 20.0),
+    ('KG', 10.0);
+
 --PRODUCT
 INSERT INTO Product (name, stock_id)
 VALUES
@@ -19,14 +27,6 @@ VALUES
     (2,'material', 'algodón'),
     (3,'alcoholType', 'negra'),
     (4,'corte', 'banderita');
-
---STOCK
-INSERT INTO Stock (stock_type, quantity)
-VALUES
-    ('Unidades', 100.0),
-    ('Unidades', 100.0),
-    ('Unidades', 20.0),
-    ('KG', 10.0);
 
 --ORDER STATE
 INSERT INTO order_state(state_code, state_desc)
