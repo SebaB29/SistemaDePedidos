@@ -4,12 +4,12 @@
       {
         "type": "AttributeLimitRule",
         "attribute": "alcoholType",
-        "maxCount": 10
+        "maxCount": 3
       },
       {
         "type": "AttributeValueLimitRule",
         "attributeName": "peso",
-        "maxValue": 150.0
+        "maxValue": 75.0
       }
     ]
   }
