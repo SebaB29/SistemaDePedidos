@@ -1,0 +1,16 @@
+{
+    "type": "AndRule",
+    "subRules": [
+      {
+        "type": "AttributeLimitRule",
+        "attribute": "alcoholType",
+        "maxCount": 10
+      },
+      {
+        "type": "AttributeValueLimitRule",
+        "attributeName": "peso",
+        "maxValue": 150.0
+      }
+    ]
+  }
+  
