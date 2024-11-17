@@ -34,6 +34,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 filterChain.doFilter(request, response);
                 return;
             }
+            if ("OPTIONS".equalsIgnoreCase(request.getMethod())) {
+                response.setStatus(HttpServletResponse.SC_OK);
+                return;
+            }
             String token = jwtService.getTokenFromRequest(request);
             if (token == null) {
                 exception.write(response, HttpStatus.UNAUTHORIZED, "El token no fue enviado");

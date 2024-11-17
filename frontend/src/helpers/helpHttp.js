@@ -2,7 +2,7 @@ export const helpHttp = () => {
   const customFetch = (endpint, options) => {
     const defaultHeader = {
       Accept: 'application/json',
-      Authorization: `Bearer ${window.sessionStorage.getItem('access_token')}`
+      Authorization: `Basic ${window.sessionStorage.getItem('access_token')}`
     }
 
     options.headers = options.headers ? { ...options.headers, ...defaultHeader } : defaultHeader
@@ -10,9 +10,9 @@ export const helpHttp = () => {
     options.body = JSON.stringify(options.body) || false
     if (!options.body) delete options.body
 
-    // console.log(options.headers)
-    // console.log(options.body)
-    // console.log(endpint)
+    console.log(options.headers)
+    console.log(options.body)
+    console.log(endpint)
 
     return fetch(endpint, options)
       .then(res => res.json())

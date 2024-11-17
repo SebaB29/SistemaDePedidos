@@ -49,6 +49,7 @@ const LoginForm = () => {
   const [errorMessage, setErrorMessage] = useState('')
 
   useEffect(() => {
+    console.log(response)
     if (response === null) return
     if (response.status === 'OK') {
       window.sessionStorage.setItem('access_token', response.data.access_token)
