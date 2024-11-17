@@ -9,7 +9,7 @@ public class InMemoryRuleRepository {
     public InMemoryRuleRepository() {
 
         List<Rule> andChildren = new ArrayList<>();
-        andChildren.add(new AttributeLimitRule("alcoholType", 10));
+        andChildren.add(new AttributeLimitRule("alcoholType", 3));
 
         andChildren.add(new AttributeValueLimitRule("peso", 150.0));
 

@@ -21,6 +21,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import com.ing_software_grupo8.sistema_de_pedidos.rules.RuleManager;
+
 @Service
 public class OrderService implements IOrderService {
 
@@ -39,6 +41,9 @@ public class OrderService implements IOrderService {
     @Autowired
     private IJwtService jwtService;
 
+    @Autowired
+    private RuleManager ruleManager;
+
     @Override
     public MessageResponseDTO create(OrderRequestDTO orderRequestDTO, HttpServletRequest request) {
         validateUserAuthorization(request);
@@ -54,6 +59,11 @@ public class OrderService implements IOrderService {
                 .collect(Collectors.toList());
 
         order.setProductOrder(productOrders);
+
+        if (!ruleManager.validateOrder(order)) {
+            throw new ApiException(HttpStatus.BAD_REQUEST, "La orden no cumple con las reglas de negocio");
+        }
+
         orderRepository.save(order);
 
         return new MessageResponseDTO("Orden creada correctamente");
