@@ -19,7 +19,7 @@ public class UserController {
     @Autowired
     private IUserService userService;
 
-    @GetMapping("/user/{userEmail}")
+    @GetMapping("/{userEmail}")
     public ResponseEntity<GenericResponse> getUser(@PathVariable String userEmail) throws JsonMappingException {
         return ResponseEntity.ok(GenericResponse.builder()
                 .data(userService.getUser(userEmail))

@@ -42,7 +42,7 @@ export const useFrom = (initialForm, validateForm, customFetch, endpint) => {
     handleChange(e)
   }
 
-  const handleSubmit = (e) => {
+  const handleSubmit = (e, headers = {}, body = form) => {
     e.preventDefault()
     setErrors(validateForm(form))
 
@@ -51,8 +51,9 @@ export const useFrom = (initialForm, validateForm, customFetch, endpint) => {
       customFetch(
         endpint,
         {
-          body: form,
+          body,
           headers: {
+            ...headers,
             'Content-Type': 'Application/json',
             Accept: 'application/json'
           }

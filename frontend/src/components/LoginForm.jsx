@@ -49,7 +49,6 @@ const LoginForm = () => {
   const [errorMessage, setErrorMessage] = useState('')
 
   useEffect(() => {
-    console.log(response)
     if (response === null) return
     if (response.status === 'OK') {
       window.sessionStorage.setItem('access_token', response.data.access_token)
@@ -75,7 +74,9 @@ const LoginForm = () => {
 
   const handleSubmitLogin = (e) => {
     window.sessionStorage.setItem('email', form.email)
-    handleSubmit(e)
+    const encodedCredentials = btoa(`${form.email}:${form.password}`)
+    const headers = { Authorization: `Basic ${encodedCredentials}` }
+    handleSubmit(e, headers)
   }
 
   return (
