@@ -11,7 +11,7 @@ public class RuleManager {
     private List<Rule> allRules;
 
     public RuleManager() {
-        InMemoryRuleRepository ruleRepository = new InMemoryRuleRepository();
+        JsonRuleRepository ruleRepository = new JsonRuleRepository();
         this.allRules = ruleRepository.findAll();
     }
 

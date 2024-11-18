@@ -7,6 +7,7 @@ import com.ing_software_grupo8.sistema_de_pedidos.repository.IOrderRepository;
 import com.ing_software_grupo8.sistema_de_pedidos.repository.IOrderStateRepository;
 import com.ing_software_grupo8.sistema_de_pedidos.repository.IProductRepository;
 import com.ing_software_grupo8.sistema_de_pedidos.repository.IUserRepository;
+import com.ing_software_grupo8.sistema_de_pedidos.rules.RuleManager;
 import com.ing_software_grupo8.sistema_de_pedidos.utils.OrderStateEnum;
 
 import jakarta.servlet.http.HttpServletRequest;
