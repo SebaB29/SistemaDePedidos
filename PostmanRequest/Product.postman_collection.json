@@ -1,0 +1,314 @@
+{
+	"info": {
+		"_postman_id": "78d3672c-ed8b-4da1-b03c-f6e272133908",
+		"name": "Product",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "39234104",
+		"_collection_link": "https://ingeniera-de-software-grupo-8.postman.co/workspace/Ingenier%25C3%25ADa-de-software---Grupo-~fa35169c-c87a-4f89-86a0-08bd934c1418/collection/39234104-78d3672c-ed8b-4da1-b03c-f6e272133908?action=share&source=collection_link&creator=39234104"
+	},
+	"item": [
+		{
+			"name": "Create - ok",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{adminToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"product_name\": \"{{newProductName}}\",\r\n    \"stock_type\": \"unidades\",\r\n    \"quantity\": 100,\r\n    \"attributes\": [\r\n        {\r\n            \"description\": \"newAttribute\",\r\n            \"value\": \"valueNewAttribute\"\r\n        }\r\n    ]\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{urlBase}}product",
+					"host": [
+						"{{urlBase}}product"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create - product exists",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{adminToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"product_name\": \"{{existingProductName}}\",\r\n    \"stock_type\": \"Unidades\",\r\n    \"quantity\": 100,\r\n    \"attributes\": [\r\n        {\r\n            \"description\": \"marca\",\r\n            \"value\": \"Stella Artois\"\r\n        }\r\n    ]\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{urlBase}}product",
+					"host": [
+						"{{urlBase}}product"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create - ok (no initial stock)",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{adminToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"product_name\": \"{{newProductOutOfStock}}\",\r\n    \"stock_type\": \"Unidades\",\r\n    \"attributes\": [\r\n        {\r\n            \"description\": \"Material\",\r\n            \"value\": \"Algodón\"\r\n        }\r\n    ]\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{urlBase}}product",
+					"host": [
+						"{{urlBase}}product"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Edit - ok",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{adminToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"product_id\": {{existingProductId}},\r\n    \"attributes\": [\r\n        {\r\n            \"description\": \"AtributoNuevo1\",\r\n            \"value\":\"Valor1\"\r\n        }\r\n    ]\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{urlBase}}product",
+					"host": [
+						"{{urlBase}}product"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Edit - product not found",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{adminToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"product_id\": {{productNon-ExistentId}},\r\n    \"attributes\": [\r\n        {\r\n            \"description\": \"AtributoNuevo1\",\r\n            \"value\":\"Valor1\"\r\n        }\r\n    ]\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{urlBase}}product",
+					"host": [
+						"{{urlBase}}product"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Edit - normal user can not edit",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{userToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"product_id\": {{existingProductId}},\r\n    \"attributes\": [\r\n        {\r\n            \"description\": \"AtributoNuevo1\",\r\n            \"value\":\"Valor1\"\r\n        }\r\n    ]\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{urlBase}}product",
+					"host": [
+						"{{urlBase}}product"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete - ok",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{adminToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{urlBase}}product/{{existingProductToDelete}}",
+					"host": [
+						"{{urlBase}}product"
+					],
+					"path": [
+						"{{existingProductToDelete}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete - product in order",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{adminToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{urlBase}}product/{{existingProductInOrderId}}",
+					"host": [
+						"{{urlBase}}product"
+					],
+					"path": [
+						"{{existingProductInOrderId}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete - product not found",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{adminToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{urlBase}}product/{{productNon-ExistentId}}",
+					"host": [
+						"{{urlBase}}product"
+					],
+					"path": [
+						"{{productNon-ExistentId}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get all - ok",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{userToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{urlBase}}product",
+					"host": [
+						"{{urlBase}}product"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
