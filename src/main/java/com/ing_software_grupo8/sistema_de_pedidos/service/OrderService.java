@@ -173,6 +173,7 @@ public class OrderService implements IOrderService {
         return new ProductResponseDTO(
                 productOrder.getProduct().getProductId(),
                 productOrder.getProduct().getName(),
+                productOrder.getOrderQuantity(),
                 attributes
         );
     }

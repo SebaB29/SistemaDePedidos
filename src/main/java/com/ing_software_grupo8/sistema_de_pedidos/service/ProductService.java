@@ -85,6 +85,7 @@ public class ProductService implements IProductService {
                 .map(product -> new ProductResponseDTO(
                         product.getProductId(),
                         product.getName(),
+                        product.getStock().getQuantity(),
                         product.getAttributes().stream()
                                 .map(attribute -> new AttributeDTO(attribute.getDescription(), attribute.getValue()))
                                 .collect(Collectors.toList())))
