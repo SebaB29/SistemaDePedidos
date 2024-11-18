@@ -30,7 +30,7 @@ public class JsonRuleRepository {
         switch (type) {
             case "AttributeLimitRule":
                 return new AttributeLimitRule(
-                        node.get("attribute").asText(),
+                        node.get("attributeName").asText(),
                         (float) node.get("maxCount").asDouble()
                 );
             case "AttributeValueLimitRule":
@@ -38,6 +38,11 @@ public class JsonRuleRepository {
                         node.get("attributeName").asText(),
                         node.get("maxValue").asDouble()
                 );
+            case "ProductLimitRule":
+                return new ProductLimitRule(
+                        node.get("productName").asText(),
+                        (float) node.get("maxCount").asDouble()
+            );
             case "AndRule":
                 List<Rule> andSubRules = new ArrayList<>();
                 for (JsonNode subRuleNode : node.get("subRules")) {
