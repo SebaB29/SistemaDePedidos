@@ -36,8 +36,8 @@ public class UserService implements IUserService {
     }
 
     @Override
-    public Optional<User> getUser(String userId) {
-        return Optional.of(findUserByIdOrThrow(Long.valueOf(userId)));
+    public Optional<User> getUser(String email) {
+        return userRepository.findUserByEmail(email);
     }
 
     private void verifySameUser(User user, HttpServletRequest request) {

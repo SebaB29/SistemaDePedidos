@@ -7,7 +7,7 @@ const validationsForm = (form) => {
   const errors = {}
 
   const regex = {
-    username: /^[A-Za-zÑñÁáÉéÍíÓóÚúÜü\s]+$/,
+    userName: /^[A-Za-zÑñÁáÉéÍíÓóÚúÜü\s]+$/,
     lastName: /^[A-Za-zÑñÁáÉéÍíÓóÚúÜü\s]+$/,
     email: /.*/,
     password: /.*/,
@@ -18,7 +18,7 @@ const validationsForm = (form) => {
   }
 
   const message = {
-    username: "El campo 'Nombre' solo acepta mayusculas, minusculas y espacios en blanco",
+    userName: "El campo 'Nombre' solo acepta mayusculas, minusculas y espacios en blanco",
     lastName: "El campo 'Apellido' solo acepta mayusculas, minusculas y espacios en blanco",
     password: '',
     age: 'Debes ser mayor de 18 y menor de 120',
@@ -46,7 +46,7 @@ const styles = {
 export const EditAccountForm = ({ data }) => {
   const ENDPOINT = 'http://localhost:8080/user'
   const initialForm = {
-    username: data.username,
+    userName: data.username,
     lastName: data.lastName,
     email: data.email,
     age: data.age.toString(),
@@ -81,14 +81,14 @@ export const EditAccountForm = ({ data }) => {
       <form onSubmit={handleSubmit}>
         <input
           type='text'
-          name='username'
+          name='userName'
           placeholder='Escribe tu nombre'
           onBlur={handleBlur}
           onChange={handleChange}
-          value={form.username}
+          value={form.userName}
           required
         />
-        {errors.username && <p style={styles}>{errors.username}</p>}
+        {errors.userName && <p style={styles}>{errors.userName}</p>}
         <input
           type='text'
           name='lastName'

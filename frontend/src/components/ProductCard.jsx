@@ -4,8 +4,6 @@ import { useModal } from '../hooks/useModal'
 import { EditProductForm } from './EditProductForm'
 import { EditProductStockForm } from './EditProductStockForm'
 
-const DELETE_ENDPOINT = ''
-
 export const ProductCard = ({ product, setCarrito, itemsCarrito }) => {
   const [isOpenEditProductModal, openEditProductModal, closeEditProductModal] = useModal(false)
   const [isOpenEditStockModal, openEditStockModal, closeEditStockModal] = useModal(false)
@@ -22,20 +20,22 @@ export const ProductCard = ({ product, setCarrito, itemsCarrito }) => {
 
   const handleDelete = () => {
     helpHttp().del(
-      DELETE_ENDPOINT,
+      `http://localhost:8080/product/${product.productId}`,
       {
-        body: {
-          id: product.id
-        },
         headers: {
           'Content-Type': 'Application/json',
           Accept: 'application/json'
         }
       })
       .then(res => {
-        window.alert(res)
+        if (res.status !== 'OK') {
+          window.alert(res.error)
+        } else {
+          console.log(res)
+          window.alert(res.data.message)
+          window.location.reload()
+        }
       })
-    window.location.reload()
   }
 
   return (
