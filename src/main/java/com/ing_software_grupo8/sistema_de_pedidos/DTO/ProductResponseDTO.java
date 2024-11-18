@@ -19,14 +19,8 @@ public class ProductResponseDTO {
     private String name;
 
     @JsonProperty
-    private List<AttributeDTO> attributes;
-
-    @JsonProperty
     private Float quantity;
 
-    public ProductResponseDTO(Long productId, String name, List<AttributeDTO> attributes) {
-        this.productId = productId;
-        this.name = name;
-        this.attributes = attributes;
-    }
+    @JsonProperty
+    private List<AttributeDTO> attributes;
 }
