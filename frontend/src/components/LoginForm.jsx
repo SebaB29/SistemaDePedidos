@@ -74,7 +74,9 @@ const LoginForm = () => {
 
   const handleSubmitLogin = (e) => {
     window.sessionStorage.setItem('email', form.email)
-    handleSubmit(e)
+    const encodedCredentials = btoa(`${form.email}:${form.password}`)
+    const headers = { Authorization: `Basic ${encodedCredentials}` }
+    handleSubmit(e, headers)
   }
 
   return (

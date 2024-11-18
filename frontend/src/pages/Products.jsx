@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import Header from '../components/Header'
 import { Main } from '../components/Main'
-import { ProductsForm } from '../components/ProductsForm'
+// import { ProductsForm } from '../components/ProductsForm'
 import Loader from '../components/Loader'
 import { ProductCard } from '../components/ProductCard'
 import { useNavigate } from 'react-router-dom'
@@ -32,7 +32,15 @@ export const Products = () => {
         let newData = []
         for (let i = 0; i < res.data.length; i++) {
           const product = res.data[i]
-          const stockRes = await fetch(`http://localhost:8080/product/${product.productId}/stock`)
+          const stockRes = await fetch(
+            `http://localhost:8080/product/${product.productId}/stock`,
+            {
+              headers: {
+                Accept: 'application/json',
+                Authorization: `Bearer ${window.sessionStorage.getItem('access_token')}`
+              }
+            }
+          )
           const stock = await stockRes.json()
           newData = [...newData, { ...product, ...stock.data }]
         }
@@ -54,7 +62,7 @@ export const Products = () => {
       <Header title='Productos' />
       <Main>
         <div className='barra-superior-products'>
-          <ProductsForm setLoading={setLoading} setProducts={setResponse} />
+          {/* <ProductsForm setLoading={setLoading} setProducts={setResponse} /> */}
           <Carrito items={carrito} />
         </div>
         {window.sessionStorage.getItem('rol') === 'ADMIN' &&
