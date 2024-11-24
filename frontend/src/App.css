@@ -34,9 +34,23 @@ header {
   align-items: center;
 }
 
-.carrito {
+.cart {
   background-color: rgb(179, 179, 179);
   padding: .5rem;
   margin: .5rem;
   border-radius: .5rem;
+}
+
+.cart:hover {
+  background-color: grey;
+  cursor: pointer;
+}
+
+.cart-selected {
+  background-color: grey;
+  border: 2px solid;
+}
+
+.delete-order-button {
+  padding: .4rem;
 }

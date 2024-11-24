@@ -168,6 +168,7 @@ public class OrderService implements IOrderService {
 
     private OrderResponseDTO mapToOrderResponseDTO(Order order) {
         return new OrderResponseDTO(
+                order.getOrderId(),
                 order.getOrderState().getStateDesc(),
                 order.getOrderDate().toString(),
                 order.getProductOrder().stream()
