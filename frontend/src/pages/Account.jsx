@@ -41,24 +41,28 @@ export const Account = () => {
     <>
       <Header title='Mi cuenta' />
       <Main>
-        {loading && <Loader />}
-        {response.status === 'OK' &&
-          <><img src={response.data.photo} alt='foto' className='user-image' />
-            <ul>
-              <li>Nombre: {response.data.username}</li>
-              <li>Apellido: {response.data.lastName}</li>
-              <li>Email: {response.data.email}</li>
-              <li>Edad: {response.data.age}</li>
-              <li>Género: {response.data.gender}</li>
-              <li>Dirección: {response.data.address}</li>
-            </ul>
-            <button onClick={openModal}>Editar Perfil</button>
-            <Modal isOpen={isOpenModal} closeModal={closeModal}>
-              <h3>Editar Perfil</h3>
-              <EditAccountForm data={response.data} />
-            </Modal>
-          </>}
-
+        <div className='account-container'>
+          {loading && <Loader />}
+          {response.status === 'OK' &&
+            <>
+              <img src={response.data.photo} alt='Foto de perfil' className='user-image' />
+              <div>
+                <ul>
+                  <li>Nombre: {response.data.username}</li>
+                  <li>Apellido: {response.data.lastName}</li>
+                  <li>Email: {response.data.email}</li>
+                  <li>Edad: {response.data.age}</li>
+                  <li>Género: {response.data.gender}</li>
+                  <li>Dirección: {response.data.address}</li>
+                </ul>
+                <button onClick={openModal}>Editar Perfil</button>
+              </div>
+              <Modal isOpen={isOpenModal} closeModal={closeModal}>
+                <h3>Editar Perfil</h3>
+                <EditAccountForm data={response.data} />
+              </Modal>
+            </>}
+        </div>
       </Main>
     </>
   )

@@ -47,7 +47,6 @@ public class OrderService implements IOrderService {
 
     @Override
     public MessageResponseDTO create(OrderRequestDTO orderRequestDTO, HttpServletRequest request) {
-        validateUserAuthorization(request);
         validateOrderProducts(orderRequestDTO.getProductOrderDTOList());
 
         Order order = new Order();
@@ -76,8 +75,11 @@ public class OrderService implements IOrderService {
         OrderState orderState = findOrderStateByCode(orderRequestDTO.getOrderState());
 
         if (orderState.getStateCode() == OrderStateEnum.CANCELADO.ordinal()) {
-            validateUserAuthorization(request);
-            cancelOrder(order);
+            if (jwtService.isSameUser(order.getUser(), jwtService.getTokenFromRequest(request))) {
+                cancelOrder(order);
+            }else{
+                throw new ApiException(HttpStatus.UNAUTHORIZED, "La orden no te pertenece");
+            }
         } else {
             validateAdminAuthorization(request);
         }

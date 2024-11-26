@@ -1,18 +1,5 @@
 import { helpHttp } from '../helpers/helpHttp'
 
-// const nextState = (orderState) => {
-//   let nextOrder
-//   switch (orderState) {
-//     case 'Confirmado':
-//       nextOrder = 3
-//       break
-//     case 'Cancelado':
-//       nextOrder = 0
-//       break
-//   }
-//   return nextOrder
-// }
-
 export const OrderCard = ({ order }) => {
   const options = {
     year: 'numeric',
@@ -20,8 +7,7 @@ export const OrderCard = ({ order }) => {
     day: 'numeric',
     hour: 'numeric',
     minute: 'numeric',
-    second: 'numeric',
-    hour12: true
+    hour12: false
   }
   const formattedDate = new Intl.DateTimeFormat('es-ES', options).format(new Date(order.creation_date))
 
@@ -60,7 +46,6 @@ export const OrderCard = ({ order }) => {
         <p>Fecha de creacion: {formattedDate}</p>
         {window.sessionStorage.getItem('rol') === 'ADMIN' &&
           <>
-            <button onClick={() => handleChangeState(0)}>Cambiar a Confirmado</button>
             <button onClick={() => handleChangeState(1)}>Cambiar a En Proceso</button>
             <button onClick={() => handleChangeState(2)}>Cambiar a Enviado</button>
           </>}

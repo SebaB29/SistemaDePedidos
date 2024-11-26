@@ -13,7 +13,7 @@ export const NavBar = () => {
       <ul className='header-buttons'>
         <li><button onClick={() => navigate('/products')}>Productos</button></li>
         <li><button onClick={() => navigate('/orders')}>Ordenes</button></li>
-        <li><button onClick={() => navigate('/account')}>Mi Usuario</button></li>
+        <li><button onClick={() => navigate('/account')}>Mi Cuenta</button></li>
         <li><button onClick={handleLogOut}>Cerrar sesion</button></li>
       </ul>
     </nav>

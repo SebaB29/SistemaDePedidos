@@ -79,7 +79,7 @@ export const Products = () => {
           {carts.map((el, index) => (
             <Cart myOnClick={handleSelect} key={index} thisCart={el} cart={cart} setCart={setCart} carts={carts} setCarts={setCarts} />
           ))}
-          <button onClick={e => setCarts([...carts, [carts.at(-1)[0] + 1]])}>Agregar Carrito</button>
+          <button onClick={e => setCarts([...carts, [carts.at(-1)[0] + 1]])}>➕</button>
         </div>
         {window.sessionStorage.getItem('rol') === 'ADMIN' &&
           <><button onClick={() => navigate('/create_product')}>Agregar Producto</button><hr /></>}

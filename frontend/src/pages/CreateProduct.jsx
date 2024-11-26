@@ -123,8 +123,11 @@ export const CreateProduct = () => {
         <input type='submit' value='Crear' />
       </form>
       {loading && <Loader />}
-      {(response !== null && response.status === 'CREATED') && <Message bgColor='#198754' message={response.data.message} />}
-
+      {response !== null
+        ? response.status === 'CREATED'
+          ? <Message bgColor='#198754' message={response.data.message} />
+          : <Message bgColor='#c80000' message={response.error} />
+        : <></>}
     </>
   )
 }
