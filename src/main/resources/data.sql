@@ -1,8 +1,8 @@
 --USER
 INSERT INTO users (username, last_name, email, password, age, photo, gender, address, role)
 VALUES
-    ('UserAdmin', 'AdminLastName', 'admin@gmail.com', 'pass123', 40, 'https://photoAdmin.png/', 'male', 'calle 123', 'ADMIN'),
-    ('NormalUser', 'UserLastName', 'normalUser@fiuba.com', 'pass123', 25, 'https://photoNormalUser.png/', 'male', 'calle 124', 'USER');
+    ('UserAdmin', 'AdminLastName', 'admin@gmail.com', 'pass123', 40, 'https://as2.ftcdn.net/v2/jpg/03/49/49/79/1000_F_349497933_Ly4im8BDmHLaLzgyKg2f2yZOvJjBtlw5.jpg', 'male', 'calle 123', 'ADMIN'),
+    ('NormalUser', 'UserLastName', 'normalUser@fiuba.com', 'pass123', 25, 'https://as2.ftcdn.net/v2/jpg/03/49/49/79/1000_F_349497933_Ly4im8BDmHLaLzgyKg2f2yZOvJjBtlw5.jpg', 'male', 'calle 124', 'USER');
 
 --STOCK
 INSERT INTO Stock (stock_type, quantity)

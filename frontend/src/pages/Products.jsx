@@ -1,21 +1,35 @@
 import { useEffect, useState } from 'react'
 import Header from '../components/Header'
 import { Main } from '../components/Main'
-// import { ProductsForm } from '../components/ProductsForm'
 import Loader from '../components/Loader'
 import { ProductCard } from '../components/ProductCard'
 import { useNavigate } from 'react-router-dom'
 import { helpHttp } from '../helpers/helpHttp'
 import Message from '../components/Message'
-import { Carrito } from '../components/Carrito'
+import { Cart } from '../components/Cart'
 
 const ENDPOINT = 'http://localhost:8080/product'
 
 export const Products = () => {
   const [loading, setLoading] = useState(false)
   const [response, setResponse] = useState({})
-  const [carrito, setCarrito] = useState([])
+  const [cart, setCart] = useState([0])
+  const [carts, setCarts] = useState([cart])
   const navigate = useNavigate()
+
+  const handleSelect = (e, cart) => {
+    e.stopPropagation()
+    if (e.target.classList.contains('cart-button')) return
+    setCart(cart)
+  }
+
+  useEffect(() => {
+    const newCarts = carts.map(el => {
+      if (el[0] === cart[0]) return cart
+      return el
+    })
+    setCarts(newCarts)
+  }, [cart])
 
   useEffect(() => {
     setLoading(true)
@@ -62,23 +76,24 @@ export const Products = () => {
       <Header title='Productos' />
       <Main>
         <div className='barra-superior-products'>
-          {/* <ProductsForm setLoading={setLoading} setProducts={setResponse} /> */}
-          <Carrito items={carrito} />
+          {carts.map((el, index) => (
+            <Cart myOnClick={handleSelect} key={index} thisCart={el} cart={cart} setCart={setCart} carts={carts} setCarts={setCarts} />
+          ))}
+          <button onClick={e => setCarts([...carts, [carts.at(-1)[0] + 1]])}>➕</button>
         </div>
         {window.sessionStorage.getItem('rol') === 'ADMIN' &&
           <><button onClick={() => navigate('/create_product')}>Agregar Producto</button><hr /></>}
         {loading && <Loader />}
-        {response.status &&
-          response.status === 'OK'
+        {response.status && response.status === 'OK'
           ? response.data.map((product, index) => (
             <ProductCard
               key={index}
               product={product}
-              itemsCarrito={carrito}
-              setCarrito={setCarrito}
+              cart={cart}
+              setCart={setCart}
             />
           ))
-          : <Message bgColor='#ff0000' message={response.status + ': ' + response.error} />}
+          : !loading && <Message bgColor='#ff0000' message={response.status + ': ' + response.error} />}
       </Main>
     </>
   )
