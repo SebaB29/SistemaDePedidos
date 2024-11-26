@@ -28,6 +28,7 @@ const validationsForm = (form) => {
   }
 
   Object.keys(form).forEach(el => {
+    if (el === 'password') return
     if (!form[el].trim()) {
       errors[el] = 'Este campo es requerido'
     } else if (!regex[el].test(form[el].trim())) {
@@ -142,7 +143,7 @@ export const EditAccountForm = ({ data }) => {
         />
         {errors.address && <p style={styles}>{errors.address}</p>}
         <input
-          type='password'
+          type='hidden'
           name='password'
           placeholder='Escribe tu Contraseña'
           onBlur={handleBlur}

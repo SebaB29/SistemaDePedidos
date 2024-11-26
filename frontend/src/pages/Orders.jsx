@@ -39,7 +39,6 @@ export const Orders = () => {
           <OrderCard
             key={index}
             order={order}
-            numeroDeOrden={index + 1}
           />
         ))}
       </Main>

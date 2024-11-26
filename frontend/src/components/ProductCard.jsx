@@ -4,18 +4,21 @@ import { useModal } from '../hooks/useModal'
 import { EditProductForm } from './EditProductForm'
 import { EditProductStockForm } from './EditProductStockForm'
 
-export const ProductCard = ({ product, setCarrito, itemsCarrito }) => {
+export const ProductCard = ({ product, setCart, cart }) => {
   const [isOpenEditProductModal, openEditProductModal, closeEditProductModal] = useModal(false)
   const [isOpenEditStockModal, openEditStockModal, closeEditStockModal] = useModal(false)
 
   const handleBuy = (e) => {
     let quantity
     while (!/^(0|[1-9][0-9]*)$/.test(quantity)) {
-      quantity = window.prompt('Cuantos quieres comprar?')
+      quantity = window.prompt('¿Cuantos queres agregar?')
       if (quantity === null) return
     }
-    setCarrito([...itemsCarrito, { productId: product.productId, quantity, name: product.name }])
-    e.target.style.display = 'none'
+    const newCart = cart
+      .slice(1)
+      .filter(el => el.name !== product.name)
+    newCart.push({ productId: product.productId, quantity, name: product.name })
+    setCart([cart[0], ...newCart])
   }
 
   const handleDelete = () => {

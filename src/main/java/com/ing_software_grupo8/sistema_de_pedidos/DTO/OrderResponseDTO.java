@@ -11,6 +11,8 @@ import java.util.List;
 @NoArgsConstructor
 @EqualsAndHashCode
 public class OrderResponseDTO {
+    @JsonProperty(value = "order_id")
+    private Long orderId;
 
     @JsonProperty(value = "order_state")
     private String orderState;
