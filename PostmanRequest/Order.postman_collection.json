@@ -1,0 +1,386 @@
+{
+	"info": {
+		"_postman_id": "20cd1bf8-9189-4dd4-bd37-b9e490cbdab6",
+		"name": "Order",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "39234104",
+		"_collection_link": "https://ingeniera-de-software-grupo-8.postman.co/workspace/Ingenier%25C3%25ADa-de-software---Grupo-~fa35169c-c87a-4f89-86a0-08bd934c1418/collection/39424698-20cd1bf8-9189-4dd4-bd37-b9e490cbdab6?action=share&source=collection_link&creator=39234104"
+	},
+	"item": [
+		{
+			"name": "Create - ok",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{userToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"user_id\": {{existingUserId}},\r\n    \"products\":[\r\n        {\r\n            \"product_id\": {{existingProductId}},\r\n            \"quantity\": 2\r\n        }\r\n    ]\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{urlBase}}order",
+					"host": [
+						"{{urlBase}}order"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create - ruleAlcoholType",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{userToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"user_id\": {{existingUserId}},\r\n    \"order_id\": 2,\r\n    \"order_state\": 1,\r\n    \"products\": [\r\n        {\r\n            \"product_id\": 5,\r\n            \"quantity\": 1\r\n        },\r\n                {\r\n            \"product_id\": 3,\r\n            \"quantity\": 1\r\n        },\r\n        {\r\n            \"product_id\": 6,\r\n            \"quantity\": 1\r\n        },\r\n        {\r\n            \"product_id\": 7,\r\n            \"quantity\": 1\r\n        }\r\n    ]\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{urlBase}}order",
+					"host": [
+						"{{urlBase}}order"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create - maxWeight",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{userToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"user_id\": {{existingUserId}},\r\n    \"order_id\": 2,\r\n    \"order_state\": 1,\r\n    \"products\": [\r\n        {\r\n            \"product_id\": 6,\r\n            \"quantity\": 3\r\n        },\r\n        {\r\n            \"product_id\": 7,\r\n            \"quantity\": 2\r\n        }\r\n    ]\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{urlBase}}order",
+					"host": [
+						"{{urlBase}}order"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create - maxProductQuantity",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{userToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"user_id\": {{existingUserId}},\r\n    \"order_id\": 2,\r\n    \"order_state\": 1,\r\n    \"products\": [\r\n        {\r\n            \"product_id\": 3,\r\n            \"quantity\": 5\r\n        }\r\n    ]\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{urlBase}}order",
+					"host": [
+						"{{urlBase}}order"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create - user not found",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{userToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"user_id\": {{userNoneExistentId}},\r\n    \"products\":[\r\n        {\r\n            \"product_id\": 1,\r\n            \"quantity\": 2\r\n        },\r\n        {\r\n            \"product_id\": 2,\r\n            \"quantity\": 20\r\n        }\r\n    ]\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{urlBase}}order",
+					"host": [
+						"{{urlBase}}order"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create - invalid stock",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{userToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"user_id\": {{existingUserId}},\r\n    \"products\":[\r\n        {\r\n            \"product_id\": {{existingProductId}},\r\n            \"quantity\": 2000\r\n        }\r\n    ]\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{urlBase}}order",
+					"host": [
+						"{{urlBase}}order"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create - product not found",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{userToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"user_id\": {{existingUserId}},\r\n    \"products\":[\r\n        {\r\n            \"product_id\": {{productNon-ExistentId}},\r\n            \"quantity\": 2\r\n        },\r\n        {\r\n            \"product_id\": 2,\r\n            \"quantity\": 20\r\n        }\r\n    ]\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{urlBase}}order",
+					"host": [
+						"{{urlBase}}order"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get all by user - ok",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{userToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{urlBase}}order?userId={{existingUserId}}",
+					"host": [
+						"{{urlBase}}order"
+					],
+					"query": [
+						{
+							"key": "userId",
+							"value": "{{existingUserId}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get all - ok",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{adminToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{urlBase}}order",
+					"host": [
+						"{{urlBase}}order"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get all - forbidden",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{userToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{urlBase}}order",
+					"host": [
+						"{{urlBase}}order"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get all by user - user not found",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{userToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{urlBase}}order?userId={{userNoneExistentId}}",
+					"host": [
+						"{{urlBase}}order"
+					],
+					"query": [
+						{
+							"key": "userId",
+							"value": "{{userNoneExistentId}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Cancel User - ok",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{adminToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PATCH",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"order_id\": {{existingOrderId}},\r\n    \"order_state\": 2\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{urlBase}}order/state",
+					"host": [
+						"{{urlBase}}order"
+					],
+					"path": [
+						"state"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

@@ -12,6 +12,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.http.HttpStatus;
+import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.mock.web.MockHttpServletRequest;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -29,6 +31,9 @@ public class ProductServiceTest {
     @Mock
     private IStockService stockService;
 
+    @Mock
+    private IJwtService jwtService;
+
     @InjectMocks
     private ProductService productService;
 
@@ -39,6 +44,7 @@ public class ProductServiceTest {
 
     @Test
     void testCreateProduct() {
+        HttpServletRequest servletRequest = new MockHttpServletRequest();
         AdminCreateProductRequestDTO request = new AdminCreateProductRequestDTO();
         request.setProductName("Producto Test");
         request.setQuantity(10);
@@ -48,6 +54,7 @@ public class ProductServiceTest {
         request.setAttributes(Arrays.asList(attributeDTO));
 
         Stock stock = new Stock();
+        when(!jwtService.tokenHasRoleAdmin(servletRequest)).thenReturn(true);
         doNothing().when(stockService).createStock(stock);
 
         MessageResponseDTO response = productService.createProduct(request);
@@ -59,6 +66,7 @@ public class ProductServiceTest {
 
     @Test
     void testEditProduct() {
+        HttpServletRequest servletRequest = new MockHttpServletRequest();
         ProductRequestDTO request = new ProductRequestDTO();
         request.setProductId(1L);
         request.setName("Producto Editado");
@@ -75,6 +83,7 @@ public class ProductServiceTest {
         attributes.add(originalAttribute);
         product.setAttributes(attributes);
 
+        when(!jwtService.tokenHasRoleAdmin(servletRequest)).thenReturn(true);
         when(productRepository.findById(1L)).thenReturn(Optional.of(product));
 
         MessageResponseDTO response = productService.editProduct(request);
@@ -86,9 +95,11 @@ public class ProductServiceTest {
 
     @Test
     void testEditProduct_ProductNotFound() {
+        HttpServletRequest servletRequest = new MockHttpServletRequest();
         ProductRequestDTO request = new ProductRequestDTO();
         request.setProductId(999L);
 
+        when(!jwtService.tokenHasRoleAdmin(servletRequest)).thenReturn(true);
         when(productRepository.findById(999L)).thenReturn(Optional.empty());
 
         ApiException exception = assertThrows(ApiException.class, () -> productService.editProduct(request));
@@ -98,10 +109,12 @@ public class ProductServiceTest {
 
     @Test
     void testDeleteProduct() {
+        HttpServletRequest servletRequest = new MockHttpServletRequest();
         ProductRequestDTO request = new ProductRequestDTO();
         request.setProductId(1L);
 
         Product product = new Product();
+        when(!jwtService.tokenHasRoleAdmin(servletRequest)).thenReturn(true);
         when(productRepository.findById(1L)).thenReturn(Optional.of(product));
 
         MessageResponseDTO response = productService.deleteProduct(request);
@@ -112,9 +125,11 @@ public class ProductServiceTest {
 
     @Test
     void testDeleteProduct_ProductNotFound() {
+        HttpServletRequest servletRequest = new MockHttpServletRequest();
         ProductRequestDTO request = new ProductRequestDTO();
         request.setProductId(999L);
 
+        when(!jwtService.tokenHasRoleAdmin(servletRequest)).thenReturn(true);
         when(productRepository.findById(999L)).thenReturn(Optional.empty());
 
         ApiException exception = assertThrows(ApiException.class, () -> productService.deleteProduct(request));
@@ -171,9 +186,11 @@ public class ProductServiceTest {
 
     @Test
     void testEditStock() {
+        HttpServletRequest servletRequest = new MockHttpServletRequest();
         StockDTO stockDTO = new StockDTO();
         stockDTO.setQuantity(20);
 
+        when(!jwtService.tokenHasRoleAdmin(servletRequest)).thenReturn(true);
         MessageResponseDTO response = productService.editStock(stockDTO);
 
         assertEquals("Stock editado correctamente", response.getMessage());

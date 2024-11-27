@@ -53,6 +53,18 @@ const LoginForm = () => {
     if (response.status === 'OK') {
       window.sessionStorage.setItem('access_token', response.data.access_token)
       window.sessionStorage.setItem('refresh_token', response.data.refresh_token)
+      helpHttp().get(
+        `http://localhost:8080/user/${window.sessionStorage.getItem('email')}`,
+        {
+          headers: {
+            'Content-Type': 'Application/json',
+            Accept: 'application/json'
+          }
+        })
+        .then(res => {
+          window.sessionStorage.setItem('rol', res.data.role)
+          window.sessionStorage.setItem('user_id', res.data.userId)
+        })
       window.alert('Ingresado correctamente')
       navigate('/products')
     } else {
@@ -60,10 +72,17 @@ const LoginForm = () => {
     }
   }, [response])
 
+  const handleSubmitLogin = (e) => {
+    window.sessionStorage.setItem('email', form.email)
+    const encodedCredentials = btoa(`${form.email}:${form.password}`)
+    const headers = { Authorization: `Basic ${encodedCredentials}` }
+    handleSubmit(e, headers)
+  }
+
   return (
     <div>
       <h2>Login</h2>
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmitLogin}>
         <input
           type='email'
           name='email'

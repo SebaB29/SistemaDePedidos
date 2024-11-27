@@ -15,9 +15,15 @@ import java.util.List;
 @NoArgsConstructor
 public class OrderRequestDTO {
 
-    @JsonProperty(required = true)
+    @JsonProperty(value = "user_id")
     private Long userId;
 
-    @JsonProperty(required = true)
+    @JsonProperty(value = "order_id")
+    private Long orderId;
+
+    @JsonProperty(value = "order_state")
+    private Integer orderState;
+
+    @JsonProperty(value = "products")
     private List<ProductOrderDTO> productOrderDTOList;
 }

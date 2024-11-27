@@ -1,71 +1,55 @@
-import { useState } from 'react'
 import { helpHttp } from '../helpers/helpHttp'
-import Loader from './Loader'
 import Modal from './Modal'
 import { useModal } from '../hooks/useModal'
 import { EditProductForm } from './EditProductForm'
+import { EditProductStockForm } from './EditProductStockForm'
 
-const BUY_ENDPOINT = ''
-const DELETE_ENDPOINT = ''
-
-export const ProductCard = ({ product }) => {
-  const [loading, setLoading] = useState(false)
-  const [isOpenModal, openModal, closeModal] = useModal(false)
+export const ProductCard = ({ product, setCarrito, itemsCarrito }) => {
+  const [isOpenEditProductModal, openEditProductModal, closeEditProductModal] = useModal(false)
+  const [isOpenEditStockModal, openEditStockModal, closeEditStockModal] = useModal(false)
 
   const handleBuy = (e) => {
-    let amount
-    while (!/^(0|[1-9][0-9]*)$/.test(amount)) {
-      amount = window.prompt('Cuantos quieres comprar?')
-      if (amount === null) return
+    let quantity
+    while (!/^(0|[1-9][0-9]*)$/.test(quantity)) {
+      quantity = window.prompt('Cuantos quieres comprar?')
+      if (quantity === null) return
     }
-    setLoading(true)
-    helpHttp().post(
-      BUY_ENDPOINT,
-      {
-        body: {
-          id: product.id,
-          amount
-        },
-        headers: {
-          'Content-Type': 'Application/json',
-          Accept: 'application/json'
-        }
-      })
-      .then(res => {
-        setLoading(false)
-        window.alert(res)
-      })
+    setCarrito([...itemsCarrito, { productId: product.productId, quantity, name: product.name }])
+    e.target.style.display = 'none'
   }
 
   const handleDelete = () => {
     helpHttp().del(
-      DELETE_ENDPOINT,
+      `http://localhost:8080/product/${product.productId}`,
       {
-        body: {
-          id: product.id
-        },
         headers: {
           'Content-Type': 'Application/json',
           Accept: 'application/json'
         }
       })
       .then(res => {
-        window.alert(res)
+        if (res.status !== 'OK') {
+          window.alert(res.error)
+        } else {
+          console.log(res)
+          window.alert(res.data.message)
+          window.location.reload()
+        }
       })
-    window.location.reload()
   }
 
   return (
     <>
       <article className='product-card'>
         <h4>{product.name}</h4>
-        <p>Stock: {product.stock}</p>
-        {loading
-          ? <Loader />
-          : <button onClick={handleBuy}>Comprar</button>}
-        {window.sessionStorage.getItem('admin')
-          ? <><button onClick={openModal}>Editar</button><button onClick={handleDelete}>Eliminar</button></>
-          : <></>}
+        <p>{product.quantity} {product.stockType}</p>
+        <button onClick={handleBuy}>Agregar al carrito</button>
+        {window.sessionStorage.getItem('rol') === 'ADMIN' &&
+          <>
+            <button onClick={openEditProductModal}>Editar Producto</button>
+            <button onClick={handleDelete}>Eliminar</button>
+            <button onClick={openEditStockModal}>Editar Stock</button>
+          </>}
       </article>
       <ul className='porperties-list'>
         {product.attributes.map((attribute, index) => (
@@ -73,9 +57,13 @@ export const ProductCard = ({ product }) => {
         ))}
       </ul>
 
-      <Modal isOpen={isOpenModal} closeModal={closeModal}>
+      <Modal isOpen={isOpenEditProductModal} closeModal={closeEditProductModal}>
         <h3>Editar {product.name}</h3>
         <EditProductForm product={product} />
+      </Modal>
+      <Modal isOpen={isOpenEditStockModal} closeModal={closeEditStockModal}>
+        <h3>Stock de {product.name}</h3>
+        <EditProductStockForm product={product} />
       </Modal>
     </>
   )

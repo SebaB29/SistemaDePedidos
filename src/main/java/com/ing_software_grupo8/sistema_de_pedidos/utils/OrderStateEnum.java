@@ -2,21 +2,18 @@ package com.ing_software_grupo8.sistema_de_pedidos.utils;
 
 public enum OrderStateEnum {
 
-    CREADO,
+    CONFIRMADO,
     PROCESO,
-    ENVIADO;
+    ENVIADO,
+    CANCELADO;
 
     @Override
     public String toString() {
-        switch (this) {
-            case CREADO:
-                return "Creado";
-            case PROCESO:
-                return "En proceso";
-            case ENVIADO:
-                return "Enviado";
-            default:
-                return "";
-        }
+        return switch (this) {
+            case CONFIRMADO -> "Confirmado";
+            case PROCESO -> "En proceso";
+            case ENVIADO -> "Enviado";
+            case CANCELADO -> "Cancelado";
+        };
     }
 }
