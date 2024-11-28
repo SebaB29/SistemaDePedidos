@@ -119,7 +119,7 @@ class OrderServiceTest {
         Product product = new Product();
         product.setStock(new Stock(1L, "KG", 10f));
 
-        when(jwtService.tokenHasRoleUser(servletRequest)).thenReturn(true);
+        when(jwtService.tokenHasRoleUser(any(HttpServletRequest.class))).thenReturn(true);
         when(productRepository.findById(2L)).thenReturn(Optional.of(product));
 
         ApiException exception = assertThrows(ApiException.class, () -> orderService.create(orderRequestDTO, servletRequest));

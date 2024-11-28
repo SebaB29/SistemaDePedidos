@@ -108,13 +108,6 @@ public class JwtService implements IJwtService {
         return roles != null && roles.contains(RoleEnum.USER.name());
     }
 
-    @SuppressWarnings("unchecked")
-    public boolean tokenHasRoleUser(HttpServletRequest request) {
-        String token = getTokenFromRequest(request);
-        List<String> roles = getClaim(token, claims -> claims.get("roles", List.class));
-        return roles != null && roles.contains(Role.USER.name());
-    }
-
     private Date getExpiration(String token) {
         return getClaim(token, Claims::getExpiration);
     }

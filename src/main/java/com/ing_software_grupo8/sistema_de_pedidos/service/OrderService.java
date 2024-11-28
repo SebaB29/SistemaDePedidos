@@ -47,6 +47,7 @@ public class OrderService implements IOrderService {
 
     @Override
     public MessageResponseDTO create(OrderRequestDTO orderRequestDTO, HttpServletRequest request) {
+        validateUserAuthorization(request);
         validateOrderProducts(orderRequestDTO.getProductOrderDTOList());
 
         Order order = new Order();
