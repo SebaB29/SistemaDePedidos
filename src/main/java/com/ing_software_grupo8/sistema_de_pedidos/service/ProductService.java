@@ -72,7 +72,8 @@ public class ProductService implements IProductService {
         findProductById(productId);
 
         if (!productOrderRepository.findByProduct_ProductId(productId).isEmpty()) {
-            throw new ApiException(HttpStatus.CONFLICT, "El producto no puede ser eliminado, ya que pertenece a una orden");
+            throw new ApiException(HttpStatus.CONFLICT,
+                    "El producto no puede ser eliminado, ya que pertenece a una orden");
         }
 
         productRepository.deleteById(productId);
@@ -84,6 +85,7 @@ public class ProductService implements IProductService {
                 .map(product -> new ProductResponseDTO(
                         product.getProductId(),
                         product.getName(),
+                        product.getStock().getQuantity(),
                         product.getAttributes().stream()
                                 .map(attribute -> new AttributeDTO(attribute.getDescription(), attribute.getValue()))
                                 .collect(Collectors.toList())))

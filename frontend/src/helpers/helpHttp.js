@@ -1,23 +1,45 @@
+const refresh = async () => {
+  const body = {
+    email: `${window.sessionStorage.getItem('email').toString()}`
+  }
+  const opciones = {
+    method: 'POST',
+    body: JSON.stringify(body),
+    headers: {
+      Accept: 'application/json',
+      Authorization: `Bearer ${window.sessionStorage.getItem('refresh_token')}`,
+      'Content-Type': 'application/json'
+    }
+  }
+  const response = await fetch('http://localhost:8080/token/refresh', opciones)
+    .then(res => res.json())
+  window.sessionStorage.setItem('access_token', response.data.access_token)
+  window.sessionStorage.setItem('refresh_token', response.data.refresh_token)
+}
+
 export const helpHttp = () => {
-  const customFetch = (endpint, options) => {
+  const customFetch = async (endpint, options) => {
     const defaultHeader = {
-      accept: 'application/json'
+      Accept: 'application/json'
     }
 
-    // if (window.sessionStorage.getItem('access_token')) {
-    //   defaultHeader = {
-    //     ...defaultHeader,
-    //     Authorization: `Bearer ${window.sessionStorage.getItem('access_token')}`
-    //   }
-    // }
+    if (!Object.hasOwn(options.headers, 'Authorization')) {
+      defaultHeader.Authorization = `Bearer ${window.sessionStorage.getItem('access_token')}`
+    }
 
     options.headers = options.headers ? { ...options.headers, ...defaultHeader } : defaultHeader
 
     options.body = JSON.stringify(options.body) || false
     if (!options.body) delete options.body
 
-    return fetch(endpint, options)
-      .then(res => res.json())
+    let response = await fetch(endpint, options).then(res => res.json())
+    if (response.statusCode === 403) {
+      await refresh()
+      options.headers.Authorization = `Bearer ${window.sessionStorage.getItem('access_token')}`
+      response = await fetch(endpint, options).then(res => res.json())
+    }
+
+    return response
   }
 
   const get = (url, options = {}) => {
@@ -40,5 +62,10 @@ export const helpHttp = () => {
     return customFetch(url, options)
   }
 
-  return { get, post, put, del }
+  const pat = (url, options = {}) => {
+    options.method = 'PATCH'
+    return customFetch(url, options)
+  }
+
+  return { get, post, put, del, pat }
 }

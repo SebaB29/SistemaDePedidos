@@ -8,7 +8,10 @@ import { helpHttp } from '../helpers/helpHttp'
 export const Orders = () => {
   const [loading, setLoading] = useState(false)
   const [orders, setOrders] = useState([])
-  const ENDPOINT = `http://localhost:8080/order/user/${window.sessionStorage.getItem('user_id')}`
+  let ENDPOINT = `http://localhost:8080/order?userId=${window.sessionStorage.getItem('user_id')}`
+  if (window.sessionStorage.getItem('rol') === 'ADMIN') {
+    ENDPOINT = 'http://localhost:8080/order'
+  }
 
   useEffect(() => {
     setLoading(true)
@@ -36,7 +39,6 @@ export const Orders = () => {
           <OrderCard
             key={index}
             order={order}
-            numeroDeOrden={index + 1}
           />
         ))}
       </Main>

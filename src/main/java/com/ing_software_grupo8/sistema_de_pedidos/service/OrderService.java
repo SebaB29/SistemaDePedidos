@@ -7,6 +7,7 @@ import com.ing_software_grupo8.sistema_de_pedidos.repository.IOrderRepository;
 import com.ing_software_grupo8.sistema_de_pedidos.repository.IOrderStateRepository;
 import com.ing_software_grupo8.sistema_de_pedidos.repository.IProductRepository;
 import com.ing_software_grupo8.sistema_de_pedidos.repository.IUserRepository;
+import com.ing_software_grupo8.sistema_de_pedidos.rules.RuleManager;
 import com.ing_software_grupo8.sistema_de_pedidos.utils.OrderStateEnum;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -20,6 +21,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
+import com.ing_software_grupo8.sistema_de_pedidos.rules.RuleManager;
 
 @Service
 public class OrderService implements IOrderService {
@@ -39,6 +42,9 @@ public class OrderService implements IOrderService {
     @Autowired
     private IJwtService jwtService;
 
+    @Autowired
+    private RuleManager ruleManager;
+
     @Override
     public MessageResponseDTO create(OrderRequestDTO orderRequestDTO, HttpServletRequest request) {
         validateOrderProducts(orderRequestDTO.getProductOrderDTOList());
@@ -53,6 +59,11 @@ public class OrderService implements IOrderService {
                 .collect(Collectors.toList());
 
         order.setProductOrder(productOrders);
+
+        if (!ruleManager.validateOrder(order)) {
+            throw new ApiException(HttpStatus.BAD_REQUEST, "La orden no cumple con las reglas de negocio");
+        }
+
         orderRepository.save(order);
 
         return new MessageResponseDTO("Orden creada correctamente");
@@ -64,7 +75,11 @@ public class OrderService implements IOrderService {
         OrderState orderState = findOrderStateByCode(orderRequestDTO.getOrderState());
 
         if (orderState.getStateCode() == OrderStateEnum.CANCELADO.ordinal()) {
-            cancelOrder(order);
+            if (jwtService.isSameUser(order.getUser(), jwtService.getTokenFromRequest(request))) {
+                cancelOrder(order);
+            }else{
+                throw new ApiException(HttpStatus.UNAUTHORIZED, "La orden no te pertenece");
+            }
         } else {
             validateAdminAuthorization(request);
         }
@@ -76,10 +91,13 @@ public class OrderService implements IOrderService {
     }
 
     @Override
-    public OrderListDTO getAll(Long userId) {
-        User user = findUserById(userId);
-        List<Order> orders = orderRepository.findAllByUser(user);
-
+    public OrderListDTO getAll(Long userId, HttpServletRequest request) {
+        if (userId == null) {
+            validateAdminAuthorization(request);
+        } else {
+            validateUserAuthorization(request);
+        }
+        List<Order> orders = userId == null ? orderRepository.findAll() : orderRepository.findAllByUser(findUserById(userId));
         List<OrderResponseDTO> orderResponseDTOList = orders.stream()
                 .map(this::mapToOrderResponseDTO)
                 .collect(Collectors.toList());
@@ -104,6 +122,12 @@ public class OrderService implements IOrderService {
 
     private void validateAdminAuthorization(HttpServletRequest request) {
         if (!jwtService.tokenHasRoleAdmin(request)) {
+            throw new ApiException(HttpStatus.UNAUTHORIZED, "No tienes autorización");
+        }
+    }
+
+    private void validateUserAuthorization(HttpServletRequest request) {
+        if (!jwtService.tokenHasRoleUser(request)) {
             throw new ApiException(HttpStatus.UNAUTHORIZED, "No tienes autorización");
         }
     }
@@ -146,6 +170,7 @@ public class OrderService implements IOrderService {
 
     private OrderResponseDTO mapToOrderResponseDTO(Order order) {
         return new OrderResponseDTO(
+                order.getOrderId(),
                 order.getOrderState().getStateDesc(),
                 order.getOrderDate().toString(),
                 order.getProductOrder().stream()
@@ -162,6 +187,7 @@ public class OrderService implements IOrderService {
         return new ProductResponseDTO(
                 productOrder.getProduct().getProductId(),
                 productOrder.getProduct().getName(),
+                productOrder.getOrderQuantity(),
                 attributes
         );
     }

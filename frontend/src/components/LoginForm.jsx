@@ -74,7 +74,9 @@ const LoginForm = () => {
 
   const handleSubmitLogin = (e) => {
     window.sessionStorage.setItem('email', form.email)
-    handleSubmit(e)
+    const encodedCredentials = btoa(`${form.email}:${form.password}`)
+    const headers = { Authorization: `Basic ${encodedCredentials}` }
+    handleSubmit(e, headers)
   }
 
   return (
@@ -105,6 +107,8 @@ const LoginForm = () => {
       </form>
       <button onClick={() => navigate('/register')}>Registrarse</button>
       <button onClick={() => navigate('/forgot_password')}>Olvidé mi contraseña</button>
+      <br />
+      <br />
       {loading && <Loader />}
       {errorMessage && <Message bgColor='#ff0000' message={errorMessage} />}
     </div>

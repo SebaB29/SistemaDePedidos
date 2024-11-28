@@ -1,0 +1,21 @@
+{
+    "type": "AndRule",
+    "subRules": [
+      {
+        "type": "AttributeLimitRule",
+        "attributeName": "alcoholType",
+        "maxCount": 3
+      },
+      {
+        "type": "AttributeValueLimitRule",
+        "attributeName": "peso",
+        "maxValue": 75.0
+      },
+      {
+        "type": "ProductLimitRule",
+        "productName": "Cerveza",
+        "maxCount": 2.0
+    }
+    ]
+  }
+  

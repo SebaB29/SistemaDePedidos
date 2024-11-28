@@ -4,38 +4,41 @@ import { useModal } from '../hooks/useModal'
 import { EditProductForm } from './EditProductForm'
 import { EditProductStockForm } from './EditProductStockForm'
 
-const DELETE_ENDPOINT = ''
-
-export const ProductCard = ({ product, setCarrito, itemsCarrito }) => {
+export const ProductCard = ({ product, setCart, cart }) => {
   const [isOpenEditProductModal, openEditProductModal, closeEditProductModal] = useModal(false)
   const [isOpenEditStockModal, openEditStockModal, closeEditStockModal] = useModal(false)
 
   const handleBuy = (e) => {
     let quantity
     while (!/^(0|[1-9][0-9]*)$/.test(quantity)) {
-      quantity = window.prompt('Cuantos quieres comprar?')
+      quantity = window.prompt('¿Cuantos queres agregar?')
       if (quantity === null) return
     }
-    setCarrito([...itemsCarrito, { productId: product.productId, quantity, name: product.name }])
-    e.target.style.display = 'none'
+    const newCart = cart
+      .slice(1)
+      .filter(el => el.name !== product.name)
+    newCart.push({ productId: product.productId, quantity, name: product.name })
+    setCart([cart[0], ...newCart])
   }
 
   const handleDelete = () => {
     helpHttp().del(
-      DELETE_ENDPOINT,
+      `http://localhost:8080/product/${product.productId}`,
       {
-        body: {
-          id: product.id
-        },
         headers: {
           'Content-Type': 'Application/json',
           Accept: 'application/json'
         }
       })
       .then(res => {
-        window.alert(res)
+        if (res.status !== 'OK') {
+          window.alert(res.error)
+        } else {
+          console.log(res)
+          window.alert(res.data.message)
+          window.location.reload()
+        }
       })
-    window.location.reload()
   }
 
   return (

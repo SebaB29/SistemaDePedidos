@@ -7,12 +7,11 @@ import { useFrom } from '../hooks/useForm'
 const ENDPOINT = 'http://localhost:8080/product'
 
 const initialForm = {
-  adminId: '1',
+  adminId: window.sessionStorage.getItem('user_id'),
   productName: '',
   stockType: '',
   quantity: '',
-  attributes: [],
-  weight: '200'
+  attributes: []
 }
 
 const styles = {
@@ -36,7 +35,7 @@ const validationsForm = (form) => {
   }
 
   Object.keys(form).forEach(el => {
-    if (el === 'attributes' || el === 'adminId' || el === 'weight') return
+    if (el === 'attributes' || el === 'adminId') return
     if (!form[el].trim()) {
       errors[el] = 'Este campo es requerido'
     } else if (!regex[el].test(form[el].trim())) {
@@ -53,11 +52,22 @@ export const CreateProduct = () => {
     handleChange, handleBlur, handleSubmit, handleAddPropertie, handleChangeProp
   } = useFrom(initialForm, validationsForm, helpHttp().post, ENDPOINT)
 
+  const handleSubmitCreateProduct = (e) => {
+    const body = {
+      adminId: Number(initialForm.adminId),
+      product_name: form.productName,
+      stock_type: form.stockType,
+      quantity: parseFloat(form.quantity),
+      attributes: form.attributes
+    }
+    handleSubmit(e, {}, body)
+  }
+
   return (
     <>
       <Header title='Crear Producto' />
       <br />
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmitCreateProduct}>
         <input
           type='text'
           name='productName'
@@ -113,8 +123,11 @@ export const CreateProduct = () => {
         <input type='submit' value='Crear' />
       </form>
       {loading && <Loader />}
-      {(response !== null && response.status === 'CREATED') && <Message bgColor='#198754' message={response.data.message} />}
-
+      {response !== null
+        ? response.status === 'CREATED'
+          ? <Message bgColor='#198754' message={response.data.message} />
+          : <Message bgColor='#c80000' message={response.error} />
+        : <></>}
     </>
   )
 }

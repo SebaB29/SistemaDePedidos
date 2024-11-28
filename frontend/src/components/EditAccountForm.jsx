@@ -7,7 +7,7 @@ const validationsForm = (form) => {
   const errors = {}
 
   const regex = {
-    username: /^[A-Za-zÑñÁáÉéÍíÓóÚúÜü\s]+$/,
+    userName: /^[A-Za-zÑñÁáÉéÍíÓóÚúÜü\s]+$/,
     lastName: /^[A-Za-zÑñÁáÉéÍíÓóÚúÜü\s]+$/,
     email: /.*/,
     password: /.*/,
@@ -18,7 +18,7 @@ const validationsForm = (form) => {
   }
 
   const message = {
-    username: "El campo 'Nombre' solo acepta mayusculas, minusculas y espacios en blanco",
+    userName: "El campo 'Nombre' solo acepta mayusculas, minusculas y espacios en blanco",
     lastName: "El campo 'Apellido' solo acepta mayusculas, minusculas y espacios en blanco",
     password: '',
     age: 'Debes ser mayor de 18 y menor de 120',
@@ -28,6 +28,7 @@ const validationsForm = (form) => {
   }
 
   Object.keys(form).forEach(el => {
+    if (el === 'password') return
     if (!form[el].trim()) {
       errors[el] = 'Este campo es requerido'
     } else if (!regex[el].test(form[el].trim())) {
@@ -46,7 +47,7 @@ const styles = {
 export const EditAccountForm = ({ data }) => {
   const ENDPOINT = 'http://localhost:8080/user'
   const initialForm = {
-    username: data.username,
+    userName: data.username,
     lastName: data.lastName,
     email: data.email,
     age: data.age.toString(),
@@ -81,14 +82,14 @@ export const EditAccountForm = ({ data }) => {
       <form onSubmit={handleSubmit}>
         <input
           type='text'
-          name='username'
+          name='userName'
           placeholder='Escribe tu nombre'
           onBlur={handleBlur}
           onChange={handleChange}
-          value={form.username}
+          value={form.userName}
           required
         />
-        {errors.username && <p style={styles}>{errors.username}</p>}
+        {errors.userName && <p style={styles}>{errors.userName}</p>}
         <input
           type='text'
           name='lastName'
@@ -142,7 +143,7 @@ export const EditAccountForm = ({ data }) => {
         />
         {errors.address && <p style={styles}>{errors.address}</p>}
         <input
-          type='password'
+          type='hidden'
           name='password'
           placeholder='Escribe tu Contraseña'
           onBlur={handleBlur}

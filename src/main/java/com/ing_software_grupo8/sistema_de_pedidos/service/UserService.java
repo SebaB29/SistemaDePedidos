@@ -25,17 +25,6 @@ public class UserService implements IUserService {
     IJwtService jwtService;
 
     @Override
-    public MessageResponseDTO createUser(UserRequestDTO userRequestDTO, HttpServletRequest request) {
-        verifyAdminRole(request);
-        validateUserRequest(userRequestDTO);
-
-        User user = mapToUser(userRequestDTO);
-        userRepository.save(user);
-
-        return new MessageResponseDTO("El usuario se creó correctamente");
-    }
-
-    @Override
     public MessageResponseDTO editUser(UserRequestDTO userRequestDTO, HttpServletRequest request) {
         User user = findUserByEmailOrThrow(userRequestDTO.getEmail());
         verifySameUser(user, request);
@@ -46,45 +35,15 @@ public class UserService implements IUserService {
         return new MessageResponseDTO("Usuario editado correctamente");
     }
 
-    @Transactional
-    public Optional<User> findUserByEmail(String email) {
-        return userRepository.findUserByEmail(email);
-    }
-
     @Override
-    public Optional<User> getUser(String userId) {
-        return Optional.of(findUserByIdOrThrow(Long.valueOf(userId)));
-    }
-
-    private void verifyAdminRole(HttpServletRequest request) {
-        if (!jwtService.tokenHasRoleAdmin(request)) {
-            throw new ApiException(HttpStatus.UNAUTHORIZED, "No tienes autorización");
-        }
+    public Optional<User> getUser(String email) {
+        return userRepository.findUserByEmail(email);
     }
 
     private void verifySameUser(User user, HttpServletRequest request) {
         if (!jwtService.isSameUser(user, jwtService.getTokenFromRequest(request))) {
             throw new ApiException(HttpStatus.UNAUTHORIZED, "No tienes autorización");
         }
-    }
-
-    private void validateUserRequest(UserRequestDTO userRequestDTO) {
-        if (userRequestDTO.getUserName() == null || userRequestDTO.getUserName().isEmpty()) {
-            throw new IllegalArgumentException("El nombre de usuario no puede estar vacío");
-        }
-    }
-
-    private User mapToUser(UserRequestDTO userRequestDTO) {
-        return User.builder()
-                .username(userRequestDTO.getUserName())
-                .lastName(userRequestDTO.getLastName())
-                .email(userRequestDTO.getEmail())
-                .password(userRequestDTO.getPassword())
-                .age(userRequestDTO.getAge())
-                .photo(userRequestDTO.getPhoto())
-                .gender(userRequestDTO.getGender())
-                .address(userRequestDTO.getAddress())
-                .build();
     }
 
     private void updateUser(User user, UserRequestDTO userRequestDTO) {
