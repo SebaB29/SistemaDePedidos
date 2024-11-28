@@ -11,6 +11,7 @@ const initialForm = {
   productName: '',
   stockType: '',
   quantity: '',
+  price: '',
   attributes: []
 }
 
@@ -25,12 +26,14 @@ const validationsForm = (form) => {
   const regex = {
     productName: /^[A-Za-zÑñÁáÉéÍíÓóÚúÜü\s]+$/,
     quantity: /^(0|[1-9][0-9]*)$/,
+    price: /^(0|[1-9][0-9]*)$/,
     stockType: /.*/
   }
 
   const message = {
     productName: "El campo 'Nombre' solo acepta mayusculas, minusculas y espacios en blanco",
     quantity: 'Stock invalido, solo acepta numeros positivos y 0',
+    price: 'Preciio invalido, solo acepta numeros positivos y 0',
     stockType: ''
   }
 
@@ -58,6 +61,7 @@ export const CreateProduct = () => {
       product_name: form.productName,
       stock_type: form.stockType,
       quantity: parseFloat(form.quantity),
+      price: parseFloat(form.price),
       attributes: form.attributes
     }
     handleSubmit(e, {}, body)
@@ -98,6 +102,16 @@ export const CreateProduct = () => {
           required
         />
         {errors.quantity && <p style={styles}>{errors.quantity}</p>}
+        <input
+          type='text'
+          name='price'
+          placeholder='Precio'
+          onBlur={handleBlur}
+          onChange={handleChange}
+          value={form.price}
+          required
+        />
+        {errors.price && <p style={styles}>{errors.price}</p>}
         {form.attributes.map((attribute, index) => (
           <div key={index}>
             <hr />

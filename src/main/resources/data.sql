@@ -16,15 +16,15 @@ VALUES
     ('Unidades', 30.0);
 
 --PRODUCT
-INSERT INTO Product (name, stock_id)
+INSERT INTO Product (name, stock_id, price)
 VALUES
-    ('Pesa',1),
-    ('Remera',2),
-    ('Cerveza',3),
-    ('Asado',4),
-    ('Tequila', 5),
-    ('Fernet', 6),
-    ('Vodka', 7);
+    ('Pesa',1, 10),
+    ('Remera',2, 25),
+    ('Cerveza',3, 15),
+    ('Asado',4, 120),
+    ('Tequila', 5, 45),
+    ('Fernet', 6, 60),
+    ('Vodka', 7, 30);
 
 --ATTRIBUTE
 INSERT INTO Attribute (product_id, description, attribute_value)
