@@ -21,6 +21,10 @@ public class ProductResponseDTO {
     @JsonProperty
     private Float quantity;
 
+    @JsonProperty(value = "price")
+    private float price;
+
+
     @JsonProperty
     private List<AttributeDTO> attributes;
 }

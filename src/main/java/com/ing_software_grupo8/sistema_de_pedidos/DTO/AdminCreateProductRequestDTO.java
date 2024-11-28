@@ -25,6 +25,9 @@ public class AdminCreateProductRequestDTO {
     @JsonProperty(value = "quantity")
     private float quantity;
 
+    @JsonProperty(value = "price")
+    private float price;
+
     @JsonProperty(value = "attributes")
     private List<AttributeDTO> attributes;
 }

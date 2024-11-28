@@ -1,5 +1,13 @@
 import { helpHttp } from '../helpers/helpHttp'
 
+const totalPrice = (order) => {
+  let sum = 0
+  order.product_list.forEach(el => {
+    sum += Number(el.price) * Number(el.quantity)
+  })
+  return sum
+}
+
 export const OrderCard = ({ order }) => {
   const options = {
     year: 'numeric',
@@ -44,6 +52,7 @@ export const OrderCard = ({ order }) => {
         <h4>Orden {order.order_id}</h4>
         <p>Estado: {order.order_state}</p>
         <p>Fecha de creacion: {formattedDate}</p>
+        <p>Total a pagar: ${totalPrice(order)}</p>
         {window.sessionStorage.getItem('rol') === 'ADMIN' &&
           <>
             <button onClick={() => handleChangeState(1)}>Cambiar a En Proceso</button>
@@ -53,7 +62,7 @@ export const OrderCard = ({ order }) => {
       </article>
       <ul className='porperties-list'>
         {order.product_list.map((product, index) => (
-          <li key={index}>{product.name} - {product.quantity}</li>
+          <li key={index}>{product.name} - {product.quantity} x ${product.price}</li>
         ))}
       </ul>
     </>
