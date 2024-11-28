@@ -52,7 +52,7 @@ public class ProductServiceTest {
         request.setStockType("Tipo de Stock");
 
         AttributeDTO attributeDTO = new AttributeDTO("Descripción", "Valor");
-        request.setAttributes(Arrays.asList(attributeDTO));
+        request.setAttributes(List.of(attributeDTO));
 
         Stock stock = new Stock();
         when(!jwtService.tokenHasRoleAdmin(servletRequest)).thenReturn(true);
@@ -73,7 +73,7 @@ public class ProductServiceTest {
         request.setName("Producto Editado");
 
         AttributeDTO attributeDTO = new AttributeDTO("Descripción Editada", "Valor Editado");
-        request.setAttributes(Arrays.asList(attributeDTO));
+        request.setAttributes(List.of(attributeDTO));
 
         Product product = new Product();
         product.setName("Producto Original");
@@ -149,7 +149,7 @@ public class ProductServiceTest {
         Attribute attribute = new Attribute();
         attribute.setDescription("Descripción");
         attribute.setValue("Valor");
-        product.setAttributes(Arrays.asList(attribute));
+        product.setAttributes(List.of(attribute));
 
         Stock stock1 = new Stock();
         stock1.setQuantity(10f);
@@ -161,7 +161,7 @@ public class ProductServiceTest {
         Attribute attribute2 = new Attribute();
         attribute2.setDescription("Descripción 2");
         attribute2.setValue("Valor 2");
-        product2.setAttributes(Arrays.asList(attribute2));
+        product2.setAttributes(List.of(attribute2));
 
         Stock stock2 = new Stock();
         stock2.setQuantity(20f);
@@ -173,9 +173,9 @@ public class ProductServiceTest {
 
         assertEquals(2, products.size());
         assertEquals("Producto Test", products.get(0).getName());
-        assertEquals("Descripción", products.get(0).getAttributes().get(0).getDescription());
+        assertEquals("Descripción", products.get(0).getAttributes().getFirst().getDescription());
         assertEquals("Producto Test 2", products.get(1).getName());
-        assertEquals("Descripción 2", products.get(1).getAttributes().get(0).getDescription());
+        assertEquals("Descripción 2", products.get(1).getAttributes().getFirst().getDescription());
     }
 
     @Test
