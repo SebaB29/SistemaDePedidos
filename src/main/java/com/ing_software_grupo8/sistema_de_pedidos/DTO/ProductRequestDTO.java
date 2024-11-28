@@ -18,6 +18,9 @@ public class ProductRequestDTO {
     @JsonProperty(value = "product_name")
     private String name;
 
+    @JsonProperty(value = "price")
+    private float price;
+
     @JsonProperty(value = "attributes")
     private List<AttributeDTO> attributes;
 }

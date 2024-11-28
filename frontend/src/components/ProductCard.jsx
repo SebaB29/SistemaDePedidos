@@ -46,6 +46,7 @@ export const ProductCard = ({ product, setCart, cart }) => {
       <article className='product-card'>
         <h4>{product.name}</h4>
         <p>{product.quantity} {product.stockType}</p>
+        <p>Precio: {`$${product.price}`}</p>
         <button onClick={handleBuy}>Agregar al carrito</button>
         {window.sessionStorage.getItem('rol') === 'ADMIN' &&
           <>

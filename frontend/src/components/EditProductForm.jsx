@@ -14,15 +14,17 @@ const validationsForm = (form) => {
   const errors = {}
 
   const regex = {
-    product_name: /^[A-Za-zÑñÁáÉéÍíÓóÚúÜü\s]+$/
+    product_name: /^[A-Za-zÑñÁáÉéÍíÓóÚúÜü\s]+$/,
+    price: /^(0|[1-9][0-9]*)$/
   }
 
   const message = {
-    product_name: "El campo 'Nombre' solo acepta mayusculas, minusculas y espacios en blanco"
+    product_name: "El campo 'Nombre' solo acepta mayusculas, minusculas y espacios en blanco",
+    price: 'Preciio invalido, solo acepta numeros positivos y 0'
   }
 
   Object.keys(form).forEach(el => {
-    if (el !== 'product_name') return
+    if (el !== 'product_name' && el !== 'price') return
     if (!form[el].trim()) {
       errors[el] = 'Este campo es requerido'
     } else if (!regex[el].test(form[el].trim())) {
@@ -37,6 +39,7 @@ export const EditProductForm = ({ product }) => {
   const initialForm = {
     product_name: product.name,
     product_id: product.productId,
+    price: product.price,
     attributes: product.attributes
   }
   const {
@@ -67,6 +70,16 @@ export const EditProductForm = ({ product }) => {
           required
         />
         {errors.product_name && <p style={styles}>{errors.product_name}</p>}
+        <input
+          type='text'
+          name='price'
+          placeholder='Precio'
+          onBlur={handleBlur}
+          onChange={handleChange}
+          value={form.price}
+          required
+        />
+        {errors.price && <p style={styles}>{errors.price}</p>}
         {form.attributes.map((attribute, index) => (
           <div key={index}>
             <hr />

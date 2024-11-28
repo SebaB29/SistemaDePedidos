@@ -188,6 +188,7 @@ public class OrderService implements IOrderService {
                 productOrder.getProduct().getProductId(),
                 productOrder.getProduct().getName(),
                 productOrder.getOrderQuantity(),
+                productOrder.getProduct().getPrice(),
                 attributes
         );
     }
