@@ -5,20 +5,18 @@ import com.ing_software_grupo8.sistema_de_pedidos.entity.Attribute;
 import com.ing_software_grupo8.sistema_de_pedidos.entity.Product;
 import com.ing_software_grupo8.sistema_de_pedidos.entity.Stock;
 import com.ing_software_grupo8.sistema_de_pedidos.exception.ApiException;
+import com.ing_software_grupo8.sistema_de_pedidos.repository.IProductOrderRepository;
 import com.ing_software_grupo8.sistema_de_pedidos.repository.IProductRepository;
-import jakarta.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.http.HttpStatus;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.mock.web.MockHttpServletRequest;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -27,6 +25,9 @@ import static org.mockito.Mockito.*;
 public class ProductServiceTest {
     @Mock
     private IProductRepository productRepository;
+
+    @Mock
+    private IProductOrderRepository productOrderRepository;
 
     @Mock
     private IStockService stockService;
@@ -51,7 +52,7 @@ public class ProductServiceTest {
         request.setStockType("Tipo de Stock");
 
         AttributeDTO attributeDTO = new AttributeDTO("Descripción", "Valor");
-        request.setAttributes(Arrays.asList(attributeDTO));
+        request.setAttributes(List.of(attributeDTO));
 
         Stock stock = new Stock();
         when(!jwtService.tokenHasRoleAdmin(servletRequest)).thenReturn(true);
@@ -72,7 +73,7 @@ public class ProductServiceTest {
         request.setName("Producto Editado");
 
         AttributeDTO attributeDTO = new AttributeDTO("Descripción Editada", "Valor Editado");
-        request.setAttributes(Arrays.asList(attributeDTO));
+        request.setAttributes(List.of(attributeDTO));
 
         Product product = new Product();
         product.setName("Producto Original");
@@ -111,16 +112,19 @@ public class ProductServiceTest {
     void testDeleteProduct() {
         HttpServletRequest servletRequest = new MockHttpServletRequest();
         ProductRequestDTO request = new ProductRequestDTO();
-        request.setProductId(1L);
+        long product_id = 1;
+        request.setProductId(product_id);
 
         Product product = new Product();
-        when(!jwtService.tokenHasRoleAdmin(servletRequest)).thenReturn(true);
-        when(productRepository.findById(1L)).thenReturn(Optional.of(product));
+
+        when(jwtService.tokenHasRoleAdmin(servletRequest)).thenReturn(true);
+        when(productRepository.findById(product_id)).thenReturn(Optional.of(product));
+        when(productOrderRepository.findByProduct_ProductId(request.getProductId())).thenReturn(Collections.emptyList());
 
         MessageResponseDTO response = productService.deleteProduct(request.getProductId(), servletRequest);
 
         assertEquals("Producto eliminado correctamente", response.getMessage());
-        verify(productRepository, times(1)).delete(product);
+        verify(productRepository, times(1)).deleteById(product_id);
     }
 
     @Test
@@ -145,7 +149,11 @@ public class ProductServiceTest {
         Attribute attribute = new Attribute();
         attribute.setDescription("Descripción");
         attribute.setValue("Valor");
-        product.setAttributes(Arrays.asList(attribute));
+        product.setAttributes(List.of(attribute));
+
+        Stock stock1 = new Stock();
+        stock1.setQuantity(10f);
+        product.setStock(stock1);
 
         Product product2 = new Product();
         product2.setName("Producto Test 2");
@@ -153,17 +161,21 @@ public class ProductServiceTest {
         Attribute attribute2 = new Attribute();
         attribute2.setDescription("Descripción 2");
         attribute2.setValue("Valor 2");
-        product2.setAttributes(Arrays.asList(attribute2));
+        product2.setAttributes(List.of(attribute2));
 
-        when(productRepository.findAll()).thenReturn(Arrays.asList(product,product2));
+        Stock stock2 = new Stock();
+        stock2.setQuantity(20f);
+        product2.setStock(stock2);
+
+        when(productRepository.findAll()).thenReturn(Arrays.asList(product, product2));
 
         List<ProductResponseDTO> products = productService.getAllProducts();
 
         assertEquals(2, products.size());
         assertEquals("Producto Test", products.get(0).getName());
-        assertEquals("Descripción", products.get(0).getAttributes().get(0).getDescription());
+        assertEquals("Descripción", products.get(0).getAttributes().getFirst().getDescription());
         assertEquals("Producto Test 2", products.get(1).getName());
-        assertEquals("Descripción 2", products.get(1).getAttributes().get(0).getDescription());
+        assertEquals("Descripción 2", products.get(1).getAttributes().getFirst().getDescription());
     }
 
     @Test
@@ -191,7 +203,6 @@ public class ProductServiceTest {
         stockDTO.setQuantity(20);
 
         when(!jwtService.tokenHasRoleAdmin(servletRequest)).thenReturn(true);
-
         MessageResponseDTO response = productService.editStock(stockDTO, servletRequest);
 
         assertEquals("Stock editado correctamente", response.getMessage());
