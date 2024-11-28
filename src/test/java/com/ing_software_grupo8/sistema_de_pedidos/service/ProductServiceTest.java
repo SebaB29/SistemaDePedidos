@@ -16,10 +16,7 @@ import org.springframework.http.HttpStatus;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.mock.web.MockHttpServletRequest;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -31,6 +28,7 @@ public class ProductServiceTest {
 
     @Mock
     private IProductOrderRepository productOrderRepository;
+
     @Mock
     private IStockService stockService;
 
@@ -60,7 +58,7 @@ public class ProductServiceTest {
         when(!jwtService.tokenHasRoleAdmin(servletRequest)).thenReturn(true);
         doNothing().when(stockService).createStock(stock);
 
-        MessageResponseDTO response = productService.createProduct(request,servletRequest);
+        MessageResponseDTO response = productService.createProduct(request, servletRequest);
 
         assertEquals("Producto creado", response.getMessage());
         verify(productRepository, times(1)).save(any(Product.class));
@@ -114,17 +112,19 @@ public class ProductServiceTest {
     void testDeleteProduct() {
         HttpServletRequest servletRequest = new MockHttpServletRequest();
         ProductRequestDTO request = new ProductRequestDTO();
-        request.setProductId(1L);
+        long product_id = 1;
+        request.setProductId(product_id);
 
         Product product = new Product();
-        when(!jwtService.tokenHasRoleAdmin(servletRequest)).thenReturn(true);
-        when(productRepository.findById(1L)).thenReturn(Optional.of(product));
-        when(!productOrderRepository.findByProduct_ProductId(request.getProductId()).isEmpty()).thenReturn(false);
+
+        when(jwtService.tokenHasRoleAdmin(servletRequest)).thenReturn(true);
+        when(productRepository.findById(product_id)).thenReturn(Optional.of(product));
+        when(productOrderRepository.findByProduct_ProductId(request.getProductId())).thenReturn(Collections.emptyList());
 
         MessageResponseDTO response = productService.deleteProduct(request.getProductId(), servletRequest);
 
         assertEquals("Producto eliminado correctamente", response.getMessage());
-        verify(productRepository, times(1)).delete(product);
+        verify(productRepository, times(1)).deleteById(product_id);
     }
 
     @Test
@@ -151,6 +151,10 @@ public class ProductServiceTest {
         attribute.setValue("Valor");
         product.setAttributes(Arrays.asList(attribute));
 
+        Stock stock1 = new Stock();
+        stock1.setQuantity(10f);
+        product.setStock(stock1);
+
         Product product2 = new Product();
         product2.setName("Producto Test 2");
 
@@ -159,7 +163,11 @@ public class ProductServiceTest {
         attribute2.setValue("Valor 2");
         product2.setAttributes(Arrays.asList(attribute2));
 
-        when(productRepository.findAll()).thenReturn(Arrays.asList(product,product2));
+        Stock stock2 = new Stock();
+        stock2.setQuantity(20f);
+        product2.setStock(stock2);
+
+        when(productRepository.findAll()).thenReturn(Arrays.asList(product, product2));
 
         List<ProductResponseDTO> products = productService.getAllProducts();
 
