@@ -21,6 +21,9 @@ public class Product {
     @Column(nullable = false)
     private String name;
 
+    @Column(nullable = false)
+    private float price;
+
     @OneToOne(fetch = FetchType.EAGER, orphanRemoval = true)
     @JoinColumn(name = "stock_id", nullable = false)
     private Stock stock;

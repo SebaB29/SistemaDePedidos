@@ -46,6 +46,7 @@ public class ProductService implements IProductService {
         Stock stock = createStock(productRequest);
         Product product = new Product();
         product.setName(productRequest.getProductName());
+        product.setPrice(productRequest.getPrice());
         product.setStock(stock);
         product.setAttributes(mapAttributes(productRequest.getAttributes(), product));
 
@@ -60,6 +61,8 @@ public class ProductService implements IProductService {
         if (productDTO.getName() != null) {
             product.setName(productDTO.getName());
         }
+
+        product.setPrice(productDTO.getPrice());
 
         product.getAttributes().clear();
         product.getAttributes().addAll(mapAttributes(productDTO.getAttributes(), product));
@@ -86,6 +89,7 @@ public class ProductService implements IProductService {
                         product.getProductId(),
                         product.getName(),
                         product.getStock().getQuantity(),
+                        product.getPrice(),
                         product.getAttributes().stream()
                                 .map(attribute -> new AttributeDTO(attribute.getDescription(), attribute.getValue()))
                                 .collect(Collectors.toList())))
