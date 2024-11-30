@@ -1,59 +1,57 @@
-# 🛒 Sistema de Gestión de Pedidos
+# 🛒 Order Management System
 
-<div text-align="justify">
-Un sistema diseñado para gestionar el registro, autenticación y creación de pedidos de productos, con funcionalidades tanto para usuarios como administradores. Este proyecto implementa un sistema flexible para el manejo de atributos dinámicos de productos y reglas personalizadas para la gestión de pedidos.
-</div>
+## 📜 Table of Contents
 
-## 📜 Tabla de Contenidos
+- [Team Members](#team-members)
+- [Features](#features)
+- [Technologies](#technologies)
+- [Contributing](#contributing)
+- [License](#license)
+- [About This Project](#about)
 
-- [Características](#características)
-- [Tecnologías](#tecnologías)
-- [Contribuir](#contribuir)
-- [Licencia](#licencia)
-- [Sobre Este Proyecto](#sobre-este-proyecto)
+## 🧑‍💻 Team Members <a name="team-members"></a>
 
-## ✨ Características <a name="características"></a>
+| Name              |
+|-------------------|
+| Sebastian Brizuela|
+| Matias Rueda      |
+| Julián Rando      |
+| Agustín Vallcorba |
+| Lucas Gimenez     |
+| Nicolas Penedo    |
+| Joaquín Czerwiak  |
 
-### Usuarios
-- Registro y autenticación con validación de email.
-- Gestión de perfil (nombre, apellido, email, foto, edad, género, domicilio).
-- Recuperación de contraseña.
-- Creación de pedidos con selección de atributos dinámicos y validación de reglas.
-- Cancelación de pedidos dentro de las primeras 24 horas (si no están en estado "EN PROCESO").
-- Visualización del historial de pedidos realizados.
+## ✨ Features <a name="features"></a>
 
-### Administradores
-- Gestión de productos y atributos dinámicos.
-- Control y actualización de stock.
-- Visualización y gestión de pedidos confirmados.
-- Actualización del estado de pedidos a "EN PROCESO" o "ENVIADO".
+- User registration and authentication with email verification.
+- Dynamic management of products and attributes.
+- Order creation and management with configurable rules.
+- Email notifications for order confirmation.
+- Inventory management with stock control.
+- Backoffice for administrators to manage products and orders.
 
-## 🛠 Tecnologías <a name="tecnologías"></a>
+## 🔧 Technologies <a name="technologies"></a>
 
-El proyecto utiliza las siguientes tecnologías y herramientas:
+- **Language**: Java  
+- **Framework**: Spring Boot  
+- **Unit Testing**: JUnit and Mockito  
+- **Project Management**: JIRA  
+- **Version Control**: GitLab  
 
-- **Lenguaje de programación**: Java
-- **Gestión de proyectos**: JIRA
-- **Sistema de control de versiones**: GitLab
-- **Pruebas unitarias**: Incluidas con JUnit
-- **Biblioteca para simulaciones y pruebas de comportamiento**: Mockito
+## 🤝 Contributing <a name="contributing"></a>
 
-## 🤝 Contribuir <a name="contribuir"></a>
+Contributions are welcome! If you'd like to improve the project, feel free to fork the repository and submit a pull request.
 
-¡Contribuciones son bienvenidas! Si deseas mejorar este proyecto, sigue estos pasos para contribuir:
+1. Fork the repository.
+2. Create your feature branch (`git checkout -b feature/AmazingFeature`).
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`).
+4. Push to the branch (`git push origin feature/AmazingFeature`).
+5. Open a pull request.
 
-1. Haz un fork del repositorio.
-2. Crea una rama para tu funcionalidad (`git checkout -b feature/TuFuncionalidad`).
-3. Realiza tus cambios y crea commits (`git commit -m 'Agrega una nueva funcionalidad'`).
-4. Haz un push a la rama (`git push origin feature/TuFuncionalidad`).
-5. Abre un pull request.
+## 📄 License <a name="license"></a>
 
-## 📄 Licencia <a name="licencia"></a>
+Distributed under the MIT License. See `LICENSE` for more information.
 
-Distribuido bajo la licencia **MIT**. Consulta el archivo `LICENSE` para más detalles.
+## 📚 About This Project <a name="about"></a>
 
-## 📚 Sobre Este Proyecto <a name="sobre-este-proyecto"></a>
-
-<div text-align="justify">
-Este proyecto fue desarrollado como un trabajo práctico universitario. El objetivo es implementar un sistema completo de gestión de pedidos, aplicando principios de diseño orientado a objetos y buenas prácticas de programación.
-</div>
+This project was developed as part of a group assignment. The goal was to create a robust system for managing dynamic product attributes, user-friendly order processes, and inventory control. It also includes complex business rules and administrative capabilities.
