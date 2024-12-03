@@ -33,6 +33,7 @@ public class AuthService implements IAuthService {
     private final IJwtService jwtService;
     private final IUserRepository userRepository;
 
+    @Override
     public GenericResponse<AuthResponseDTO> login(HttpServletRequest request) {
         String email = basicService.getEmailFromToken(request);
         String password = basicService.getPasswordFromRequest(request);
@@ -55,6 +56,7 @@ public class AuthService implements IAuthService {
                 .build();
     }
 
+    @Override
     public GenericResponse<MessageResponseDTO> register(RegisterRequestDTO request) {
         validateEmailUniqueness(request.getEmail());
 
@@ -67,6 +69,7 @@ public class AuthService implements IAuthService {
                 .build();
     }
 
+    @Override
     public GenericResponse<MessageResponseDTO> restore(RestorePasswordRequestDTO request) {
         User user = findUserByEmail(request.getEmail())
                 .orElseThrow(() -> new ApiException(HttpStatus.BAD_REQUEST, USER_NOT_FOUND_MSG));
