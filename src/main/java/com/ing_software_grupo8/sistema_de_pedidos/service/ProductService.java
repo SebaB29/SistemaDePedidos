@@ -7,6 +7,7 @@ import com.ing_software_grupo8.sistema_de_pedidos.exception.ApiException;
 import com.ing_software_grupo8.sistema_de_pedidos.repository.IProductOrderRepository;
 import com.ing_software_grupo8.sistema_de_pedidos.repository.IProductRepository;
 
+import com.ing_software_grupo8.sistema_de_pedidos.utils.RoleEnum;
 import jakarta.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -121,7 +122,7 @@ public class ProductService implements IProductService {
     }
 
     private void verifyAdminRole(HttpServletRequest request) {
-        if (!jwtService.tokenHasRoleAdmin(request)) {
+        if (!jwtService.tokenHasRole(request, RoleEnum.ADMIN)) {
             throw new ApiException(HttpStatus.UNAUTHORIZED, "No tienes autorización");
         }
     }

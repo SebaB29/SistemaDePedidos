@@ -29,34 +29,75 @@ import lombok.RequiredArgsConstructor;
 public class JwtService implements IJwtService {
 
     private static final String SECRET_KEY = "586E3272357538782F413F4428472B4B6250655368566B597033733676397924";
-    private final long ACCESS_EXPIRED = 1000 * 60 * 24;
-    private final long REFRESH_EXPIRED = 1000 * 60 * 60 * 24 * 365;
+    private static final long ACCESS_EXPIRED = 1000 * 60 * 24;
+    private static final long REFRESH_EXPIRED = 1000L * 60 * 60 * 24 * 365;
 
+    private static final String BEARER_PREFIX = "Bearer ";
+    private static final String ROLES_CLAIM = "roles";
+
+    // Métodos públicos de la interfaz IJwtService
     @Override
     public String createAccessToken(User user) {
         Map<String, Object> extraClaims = new HashMap<>();
         extraClaims.put("id", user.getUserId());
-        extraClaims.put("roles", user.getAuthorities()
-                .stream()
-                .map(GrantedAuthority::getAuthority)
-                .collect(Collectors.toList()));
-        return getToken(user, extraClaims, ACCESS_EXPIRED);
+        extraClaims.put(ROLES_CLAIM, getRoleNames(user));
+        return generateToken(user, extraClaims, ACCESS_EXPIRED);
     }
 
     @Override
     public String createRefreshToken(User user) {
-        return getToken(user, new HashMap<>(), REFRESH_EXPIRED);
+        return generateToken(user, new HashMap<>(), REFRESH_EXPIRED);
     }
 
-    private String getToken(User user, Map<String, Object> extraClaims, long expired) {
+    @Override
+    public String getEmailFromToken(String token) {
+        return getClaimFromToken(token, Claims::getSubject);
+    }
+
+    @Override
+    public boolean isTokenExpired(String token) {
+        return getClaimFromToken(token, Claims::getExpiration).before(new Date());
+    }
+
+    @Override
+    public boolean isSameUser(User user, String token) {
+        return user.getEmail().equals(getEmailFromToken(token));
+    }
+
+    @Override
+    public boolean tokenHasRole(HttpServletRequest request, RoleEnum roleEnum) {
+        String token = getTokenFromRequest(request);
+        @SuppressWarnings("unchecked")
+        List<String> roles = getClaimFromToken(token, claims -> (List<String>) claims.get(ROLES_CLAIM));
+        return roles != null && roles.contains(roleEnum.name());
+    }
+
+    @Override
+    public String getTokenFromRequest(HttpServletRequest request) {
+        final String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
+        if (StringUtils.hasText(authHeader) && authHeader.startsWith(BEARER_PREFIX)) {
+            return authHeader.substring(BEARER_PREFIX.length());
+        }
+        return null;
+    }
+
+    // Métodos privados de utilidad (que no están en la interfaz)
+    private String generateToken(User user, Map<String, Object> extraClaims, long expiration) {
         return Jwts
                 .builder()
                 .setClaims(extraClaims)
                 .setSubject(user.getEmail())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + expired))
+                .setExpiration(new Date(System.currentTimeMillis() + expiration))
                 .signWith(getKey(), SignatureAlgorithm.HS256)
                 .compact();
+    }
+
+    private List<String> getRoleNames(User user) {
+        return user.getAuthorities()
+                .stream()
+                .map(GrantedAuthority::getAuthority)
+                .collect(Collectors.toList());
     }
 
     private Key getKey() {
@@ -64,12 +105,7 @@ public class JwtService implements IJwtService {
         return Keys.hmacShaKeyFor(keyBytes);
     }
 
-    @Override
-    public String getEmailFromToken(String token) {
-        return getClaim(token, Claims::getSubject);
-    }
-
-    private Claims getAllClaims(String token) {
+    private Claims getClaimsFromToken(String token) {
         return Jwts
                 .parserBuilder()
                 .setSigningKey(getKey())
@@ -79,47 +115,8 @@ public class JwtService implements IJwtService {
     }
 
     @Override
-    public <T> T getClaim(String token, Function<Claims, T> claimsResolver) {
-        final Claims claims = getAllClaims(token);
+    public <T> T getClaimFromToken(String token, Function<Claims, T> claimsResolver) {
+        final Claims claims = getClaimsFromToken(token);
         return claimsResolver.apply(claims);
     }
-
-    @Override
-    public String getTokenFromRequest(HttpServletRequest request) {
-        final String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
-        if (StringUtils.hasText(authHeader) && authHeader.startsWith("Bearer "))
-            return authHeader.substring(7);
-        return null;
-    }
-
-    @Override
-    @SuppressWarnings("unchecked")
-    public boolean tokenHasRoleAdmin(HttpServletRequest request) {
-        String token = getTokenFromRequest(request);
-        List<String> roles = getClaim(token, claims -> claims.get("roles", List.class));
-        return roles != null && roles.contains(RoleEnum.ADMIN.name());
-    }
-
-    @Override
-    @SuppressWarnings("unchecked")
-    public boolean tokenHasRoleUser(HttpServletRequest request) {
-        String token = getTokenFromRequest(request);
-        List<String> roles = getClaim(token, claims -> claims.get("roles", List.class));
-        return roles != null && roles.contains(RoleEnum.USER.name());
-    }
-
-    private Date getExpiration(String token) {
-        return getClaim(token, Claims::getExpiration);
-    }
-
-    @Override
-    public boolean isTokenExpired(String token) {
-        return getExpiration(token).before(new Date());
-    }
-
-    @Override
-    public boolean isSameUser(User user, String token) {
-        return user.getEmail().equals(getEmailFromToken(token));
-    }
-
 }

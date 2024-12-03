@@ -10,6 +10,7 @@ import com.ing_software_grupo8.sistema_de_pedidos.repository.IUserRepository;
 import com.ing_software_grupo8.sistema_de_pedidos.rules.RuleManager;
 import com.ing_software_grupo8.sistema_de_pedidos.utils.OrderStateEnum;
 
+import com.ing_software_grupo8.sistema_de_pedidos.utils.RoleEnum;
 import jakarta.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -122,13 +123,13 @@ public class OrderService implements IOrderService {
     }
 
     private void validateAdminAuthorization(HttpServletRequest request) {
-        if (!jwtService.tokenHasRoleAdmin(request)) {
+        if (!jwtService.tokenHasRole(request, RoleEnum.ADMIN)) {
             throw new ApiException(HttpStatus.UNAUTHORIZED, "No tienes autorización");
         }
     }
 
     private void validateUserAuthorization(HttpServletRequest request) {
-        if (!jwtService.tokenHasRoleUser(request)) {
+        if (!jwtService.tokenHasRole(request, RoleEnum.USER)) {
             throw new ApiException(HttpStatus.UNAUTHORIZED, "No tienes autorización");
         }
     }
