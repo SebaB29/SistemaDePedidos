@@ -2,20 +2,20 @@ package com.ing_software_grupo8.sistema_de_pedidos.service;
 
 import com.ing_software_grupo8.sistema_de_pedidos.DTO.*;
 import com.ing_software_grupo8.sistema_de_pedidos.entity.*;
-import com.ing_software_grupo8.sistema_de_pedidos.exception.ApiException;
+import com.ing_software_grupo8.sistema_de_pedidos.repository.IUserRepository;
+import com.ing_software_grupo8.sistema_de_pedidos.repository.IProductRepository;
 import com.ing_software_grupo8.sistema_de_pedidos.repository.IOrderRepository;
 import com.ing_software_grupo8.sistema_de_pedidos.repository.IOrderStateRepository;
-import com.ing_software_grupo8.sistema_de_pedidos.repository.IProductRepository;
-import com.ing_software_grupo8.sistema_de_pedidos.repository.IUserRepository;
 import com.ing_software_grupo8.sistema_de_pedidos.rules.RuleManager;
-import com.ing_software_grupo8.sistema_de_pedidos.utils.OrderStateEnum;
-
 import com.ing_software_grupo8.sistema_de_pedidos.utils.RoleEnum;
-import jakarta.servlet.http.HttpServletRequest;
+import com.ing_software_grupo8.sistema_de_pedidos.utils.OrderStateEnum;
+import com.ing_software_grupo8.sistema_de_pedidos.exception.ApiException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+
+import jakarta.servlet.http.HttpServletRequest;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -23,26 +23,19 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import com.ing_software_grupo8.sistema_de_pedidos.rules.RuleManager;
-
 @Service
 public class OrderService implements IOrderService {
 
     @Autowired
-    private IOrderRepository orderRepository;
-
-    @Autowired
     private IUserRepository userRepository;
-
     @Autowired
     private IProductRepository productRepository;
-
+    @Autowired
+    private IOrderRepository orderRepository;
     @Autowired
     private IOrderStateRepository orderStateRepository;
-
     @Autowired
     private IJwtService jwtService;
-
     @Autowired
     private RuleManager ruleManager;
 
@@ -79,7 +72,7 @@ public class OrderService implements IOrderService {
         if (orderState.getStateCode() == OrderStateEnum.CANCELADO.ordinal()) {
             if (jwtService.isSameUser(order.getUser(), jwtService.getTokenFromRequest(request))) {
                 cancelOrder(order);
-            }else{
+            } else {
                 throw new ApiException(HttpStatus.UNAUTHORIZED, "La orden no te pertenece");
             }
         } else {

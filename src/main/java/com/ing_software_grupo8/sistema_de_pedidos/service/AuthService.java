@@ -1,21 +1,20 @@
 package com.ing_software_grupo8.sistema_de_pedidos.service;
 
-import java.util.Optional;
+import com.ing_software_grupo8.sistema_de_pedidos.DTO.AuthResponseDTO;
+import com.ing_software_grupo8.sistema_de_pedidos.DTO.MessageResponseDTO;
+import com.ing_software_grupo8.sistema_de_pedidos.DTO.RegisterRequestDTO;
+import com.ing_software_grupo8.sistema_de_pedidos.DTO.RestorePasswordRequestDTO;
+import com.ing_software_grupo8.sistema_de_pedidos.response.GenericResponse;
+import com.ing_software_grupo8.sistema_de_pedidos.entity.User;
+import com.ing_software_grupo8.sistema_de_pedidos.repository.IUserRepository;
+import com.ing_software_grupo8.sistema_de_pedidos.utils.RoleEnum;
+import com.ing_software_grupo8.sistema_de_pedidos.exception.ApiException;
 
 import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
-import com.ing_software_grupo8.sistema_de_pedidos.DTO.AuthResponseDTO;
-import com.ing_software_grupo8.sistema_de_pedidos.DTO.MessageResponseDTO;
-import com.ing_software_grupo8.sistema_de_pedidos.DTO.RegisterRequestDTO;
-import com.ing_software_grupo8.sistema_de_pedidos.DTO.RestorePasswordRequestDTO;
-import com.ing_software_grupo8.sistema_de_pedidos.entity.User;
-import com.ing_software_grupo8.sistema_de_pedidos.exception.ApiException;
-import com.ing_software_grupo8.sistema_de_pedidos.repository.IUserRepository;
-import com.ing_software_grupo8.sistema_de_pedidos.response.GenericResponse;
-import com.ing_software_grupo8.sistema_de_pedidos.utils.RoleEnum;
-
+import java.util.Optional;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 

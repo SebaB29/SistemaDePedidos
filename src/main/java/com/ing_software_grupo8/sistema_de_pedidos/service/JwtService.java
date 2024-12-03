@@ -1,5 +1,13 @@
 package com.ing_software_grupo8.sistema_de_pedidos.service;
 
+import com.ing_software_grupo8.sistema_de_pedidos.entity.User;
+import com.ing_software_grupo8.sistema_de_pedidos.utils.RoleEnum;
+
+import org.springframework.http.HttpHeaders;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
+
 import java.security.Key;
 import java.util.Date;
 import java.util.HashMap;
@@ -7,14 +15,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-
-import org.springframework.http.HttpHeaders;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
-
-import com.ing_software_grupo8.sistema_de_pedidos.entity.User;
-import com.ing_software_grupo8.sistema_de_pedidos.utils.RoleEnum;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -67,8 +67,7 @@ public class JwtService implements IJwtService {
     @Override
     public boolean tokenHasRole(HttpServletRequest request, RoleEnum roleEnum) {
         String token = getTokenFromRequest(request);
-        @SuppressWarnings("unchecked")
-        List<String> roles = getClaimFromToken(token, claims -> (List<String>) claims.get(ROLES_CLAIM));
+        @SuppressWarnings("unchecked") List<String> roles = getClaimFromToken(token, claims -> (List<String>) claims.get(ROLES_CLAIM));
         return roles != null && roles.contains(roleEnum.name());
     }
 
@@ -83,21 +82,11 @@ public class JwtService implements IJwtService {
 
     // Métodos privados de utilidad (que no están en la interfaz)
     private String generateToken(User user, Map<String, Object> extraClaims, long expiration) {
-        return Jwts
-                .builder()
-                .setClaims(extraClaims)
-                .setSubject(user.getEmail())
-                .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + expiration))
-                .signWith(getKey(), SignatureAlgorithm.HS256)
-                .compact();
+        return Jwts.builder().setClaims(extraClaims).setSubject(user.getEmail()).setIssuedAt(new Date(System.currentTimeMillis())).setExpiration(new Date(System.currentTimeMillis() + expiration)).signWith(getKey(), SignatureAlgorithm.HS256).compact();
     }
 
     private List<String> getRoleNames(User user) {
-        return user.getAuthorities()
-                .stream()
-                .map(GrantedAuthority::getAuthority)
-                .collect(Collectors.toList());
+        return user.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.toList());
     }
 
     private Key getKey() {
@@ -106,12 +95,7 @@ public class JwtService implements IJwtService {
     }
 
     private Claims getClaimsFromToken(String token) {
-        return Jwts
-                .parserBuilder()
-                .setSigningKey(getKey())
-                .build()
-                .parseClaimsJws(token)
-                .getBody();
+        return Jwts.parserBuilder().setSigningKey(getKey()).build().parseClaimsJws(token).getBody();
     }
 
     @Override
