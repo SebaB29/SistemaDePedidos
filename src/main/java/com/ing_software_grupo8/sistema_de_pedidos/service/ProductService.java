@@ -103,7 +103,7 @@ public class ProductService implements IProductService {
     @Override
     public MessageResponseDTO editStock(StockDTO stockDTO, HttpServletRequest request) {
         verifyAdminRole(request);
-        stockService.editStockFrom(stockDTO);
+        stockService.updateStock(stockDTO);
         return new MessageResponseDTO("Stock editado correctamente");
     }
 
