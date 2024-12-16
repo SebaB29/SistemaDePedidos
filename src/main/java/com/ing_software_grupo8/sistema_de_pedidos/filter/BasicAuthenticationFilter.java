@@ -47,9 +47,7 @@ public class BasicAuthenticationFilter extends OncePerRequestFilter {
             } catch (ArrayIndexOutOfBoundsException e) {
                 exception.write(response, HttpStatus.UNAUTHORIZED, "El token es invalido");
                 return;
-            }
-
-            catch (IllegalArgumentException e) {
+            } catch (IllegalArgumentException e) {
                 exception.write(response, HttpStatus.UNAUTHORIZED, "El token es invalido");
                 return;
             }

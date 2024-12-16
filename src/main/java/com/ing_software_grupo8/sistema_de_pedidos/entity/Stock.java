@@ -23,13 +23,13 @@ public class Stock {
     @Column(nullable = false)
     private Float quantity;
 
-    public boolean discountStock(Float stockQuantity){
-        if(quantity < stockQuantity) return false;
+    public boolean discountStock(Float stockQuantity) {
+        if (quantity < stockQuantity) return false;
         quantity -= stockQuantity;
         return true;
     }
 
-    public boolean addStock(Float stockQuantity){
+    public boolean addStock(Float stockQuantity) {
         quantity += stockQuantity;
         return true;
     }

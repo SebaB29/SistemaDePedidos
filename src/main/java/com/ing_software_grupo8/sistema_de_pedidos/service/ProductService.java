@@ -1,24 +1,24 @@
 package com.ing_software_grupo8.sistema_de_pedidos.service;
 
-import com.ing_software_grupo8.sistema_de_pedidos.entity.Attribute;
-import com.ing_software_grupo8.sistema_de_pedidos.entity.Product;
-import com.ing_software_grupo8.sistema_de_pedidos.entity.Stock;
-import com.ing_software_grupo8.sistema_de_pedidos.exception.ApiException;
-import com.ing_software_grupo8.sistema_de_pedidos.repository.IProductOrderRepository;
-import com.ing_software_grupo8.sistema_de_pedidos.repository.IProductRepository;
-
-import jakarta.servlet.http.HttpServletRequest;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Service;
-
 import com.ing_software_grupo8.sistema_de_pedidos.DTO.AdminCreateProductRequestDTO;
 import com.ing_software_grupo8.sistema_de_pedidos.DTO.AttributeDTO;
 import com.ing_software_grupo8.sistema_de_pedidos.DTO.MessageResponseDTO;
 import com.ing_software_grupo8.sistema_de_pedidos.DTO.ProductRequestDTO;
 import com.ing_software_grupo8.sistema_de_pedidos.DTO.ProductResponseDTO;
 import com.ing_software_grupo8.sistema_de_pedidos.DTO.StockDTO;
+import com.ing_software_grupo8.sistema_de_pedidos.entity.Product;
+import com.ing_software_grupo8.sistema_de_pedidos.entity.Attribute;
+import com.ing_software_grupo8.sistema_de_pedidos.entity.Stock;
+import com.ing_software_grupo8.sistema_de_pedidos.repository.IProductRepository;
+import com.ing_software_grupo8.sistema_de_pedidos.repository.IProductOrderRepository;
+import com.ing_software_grupo8.sistema_de_pedidos.utils.RoleEnum;
+import com.ing_software_grupo8.sistema_de_pedidos.exception.ApiException;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
+
+import jakarta.servlet.http.HttpServletRequest;
 
 import java.util.List;
 import java.util.Optional;
@@ -39,6 +39,7 @@ public class ProductService implements IProductService {
     @Autowired
     IJwtService jwtService;
 
+    @Override
     public MessageResponseDTO createProduct(AdminCreateProductRequestDTO productRequest, HttpServletRequest request) {
         verifyAdminRole(request);
         validateProductNameUniqueness(productRequest.getProductName());
@@ -54,6 +55,7 @@ public class ProductService implements IProductService {
         return new MessageResponseDTO("Producto creado");
     }
 
+    @Override
     public MessageResponseDTO editProduct(ProductRequestDTO productDTO, HttpServletRequest request) {
         verifyAdminRole(request);
 
@@ -70,6 +72,7 @@ public class ProductService implements IProductService {
         return new MessageResponseDTO("Producto editado correctamente");
     }
 
+    @Override
     public MessageResponseDTO deleteProduct(Long productId, HttpServletRequest request) {
         verifyAdminRole(request);
         findProductById(productId);
@@ -83,6 +86,7 @@ public class ProductService implements IProductService {
         return new MessageResponseDTO("Producto eliminado correctamente");
     }
 
+    @Override
     public List<ProductResponseDTO> getAllProducts() {
         return productRepository.findAll().stream()
                 .map(product -> new ProductResponseDTO(
@@ -96,6 +100,19 @@ public class ProductService implements IProductService {
                 .collect(Collectors.toList());
     }
 
+    @Override
+    public MessageResponseDTO editStock(StockDTO stockDTO, HttpServletRequest request) {
+        verifyAdminRole(request);
+        stockService.updateStock(stockDTO);
+        return new MessageResponseDTO("Stock editado correctamente");
+    }
+
+    @Override
+    public Optional<Stock> getProductStock(Long productId) {
+        Product product = findProductById(productId);
+        return stockService.getStockFrom(product.getProductId());
+    }
+
     private Stock createStock(AdminCreateProductRequestDTO productRequest) {
         Stock stock = new Stock();
         stock.setStockType(productRequest.getStockType());
@@ -104,24 +121,13 @@ public class ProductService implements IProductService {
         return stock;
     }
 
-    public MessageResponseDTO editStock(StockDTO stockDTO, HttpServletRequest request) {
-        verifyAdminRole(request);
-        stockService.editStockFrom(stockDTO);
-        return new MessageResponseDTO("Stock editado correctamente");
-    }
-
-    public Optional<Stock> getProductStock(Long productId) {
-        Product product = findProductById(productId);
-        return stockService.getStockFrom(product.getProductId());
-    }
-
     private Product findProductById(Long productId) {
         return productRepository.findById(productId)
                 .orElseThrow(() -> new ApiException(HttpStatus.BAD_REQUEST, "Producto no encontrado"));
     }
 
     private void verifyAdminRole(HttpServletRequest request) {
-        if (!jwtService.tokenHasRoleAdmin(request)) {
+        if (!jwtService.tokenHasRole(request, RoleEnum.ADMIN)) {
             throw new ApiException(HttpStatus.UNAUTHORIZED, "No tienes autorización");
         }
     }

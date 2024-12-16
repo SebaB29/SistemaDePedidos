@@ -16,9 +16,9 @@ public class ProductLimitRule implements Rule {
     @Override
     public boolean validate(Order order) {
         double totalProductCount = order.getProductOrder().stream()
-            .filter(productOrder -> this.productName.equals(productOrder.getProduct().getName()))
-            .mapToDouble(ProductOrder::getOrderQuantity)
-            .sum();
+                .filter(productOrder -> this.productName.equals(productOrder.getProduct().getName()))
+                .mapToDouble(ProductOrder::getOrderQuantity)
+                .sum();
 
         return totalProductCount <= maxCount;
     }

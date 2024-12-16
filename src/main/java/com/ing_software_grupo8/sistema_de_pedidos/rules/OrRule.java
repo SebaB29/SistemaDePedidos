@@ -5,8 +5,8 @@ import java.util.List;
 import com.ing_software_grupo8.sistema_de_pedidos.entity.Order;
 
 public class OrRule implements Rule {
-    
-    private List<Rule> subRules;
+
+    private final List<Rule> subRules;
 
     public OrRule(List<Rule> rules) {
         this.subRules = rules;
