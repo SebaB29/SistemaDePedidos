@@ -7,6 +7,7 @@ import com.ing_software_grupo8.sistema_de_pedidos.entity.Stock;
 import com.ing_software_grupo8.sistema_de_pedidos.exception.ApiException;
 import com.ing_software_grupo8.sistema_de_pedidos.repository.IProductOrderRepository;
 import com.ing_software_grupo8.sistema_de_pedidos.repository.IProductRepository;
+import com.ing_software_grupo8.sistema_de_pedidos.utils.RoleEnum;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -55,7 +56,7 @@ public class ProductServiceTest {
         request.setAttributes(List.of(attributeDTO));
 
         Stock stock = new Stock();
-        when(!jwtService.tokenHasRoleAdmin(servletRequest)).thenReturn(true);
+        when(!jwtService.tokenHasRole(servletRequest, RoleEnum.ADMIN)).thenReturn(true);
         doNothing().when(stockService).createStock(stock);
 
         MessageResponseDTO response = productService.createProduct(request, servletRequest);
@@ -84,7 +85,7 @@ public class ProductServiceTest {
         attributes.add(originalAttribute);
         product.setAttributes(attributes);
 
-        when(!jwtService.tokenHasRoleAdmin(servletRequest)).thenReturn(true);
+        when(!jwtService.tokenHasRole(servletRequest, RoleEnum.ADMIN)).thenReturn(true);
         when(productRepository.findById(1L)).thenReturn(Optional.of(product));
 
         MessageResponseDTO response = productService.editProduct(request, servletRequest);
@@ -100,7 +101,7 @@ public class ProductServiceTest {
         ProductRequestDTO request = new ProductRequestDTO();
         request.setProductId(999L);
 
-        when(!jwtService.tokenHasRoleAdmin(servletRequest)).thenReturn(true);
+        when(!jwtService.tokenHasRole(servletRequest, RoleEnum.ADMIN)).thenReturn(true);
         when(productRepository.findById(999L)).thenReturn(Optional.empty());
 
         ApiException exception = assertThrows(ApiException.class, () -> productService.editProduct(request, servletRequest));
@@ -117,7 +118,7 @@ public class ProductServiceTest {
 
         Product product = new Product();
 
-        when(jwtService.tokenHasRoleAdmin(servletRequest)).thenReturn(true);
+        when(jwtService.tokenHasRole(servletRequest, RoleEnum.ADMIN)).thenReturn(true);
         when(productRepository.findById(product_id)).thenReturn(Optional.of(product));
         when(productOrderRepository.findByProduct_ProductId(request.getProductId())).thenReturn(Collections.emptyList());
 
@@ -133,7 +134,7 @@ public class ProductServiceTest {
         ProductRequestDTO request = new ProductRequestDTO();
         request.setProductId(999L);
 
-        when(!jwtService.tokenHasRoleAdmin(servletRequest)).thenReturn(true);
+        when(!jwtService.tokenHasRole(servletRequest, RoleEnum.ADMIN)).thenReturn(true);
         when(productRepository.findById(999L)).thenReturn(Optional.empty());
 
         ApiException exception = assertThrows(ApiException.class, () -> productService.deleteProduct(request.getProductId(), servletRequest));
@@ -202,10 +203,10 @@ public class ProductServiceTest {
         StockDTO stockDTO = new StockDTO();
         stockDTO.setQuantity(20);
 
-        when(!jwtService.tokenHasRoleAdmin(servletRequest)).thenReturn(true);
+        when(!jwtService.tokenHasRole(servletRequest, RoleEnum.ADMIN)).thenReturn(true);
         MessageResponseDTO response = productService.editStock(stockDTO, servletRequest);
 
         assertEquals("Stock editado correctamente", response.getMessage());
-        verify(stockService, times(1)).editStockFrom(stockDTO);
+        verify(stockService, times(1)).updateStock(stockDTO);
     }
 }

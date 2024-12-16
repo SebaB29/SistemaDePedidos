@@ -9,19 +9,19 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class JsonRuleRepository {
-    private List<Rule> rules = new ArrayList<>();
+    private final List<Rule> rules = new ArrayList<>();
 
     public JsonRuleRepository() {
         try {
-            loadRulesFromJson("src/main/java/com/ing_software_grupo8/sistema_de_pedidos/rules/rules.json");
+            loadRulesFromJson();
         } catch (IOException e) {
             throw new RuntimeException("Error loading rules from JSON", e);
         }
     }
 
-    private void loadRulesFromJson(String filePath) throws IOException {
+    private void loadRulesFromJson() throws IOException {
         ObjectMapper mapper = new ObjectMapper();
-        JsonNode root = mapper.readTree(new File(filePath));
+        JsonNode root = mapper.readTree(new File("src/main/java/com/ing_software_grupo8/sistema_de_pedidos/rules/rules.json"));
         rules.add(parseRule(root));
     }
 
@@ -42,7 +42,7 @@ public class JsonRuleRepository {
                 return new ProductLimitRule(
                         node.get("productName").asText(),
                         (float) node.get("maxCount").asDouble()
-            );
+                );
             case "AndRule":
                 List<Rule> andSubRules = new ArrayList<>();
                 for (JsonNode subRuleNode : node.get("subRules")) {

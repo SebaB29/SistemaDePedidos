@@ -15,9 +15,9 @@ public class AttributeLimitRule implements Rule {
     @Override
     public boolean validate(Order order) {
         long totalOccurrences = order.getProductOrder().stream()
-            .flatMap(productOrder -> productOrder.getProduct().getAttributes().stream())
-            .filter(attribute -> this.attribute.equals(attribute.getDescription()))
-            .count();
+                .flatMap(productOrder -> productOrder.getProduct().getAttributes().stream())
+                .filter(attribute -> this.attribute.equals(attribute.getDescription()))
+                .count();
 
         return totalOccurrences <= maxCount;
     }

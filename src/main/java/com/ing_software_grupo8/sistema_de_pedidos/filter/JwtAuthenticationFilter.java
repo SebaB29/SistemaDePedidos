@@ -53,9 +53,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 return;
             }
             filterChain.doFilter(request, response);
-        }
-
-        catch (SignatureException e) {
+        } catch (SignatureException e) {
             exception.write(response, HttpStatus.UNAUTHORIZED, "El token es invalido");
         } catch (MalformedJwtException e) {
             exception.write(response, HttpStatus.UNAUTHORIZED, "El token esta mal formado");

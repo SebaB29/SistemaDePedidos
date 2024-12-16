@@ -8,7 +8,7 @@ import com.ing_software_grupo8.sistema_de_pedidos.entity.Order;
 
 @Service
 public class RuleManager {
-    private List<Rule> allRules;
+    private final List<Rule> allRules;
 
     public RuleManager() {
         JsonRuleRepository ruleRepository = new JsonRuleRepository();

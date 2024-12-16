@@ -19,11 +19,11 @@ public class ProductOrder {
     private Long productOrderId;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name="order_id")
+    @JoinColumn(name = "order_id")
     private Order order;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name="product_id")
+    @JoinColumn(name = "product_id")
     private Product product;
 
     @Column

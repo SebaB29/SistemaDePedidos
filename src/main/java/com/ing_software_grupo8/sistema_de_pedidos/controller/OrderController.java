@@ -27,9 +27,9 @@ public class OrderController {
     @PatchMapping("/state")
     public ResponseEntity<?> updateState(@RequestBody OrderRequestDTO orderRequestDTO, HttpServletRequest httpServletRequest) {
         return ResponseEntity.ok(GenericResponse.builder()
-                                                .data(orderService.updateState(orderRequestDTO, httpServletRequest))
-                                                .status(HttpStatus.OK)
-                                                .build());
+                .data(orderService.updateState(orderRequestDTO, httpServletRequest))
+                .status(HttpStatus.OK)
+                .build());
     }
 
     @PostMapping

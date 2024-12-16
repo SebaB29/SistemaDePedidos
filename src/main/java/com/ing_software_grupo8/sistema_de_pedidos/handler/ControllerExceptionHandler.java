@@ -14,27 +14,27 @@ public class ControllerExceptionHandler {
     @ExceptionHandler(NoHandlerFoundException.class)
     public ResponseEntity<GenericResponse> handleException(NoHandlerFoundException e) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                             .body(GenericResponse.builder()
-                                                  .error(e.getMessage())
-                                                  .status(HttpStatus.NOT_FOUND)
-                                                  .build());
+                .body(GenericResponse.builder()
+                        .error(e.getMessage())
+                        .status(HttpStatus.NOT_FOUND)
+                        .build());
     }
 
     @ExceptionHandler(ApiException.class)
     public ResponseEntity<GenericResponse> handleApiException(ApiException e) {
         return ResponseEntity.status(e.getStatusCode())
-                             .body(GenericResponse.builder()
-                                                    .error(e.getMessage())
-                                                    .status(e.getStatusCode())
-                                                    .build());
+                .body(GenericResponse.builder()
+                        .error(e.getMessage())
+                        .status(e.getStatusCode())
+                        .build());
     }
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<GenericResponse> handleException() {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                             .body(GenericResponse.builder()
-                                                  .error("Internal server error")
-                                                  .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                                                  .build());
+                .body(GenericResponse.builder()
+                        .error("Internal server error")
+                        .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                        .build());
     }
 }

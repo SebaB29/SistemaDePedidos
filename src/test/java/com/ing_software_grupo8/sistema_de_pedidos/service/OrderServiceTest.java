@@ -61,7 +61,7 @@ class OrderServiceTest {
         User user = new User();
         user.setUserId(1L);
         when(userRepository.findById(user.getUserId())).thenReturn(Optional.empty());
-        when(jwtService.tokenHasRoleUser(servletRequest)).thenReturn(true);
+        when(jwtService.tokenHasRole(servletRequest, RoleEnum.USER)).thenReturn(true);
 
         ApiException exception = assertThrows(ApiException.class, () -> orderService.getAll(user.getUserId(), servletRequest));
 
@@ -78,7 +78,7 @@ class OrderServiceTest {
         user.setUserId(1L);
         user.setRole(RoleEnum.USER);
         when(userRepository.findById(user.getUserId())).thenReturn(Optional.of(user));
-        when(!jwtService.tokenHasRoleUser(servletRequest)).thenReturn(true);
+        when(!jwtService.tokenHasRole(servletRequest, RoleEnum.USER)).thenReturn(true);
 
         List<Order> orders = new ArrayList<>();
         Order order = new Order();
@@ -119,7 +119,7 @@ class OrderServiceTest {
         Product product = new Product();
         product.setStock(new Stock(1L, "KG", 10f));
 
-        when(jwtService.tokenHasRoleUser(any(HttpServletRequest.class))).thenReturn(true);
+        when(jwtService.tokenHasRole(servletRequest, RoleEnum.USER)).thenReturn(true);
         when(productRepository.findById(2L)).thenReturn(Optional.of(product));
 
         ApiException exception = assertThrows(ApiException.class, () -> orderService.create(orderRequestDTO, servletRequest));
@@ -137,7 +137,7 @@ class OrderServiceTest {
         ProductOrderDTO productOrderDTO = new ProductOrderDTO(2L, 1);
         OrderRequestDTO orderRequestDTO = new OrderRequestDTO(1L, 1L, 1, List.of(productOrderDTO));
 
-        when(!jwtService.tokenHasRoleUser(servletRequest)).thenReturn(true);
+        when(!jwtService.tokenHasRole(servletRequest, RoleEnum.USER)).thenReturn(true);
 
         ApiException exception = assertThrows(ApiException.class, () -> orderService.create(orderRequestDTO, servletRequest));
 
@@ -155,7 +155,7 @@ class OrderServiceTest {
         product.setStock(new Stock(1L, "KG", 10f));
         User user = new User();
 
-        when(jwtService.tokenHasRoleUser(servletRequest)).thenReturn(true);
+        when(jwtService.tokenHasRole(servletRequest, RoleEnum.USER)).thenReturn(true);
         when(ruleManager.validateOrder(any(Order.class))).thenReturn(true);
         when(productRepository.findById(2L)).thenReturn(Optional.of(product));
         when(userRepository.findById(1L)).thenReturn(Optional.of(user));
